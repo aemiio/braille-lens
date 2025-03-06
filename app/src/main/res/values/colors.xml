@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Colors -->
+    <color name="dark_orange">#FF9D23</color>
+    <color name="dark_olive">#71871E</color>
+    <color name="dark_teal">#08424E</color>
+
+    <!-- Neutral Colors -->
+    <color name="light_cream">#FCF3E3</color>
+    <color name="background_cream">#F8EDD9</color>
+
+    <!-- Lighter Pastel Colors -->
+    <color name="pastel_orange">#FFDEAB</color>
+    <color name="pastel_green">#D3DB9B</color>
+    <color name="pastel_teal">#477287</color>
+
+    <!-- Accent Colors -->
+    <color name="accent_red">#C14600</color>
+    <color name="accent_beige">#E5D0AC</color>
+    <color name="accent_purple">#8C3061</color>
+
+    <!-- Font Colors -->
+    <color name="font_white">#FFFFFF</color>
+    <color name="font_black">#131010</color>
+</resources>

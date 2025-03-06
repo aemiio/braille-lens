@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark Theme -->
+    <style name="Theme.BrailleLens.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand color -->
+        <item name="colorPrimary">@color/pastel_orange</item>
+        <item name="colorPrimaryVariant">@color/dark_orange</item>
+        <item name="colorOnPrimary">@color/font_black</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">@color/pastel_green</item>
+        <item name="colorSecondaryVariant">@color/dark_olive</item>
+        <item name="colorOnSecondary">@color/font_black</item>
+
+        <!-- Accent colors -->
+        <item name="colorAccent">@color/accent_red</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@color/dark_teal</item>
+
+        <!-- Background colors -->
+        <item name="android:windowBackground">@color/dark_teal</item>
+        <item name="colorSurface">@color/pastel_teal</item>
+        <item name="colorOnSurface">@color/font_white</item>
+        <item name="colorOnBackground">@color/font_white</item>
+
+        <!-- Additional custom attributes for specific components -->
+        <item name="elevationOverlayColor">@color/accent_beige</item>
+        <item name="colorError">@color/accent_purple</item>
+        <item name="colorOnError">@color/font_white</item>
+    </style>
+</resources>

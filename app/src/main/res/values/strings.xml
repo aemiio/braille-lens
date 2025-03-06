@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Braille-Lens</string>
+    <string name="app_logo">Braille-Lens</string>
+    <string name="app_subtitle">Filipino Braille Recognition</string>
+</resources>
