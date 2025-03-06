@@ -5,48 +5,72 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberDrawerState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import kotlinx.coroutines.launch
-import com.example.braillelens.ui.screens.HomeScreen
-import com.example.braillelens.ui.screens.DictionaryScreen
-import com.example.braillelens.ui.screens.AboutScreen
+import androidx.navigation.compose.rememberNavController
 import com.example.braillelens.ui.components.AppDrawer
 import com.example.braillelens.ui.components.BottomNavigationBar
+import com.example.braillelens.ui.screens.AboutScreen
+import com.example.braillelens.ui.screens.DictionaryScreen
+import com.example.braillelens.ui.screens.HomeScreen
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainScreen()
+            Surface(color = MaterialTheme.colorScheme.background) {
+                MainScreen()
+
+            }
         }
     }
 }
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-    val coroutineScope = rememberCoroutineScope()
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
     var selectedScreen by remember { mutableStateOf("home") }
+    val navController = rememberNavController()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet {
-                AppDrawer { selectedScreen = it }
+                AppDrawer { screen ->
+                    selectedScreen = screen
+                    scope.launch {
+                        drawerState.close()
+                    }
+                }
             }
         }
     ) {
         Scaffold(
             bottomBar = {
-                BottomNavigationBar { selectedScreen = it }
+                BottomNavigationBar { screen ->
+                    selectedScreen = screen
+                }
             }
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 when (selectedScreen) {
-                    "home" -> HomeScreen { coroutineScope.launch { drawerState.open() } }
+                    "home" -> HomeScreen { scope.launch { drawerState.open() } }
                     "dictionary" -> DictionaryScreen()
                     "about" -> AboutScreen()
                 }
