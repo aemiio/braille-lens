@@ -30,13 +30,13 @@ import com.example.braillelens.ui.components.RecognitionCard
 
 @Composable
 fun HomeScreen(openDrawer: () -> Unit) {
-    val navController = rememberNavController()  // Add this line
+    val navController = rememberNavController()
     val context = LocalContext.current
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
 
         // Top Image
         Image(
-            painter = painterResource(id = R.drawable.braille_logo),
+            painter = painterResource(id = R.drawable.home),
             contentDescription = "Home Image",
             modifier = Modifier
                 .fillMaxWidth()
@@ -58,7 +58,7 @@ fun HomeScreen(openDrawer: () -> Unit) {
             // Drawer Button
             IconButton(onClick = openDrawer) {
                 Icon(
-                    painter = painterResource(id = R.drawable.braille_logo),
+                    painter = painterResource(id = R.drawable.menu_24px),
                     contentDescription = "Open Drawer",
                     tint = MaterialTheme.colorScheme.primary
                 )

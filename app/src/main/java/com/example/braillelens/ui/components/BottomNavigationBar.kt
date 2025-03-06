@@ -18,7 +18,7 @@ fun BottomNavigationBar(onItemSelected: (String) -> Unit) {
         modifier = Modifier.height(64.dp)
     ) {
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.braille_logo), contentDescription = "Home") },
+            icon = { Icon(painter = painterResource(id = R.drawable.home_24px), contentDescription = "Home") },
             label = { Text("Home") },
             selected = selectedItem == "home",
             onClick = {
@@ -27,7 +27,7 @@ fun BottomNavigationBar(onItemSelected: (String) -> Unit) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.braille_logo), contentDescription = "Dictionary") },
+            icon = { Icon(painter = painterResource(id = R.drawable.dictionary_24px), contentDescription = "Dictionary") },
             label = { Text("Dictionary") },
             selected = selectedItem == "dictionary",
             onClick = {
@@ -36,7 +36,7 @@ fun BottomNavigationBar(onItemSelected: (String) -> Unit) {
             }
         )
         NavigationBarItem(
-            icon = { Icon(painter = painterResource(id = R.drawable.braille_logo), contentDescription = "About") },
+            icon = { Icon(painter = painterResource(id = R.drawable.info_24px), contentDescription = "About") },
             label = { Text("About") },
             selected = selectedItem == "about",
             onClick = {
