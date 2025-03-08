@@ -20,21 +20,27 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import com.example.braillelens.ui.components.AppDrawer
 import com.example.braillelens.ui.components.BottomNavigationBar
 import com.example.braillelens.ui.screens.AboutScreen
 import com.example.braillelens.ui.screens.DictionaryScreen
 import com.example.braillelens.ui.screens.HomeScreen
+import com.example.braillelens.ui.screens.OnboardingScreen
+import com.example.braillelens.ui.screens.hasCompletedOnboarding
+import com.example.braillelens.ui.screens.setOnboardingComplete
+import com.example.braillelens.ui.BrailleLensTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Surface(color = MaterialTheme.colorScheme.background) {
-                MainScreen()
-
+            BrailleLensTheme {
+                Surface(color = MaterialTheme.colorScheme.background) {
+                    MainScreen()
+                }
             }
         }
     }
@@ -47,32 +53,48 @@ fun MainScreen() {
     val scope = rememberCoroutineScope()
     var selectedScreen by remember { mutableStateOf("home") }
     val navController = rememberNavController()
+    val context = LocalContext.current
 
-    ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = {
-            ModalDrawerSheet {
-                AppDrawer { screen ->
-                    selectedScreen = screen
-                    scope.launch {
-                        drawerState.close()
+    // Onboarding state
+    var onboardingCompleted by remember { mutableStateOf(hasCompletedOnboarding(context)) }
+
+    //  Show only the onboarding screen
+    if (!onboardingCompleted) {
+        OnboardingScreen(
+            navController = navController,
+            onFinishOnboarding = {
+                setOnboardingComplete(context)
+                onboardingCompleted = true
+            }
+        )
+    } else {
+        // Normal app flow
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    AppDrawer { screen ->
+                        selectedScreen = screen
+                        scope.launch {
+                            drawerState.close()
+                        }
                     }
                 }
             }
-        }
-    ) {
-        Scaffold(
-            bottomBar = {
-                BottomNavigationBar { screen ->
-                    selectedScreen = screen
+        ) {
+            Scaffold(
+                bottomBar = {
+                    BottomNavigationBar { screen ->
+                        selectedScreen = screen
+                    }
                 }
-            }
-        ) { innerPadding ->
-            Box(modifier = Modifier.padding(innerPadding)) {
-                when (selectedScreen) {
-                    "home" -> HomeScreen { scope.launch { drawerState.open() } }
-                    "dictionary" -> DictionaryScreen()
-                    "about" -> AboutScreen()
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    when (selectedScreen) {
+                        "home" -> HomeScreen { scope.launch { drawerState.open() } }
+                        "dictionary" -> DictionaryScreen()
+                        "about" -> AboutScreen()
+                    }
                 }
             }
         }

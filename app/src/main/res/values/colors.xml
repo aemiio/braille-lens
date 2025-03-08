@@ -8,11 +8,12 @@
     <!-- Neutral Colors -->
     <color name="light_cream">#FCF3E3</color>
     <color name="background_cream">#F8EDD9</color>
+    <color name="background_grey">#f7f7f7</color>
 
     <!-- Lighter Pastel Colors -->
     <color name="pastel_orange">#FFDEAB</color>
     <color name="pastel_green">#D3DB9B</color>
-    <color name="pastel_teal">#477287</color>
+    <color name="pastel_teal">#8bafb6</color>
 
     <!-- Accent Colors -->
     <color name="accent_red">#C14600</color>
