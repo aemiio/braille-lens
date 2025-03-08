@@ -28,6 +28,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.braillelens.R
+import com.example.braillelens.ui.BackgroundGrey
+import com.example.braillelens.ui.BrailleLensTheme
+import com.example.braillelens.ui.DarkTeal
+import com.example.braillelens.ui.FontBlack
 
 @Composable
 fun AppDrawer(
@@ -37,7 +41,7 @@ fun AppDrawer(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(BackgroundGrey)
             .padding(vertical = 24.dp)
     ) {
         // Header with Logo and App Title
@@ -62,7 +66,7 @@ fun AppDrawer(
 
                 Column {
                     Text(
-                        text = "Braille Lens",
+                        text = "Braille-Lens",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
@@ -70,7 +74,7 @@ fun AppDrawer(
                     Text(
                         text = "Your Vision, Our Mission",
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.secondary
+                        color = FontBlack
                     )
                 }
             }
@@ -116,17 +120,9 @@ fun NavigationItem(
     isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
-    val backgroundColor = if (isSelected) {
-        MaterialTheme.colorScheme.primaryContainer
-    } else {
-        Color.Transparent
-    }
+    val backgroundColor = BackgroundGrey
 
-    val textColor = if (isSelected) {
-        MaterialTheme.colorScheme.onPrimaryContainer
-    } else {
-        MaterialTheme.colorScheme.onSurface
-    }
+    val textColor = FontBlack
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
