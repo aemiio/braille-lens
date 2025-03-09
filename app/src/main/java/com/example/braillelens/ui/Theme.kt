@@ -4,6 +4,8 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.SideEffect
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val DarkOrange = Color(0xFFFF9D23)
 val DarkOlive = Color(0xFF71871E)
@@ -51,15 +53,40 @@ private val DarkColors = darkColorScheme(
     onSurface = FontWhite
 )
 
+object BrailleLensColors {
+    val darkOrange = DarkOrange
+    val darkOlive = DarkOlive
+    val darkTeal = DarkTeal
+    val lightCream = LightCream
+    val backgroundCream = BackgroundCream
+    val backgroundGrey = BackgroundGrey
+    val pastelOrange = PastelOrange
+    val pastelGreen = PastelGreen
+    val pastelTeal = PastelTeal
+    val accentRed = AccentRed
+    val accentBeige = AccentBeige
+    val accentPurple = AccentPurple
+    val fontWhite = FontWhite
+    val fontBlack = FontBlack
+}
+
 @Composable
 fun BrailleLensTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colors = if (useDarkTheme) DarkColors else LightColors
+    val systemUiController = rememberSystemUiController()
+    val statusBarColor = BrailleLensColors.backgroundGrey
+
+    SideEffect {
+        systemUiController.setStatusBarColor(
+            color = statusBarColor,
+            darkIcons = !useDarkTheme
+        )
+    }
 
     MaterialTheme(
-        colorScheme = colors,
+        colorScheme = if (useDarkTheme) DarkColors else LightColors,
         content = content
     )
 }

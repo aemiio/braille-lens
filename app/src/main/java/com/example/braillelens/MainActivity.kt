@@ -3,8 +3,11 @@ package com.example.braillelens
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -21,7 +24,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.ui.BrailleLensTheme
 import com.example.braillelens.ui.components.AppDrawer
 import com.example.braillelens.ui.components.BottomNavigationBar
@@ -81,11 +86,26 @@ fun MainScreen() {
         ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                ModalDrawerSheet {
-                    AppDrawer { screen ->
-                        selectedScreen = screen
-                        scope.launch {
-                            drawerState.close()
+                ModalDrawerSheet(
+
+                    drawerShape = RoundedCornerShape(
+                        topEnd = 30.dp,
+                        bottomEnd = 30.dp
+                    ),
+                    drawerContainerColor = BrailleLensColors.backgroundGrey
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(BrailleLensColors.backgroundGrey)
+                    ) {
+
+                        AppDrawer { screen ->
+                            selectedScreen = screen
+                            scope.launch {
+                                drawerState.close()
+                            }
                         }
                     }
                 }

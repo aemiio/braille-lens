@@ -60,6 +60,7 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
 
