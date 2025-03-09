@@ -29,7 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.ui.BrailleLensTheme
 import com.example.braillelens.ui.components.AppDrawer
-import com.example.braillelens.ui.components.BottomNavigationBar
+import com.example.braillelens.ui.components.CustomNavigationBar
 import com.example.braillelens.ui.screens.AboutScreen
 import com.example.braillelens.ui.screens.DictionaryScreen
 import com.example.braillelens.ui.screens.HomeScreen
@@ -43,7 +43,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BrailleLensTheme {
-                Surface(color = MaterialTheme.colorScheme.background) {
+                Surface(color = BrailleLensColors.backgroundGrey) {
                     MainScreen()
                 }
             }
@@ -113,9 +113,12 @@ fun MainScreen() {
         ) {
             Scaffold(
                 bottomBar = {
-                    BottomNavigationBar { screen ->
-                        selectedScreen = screen
-                    }
+                    CustomNavigationBar(
+                        currentScreen = selectedScreen,
+                        onItemSelected = { screen ->
+                            selectedScreen = screen
+                        }
+                    )
                 }
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {

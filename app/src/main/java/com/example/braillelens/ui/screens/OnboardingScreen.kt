@@ -143,22 +143,22 @@ fun OnboardingScreen(
             title = "Empower Inclusion, Recognize Filipino Braille",
             subtitle = "Together, we break barriers with effortless Grade 1 and Grade 2 Braille recognition, fostering a more inclusive society.",
             imageRes = R.drawable.onboarding_1,
-            contentDescription = "Person using a mobile app",
+            contentDescription = "a visually impaired girl walking to school",
             backgroundColor = DarkOrange
         ),
         OnboardingPage(
             title = "Easy Braille Recognition",
             subtitle = "Capture or import Filipino Braille and experience detection powered by advanced technology.",
             imageRes = R.drawable.onboarding_2,
-            contentDescription = "Customization options illustration",
+            contentDescription = "Father and daughter going to school",
             backgroundColor = DarkOlive
         ),
         OnboardingPage(
             title = "See Beyond Touch with Braille-Lens",
             subtitle = "Transform Filipino Braille into text and speech with ease, bridging communication and accessibility effortlessly.",
             imageRes = R.drawable.onboarding_3,
-            contentDescription = "Person starting their journey",
-            backgroundColor = DarkTeal
+            contentDescription = "Diversity of people",
+            backgroundColor = DarkOlive
         )
     )
 
@@ -369,7 +369,7 @@ fun FirstPageLayout(page: OnboardingPage) {
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = DarkOrange,
+            color = DarkOlive,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
