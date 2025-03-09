@@ -43,7 +43,7 @@ fun HomeScreen(openDrawer: () -> Unit) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 250.dp)
+                .padding(top = 350.dp)
                 .background(
                     MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(topStart = 30.dp, topEnd = 30.dp)

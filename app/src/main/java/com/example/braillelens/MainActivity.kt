@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
+import com.example.braillelens.ui.BrailleLensTheme
 import com.example.braillelens.ui.components.AppDrawer
 import com.example.braillelens.ui.components.BottomNavigationBar
 import com.example.braillelens.ui.screens.AboutScreen
@@ -30,7 +31,6 @@ import com.example.braillelens.ui.screens.HomeScreen
 import com.example.braillelens.ui.screens.OnboardingScreen
 import com.example.braillelens.ui.screens.hasCompletedOnboarding
 import com.example.braillelens.ui.screens.setOnboardingComplete
-import com.example.braillelens.ui.BrailleLensTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -55,16 +55,25 @@ fun MainScreen() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Onboarding state
-    var onboardingCompleted by remember { mutableStateOf(hasCompletedOnboarding(context)) }
+    // DEBUG FLAGS
+    val forceShowOnboarding = true // Set to true to show onboarding during development
+    val allowOnboardingNavigation = true // Set to true to allow navigation from onboarding to home
 
-    //  Show only the onboarding screen
+    // Onboarding state
+    var onboardingCompleted by remember {
+        mutableStateOf(if (forceShowOnboarding) false else hasCompletedOnboarding(context))
+    }
+
+    // Show only the onboarding screen if not completed
     if (!onboardingCompleted) {
         OnboardingScreen(
             navController = navController,
             onFinishOnboarding = {
                 setOnboardingComplete(context)
-                onboardingCompleted = true
+                // Use allowOnboardingNavigation to determine if we should navigate away
+                if (allowOnboardingNavigation) {
+                    onboardingCompleted = true
+                }
             }
         )
     } else {
