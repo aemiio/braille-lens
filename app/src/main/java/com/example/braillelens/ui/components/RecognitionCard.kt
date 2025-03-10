@@ -5,13 +5,42 @@ import android.content.SharedPreferences
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,7 +53,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.braillelens.R
 import com.example.braillelens.ui.BrailleLensColors
-import androidx.compose.material3.ExposedDropdownMenuBox
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,7 +83,7 @@ fun RecognitionCard(
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.dark_olive)),
+        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pastel_green)),
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
@@ -66,13 +94,13 @@ fun RecognitionCard(
                 Text(
                     "Recognize Braille",
                     fontSize = 22.sp,
-                    color = Color.White,
+                    color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
                     thickness = 1.dp,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = Color.Black.copy(alpha = 0.7f)
                 )
 
                 // Detection Mode and Tagalog text in a row
@@ -91,20 +119,25 @@ fun RecognitionCard(
                             value = selectedMode,
                             onValueChange = {},
                             readOnly = true,
-                            label = { Text("Detection Mode", color = Color.White.copy(alpha = 0.9f)) },
+                            label = {
+                                Text(
+                                    "Detection Mode",
+                                    color = Color.Black.copy(alpha = 0.9f)
+                                )
+                            },
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Toggle Dropdown",
-                                    tint = Color.White
+                                    tint = Color.Black
                                 )
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.White,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.7f),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White,
-                                cursorColor = Color.White
+                                focusedBorderColor = Color.Black,
+                                unfocusedBorderColor = Color.Black.copy(alpha = 0.7f),
+                                focusedTextColor = Color.Black,
+                                unfocusedTextColor = Color.Black,
+                                cursorColor = Color.Black
                             ),
                             modifier = Modifier
                                 .menuAnchor()
@@ -135,26 +168,26 @@ fun RecognitionCard(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_right),
                             contentDescription = "Arrow Right",
-                            tint = Color.White,
+                            tint = Color.Black,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Tagalog",
                             fontSize = 14.sp,
-                            color = Color.White
+                            color = Color.Black
                         )
                     }
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Action buttons with icons on top
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // Define fixed size for all buttons
+
                     val buttonModifier = Modifier
                         .weight(1f)
                         .height(70.dp)
@@ -163,7 +196,7 @@ fun RecognitionCard(
                     Button(
                         onClick = { navController?.navigate("capture/$selectedMode") },
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.pastelGreen),
+                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
@@ -173,10 +206,11 @@ fun RecognitionCard(
                             Icon(
                                 painter = painterResource(id = R.drawable.camera_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
+                                colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Capture", fontSize = 13.sp)
+                            Text("Capture", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
                         }
                     }
 
@@ -184,7 +218,7 @@ fun RecognitionCard(
                     Button(
                         onClick = { navController?.navigate("import/$selectedMode") },
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.accentBeige),
+                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
@@ -194,10 +228,11 @@ fun RecognitionCard(
                             Icon(
                                 painter = painterResource(id = R.drawable.image_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
+                                colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Import", fontSize = 13.sp)
+                            Text("Import", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
                         }
                     }
 
@@ -205,7 +240,7 @@ fun RecognitionCard(
                     Button(
                         onClick = { showSampleDialog = true },
                         shape = RoundedCornerShape(8.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.pastelOrange),
+                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
@@ -215,10 +250,11 @@ fun RecognitionCard(
                             Icon(
                                 painter = painterResource(id = R.drawable.collections_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp)
+                                modifier = Modifier.size(24.dp),
+                                colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Sample", fontSize = 13.sp)
+                            Text("Sample", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
                         }
                     }
                 }
@@ -241,7 +277,7 @@ fun RecognitionCard(
             title = { Text("Choose a Sample", fontWeight = FontWeight.Bold) },
             text = {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // First row with sample1, sample2, sample3
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -260,7 +296,7 @@ fun RecognitionCard(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Second row with sample4, sample5
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceEvenly
@@ -280,7 +316,7 @@ fun RecognitionCard(
             confirmButton = {
                 Button(
                     onClick = { showSampleDialog = false },
-                    colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.pastelGreen)
+                    colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive)
                 ) {
                     Text("Close")
                 }
@@ -288,6 +324,7 @@ fun RecognitionCard(
         )
     }
 }
+
 @Composable
 private fun SampleItem(
     sampleRes: Int,
@@ -342,7 +379,7 @@ fun InfoPopover() {
             onClick = { showPopover = true },
             modifier = Modifier
                 .background(
-                    color = BrailleLensColors.lightCream.copy(alpha = 0.2f),
+                    color = BrailleLensColors.backgroundGrey.copy(alpha = 0.2f),
                     shape = CircleShape
                 )
                 .size(36.dp)
@@ -350,7 +387,7 @@ fun InfoPopover() {
             Icon(
                 painter = painterResource(id = R.drawable.info_24px),
                 contentDescription = "Info",
-                tint = Color.White
+                tint = BrailleLensColors.darkOrange
             )
         }
 
