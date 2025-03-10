@@ -63,6 +63,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
     implementation("androidx.compose.material3:material3:1.2.0")
     implementation("androidx.compose.foundation:foundation:1.5.0")
+    implementation ("com.google.code.gson:gson:2.10.1")
 
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
