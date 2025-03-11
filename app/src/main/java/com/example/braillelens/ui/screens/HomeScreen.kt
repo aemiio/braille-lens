@@ -28,10 +28,26 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.compose.rememberNavController
 import com.example.braillelens.R
 import com.example.braillelens.ui.BrailleLensColors
+import com.example.braillelens.ui.components.MediumRecognitionCard
 import com.example.braillelens.ui.components.RecognitionCard
+import com.example.braillelens.utils.WindowType
+import com.example.braillelens.utils.rememberWindowSize
 
 @Composable
 fun HomeScreen(openDrawer: () -> Unit) {
+    val windowSize = rememberWindowSize()
+    when (windowSize.height) {
+        WindowType.Compact -> {
+            SmallHomeScreen(openDrawer = {})
+        } else -> {
+            MediumHomeScreen(openDrawer = {})
+        }
+    }
+}
+
+
+@Composable
+fun SmallHomeScreen(openDrawer: () -> Unit) {
     val context = LocalContext.current
     val navController = rememberNavController()
 
@@ -59,6 +75,7 @@ fun HomeScreen(openDrawer: () -> Unit) {
             modifier = Modifier
                 .padding(16.dp)
                 .align(Alignment.TopStart)
+                .zIndex(2f)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.menu_24px),
@@ -85,42 +102,139 @@ fun HomeScreen(openDrawer: () -> Unit) {
                 .zIndex(0f)
         ) {
 
-            Spacer(modifier = Modifier.height(20.dp))
-            // Logo & Title
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-
-                Image(
-                    painter = painterResource(id = R.drawable.braille_logo),
-                    contentDescription = "Braille Lens Logo",
-                    modifier = Modifier.size(80.dp)
-                )
-
-                Column(modifier = Modifier.padding(start = 16.dp)) {
-                    Text(
-                        text = "Braille Lens",
-                        fontSize = 23.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = BrailleLensColors.darkOrange
-                    )
-                    Text(
-                        text = "Your Vision, Our Mission",
-                        fontSize = 16.sp,
-                        color = BrailleLensColors.fontBlack
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
-            }
+//            Spacer(modifier = Modifier.height(20.dp))
+//            // Logo & Title
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 8.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Spacer(modifier = Modifier.weight(1f))
+//
+//                Image(
+//                    painter = painterResource(id = R.drawable.braille_logo),
+//                    contentDescription = "Braille Lens Logo",
+//                    modifier = Modifier.size(80.dp)
+//                )
+//
+//                Column(modifier = Modifier.padding(start = 16.dp)) {
+//                    Text(
+//                        text = "Braille Lens",
+//                        fontSize = 23.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = BrailleLensColors.darkOrange
+//                    )
+//                    Text(
+//                        text = "Your Vision, Our Mission",
+//                        fontSize = 16.sp,
+//                        color = BrailleLensColors.fontBlack
+//                    )
+//                }
+//                Spacer(modifier = Modifier.weight(1f))
+//            }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             // Recognition Card
             RecognitionCard(
+                navController = navController,
+                context = context
+            )
+        }
+    }
+}
+
+@Composable
+fun MediumHomeScreen(openDrawer: () -> Unit) {
+    val context = LocalContext.current
+    val navController = rememberNavController()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BrailleLensColors.pastelGreen)
+    ) {
+        // Top Image reaching the status bar
+        Image(
+            painter = painterResource(id = R.drawable.home),
+            contentDescription = "Home Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(350.dp)
+                .align(Alignment.TopCenter)
+                .zIndex(1f)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // App Drawer Button
+        IconButton(
+            onClick = openDrawer,
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.TopStart)
+                .zIndex(2f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.menu_24px),
+                contentDescription = "Open Drawer",
+                tint = BrailleLensColors.accentRed
+
+            )
+        }
+
+        // Main Content
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 300.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp),
+                    clip = false
+                )
+                .background(
+                    BrailleLensColors.backgroundGrey,
+                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
+                )
+                .padding(20.dp)
+                .zIndex(0f)
+        ) {
+//            // Logo & Title
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 8.dp),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Spacer(modifier = Modifier.weight(1f))
+//
+//                Image(
+//                    painter = painterResource(id = R.drawable.braille_logo),
+//                    contentDescription = "Braille Lens Logo",
+//                    modifier = Modifier.size(50.dp)
+//                )
+//
+//                Column(modifier = Modifier.padding(start = 16.dp)) {
+//                    Text(
+//                        text = "Braille Lens",
+//                        fontSize = 16.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = BrailleLensColors.darkOrange
+//                    )
+//                    Text(
+//                        text = "Your Vision, Our Mission",
+//                        fontSize = 8.sp,
+//                        color = BrailleLensColors.fontBlack
+//                    )
+//                }
+//            }
+
+            Spacer(modifier = Modifier.height(5.dp))
+
+            // Recognition Card
+            MediumRecognitionCard(
                 navController = navController,
                 context = context
             )

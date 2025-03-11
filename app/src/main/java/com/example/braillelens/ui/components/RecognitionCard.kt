@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,11 +55,30 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.braillelens.R
 import com.example.braillelens.ui.BrailleLensColors
+import com.example.braillelens.utils.WindowType
+import com.example.braillelens.utils.rememberWindowSize
+
+@Composable
+fun RecognitionCard(
+    navController: NavController? = null,
+    context: Context? = null
+) {
+    val windowSize = rememberWindowSize()
+    when (windowSize.height) {
+        WindowType.Compact -> {
+            MediumRecognitionCard(navController = navController, context = context)
+        }
+
+        else -> {
+            MediumRecognitionCard(navController = navController, context = context)
+        }
+    }
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RecognitionCard(
+fun MediumRecognitionCard(
     navController: NavController? = null,
     context: Context? = null
 ) {
@@ -93,7 +114,7 @@ fun RecognitionCard(
             Column(modifier = Modifier.padding(20.dp)) {
                 Text(
                     "Recognize Braille",
-                    fontSize = 22.sp,
+                    fontSize = 20.sp,
                     color = Color.Black,
                     fontWeight = FontWeight.Bold
                 )
@@ -185,32 +206,41 @@ fun RecognitionCard(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-
                     val buttonModifier = Modifier
                         .weight(1f)
-                        .height(70.dp)
+                        .height(90.dp)
 
                     // Capture Button
                     Button(
                         onClick = { navController?.navigate("capture/$selectedMode") },
                         shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 4.dp,
+                            vertical = 0.dp
+                        ),  // Removed vertical padding
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.camera_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                colorResource(id = R.color.font_white)
+                                modifier = Modifier.size(20.dp),
+                                tint = colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Capture", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
+                            Text(
+                                text = "Capture",
+                                fontSize = 12.sp,
+                                color = BrailleLensColors.fontWhite,
+                                softWrap = false
+                            )
                         }
                     }
 
@@ -218,21 +248,31 @@ fun RecognitionCard(
                     Button(
                         onClick = { navController?.navigate("import/$selectedMode") },
                         shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 4.dp,
+                            vertical = 0.dp
+                        ),  // Removed vertical padding
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.image_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                colorResource(id = R.color.font_white)
+                                modifier = Modifier.size(20.dp),
+                                tint = colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Import", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
+                            Text(
+                                text = "Import",
+                                fontSize = 12.sp,
+                                color = BrailleLensColors.fontWhite,
+                                softWrap = false
+                            )
                         }
                     }
 
@@ -240,21 +280,31 @@ fun RecognitionCard(
                     Button(
                         onClick = { showSampleDialog = true },
                         shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(
+                            horizontal = 4.dp,
+                            vertical = 0.dp
+                        ),  // Removed vertical padding
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
+                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.collections_24px),
                                 contentDescription = null,
-                                modifier = Modifier.size(24.dp),
-                                colorResource(id = R.color.font_white)
+                                modifier = Modifier.size(20.dp),
+                                tint = colorResource(id = R.color.font_white)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("Sample", fontSize = 13.sp, color = BrailleLensColors.fontWhite)
+                            Text(
+                                text = "Sample",
+                                fontSize = 12.sp,
+                                color = BrailleLensColors.fontWhite,
+                                softWrap = false
+                            )
                         }
                     }
                 }
