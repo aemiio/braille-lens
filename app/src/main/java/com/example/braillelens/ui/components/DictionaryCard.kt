@@ -1,6 +1,7 @@
 package com.example.braillelens.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,76 +24,92 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.braillelens.R
+import com.example.braillelens.ui.BrailleLensColors
 
 @Composable
 fun DictionaryCard(navController: NavController) {
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.dark_olive)),
+        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pastel_green)),
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(16.dp)
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                "Braille Dictionary",
-                fontSize = 22.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.padding(vertical = 12.dp),
-                thickness = 1.dp,
-                color = Color.White.copy(alpha = 0.7f)
-            )
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-
-            Button(
-                onClick = { navController.navigate("grade1") },
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White.copy(alpha = 0.3f)
-                )
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "Grade 1 Dictionary",
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
-                    color = Color.White
+                    "Braille Dictionary",
+                    fontSize = 20.sp,
+                    color = Color.Black,
+                    fontWeight = FontWeight.Bold
                 )
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    thickness = 1.dp,
+                    color = Color.Black.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("grade1") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BrailleLensColors.darkOlive
+                    )
+                ) {
+                    Text(
+                        text = "Filipino Grade 1 Dictionary",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = { navController.navigate("grade2") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BrailleLensColors.darkOlive
+                    )
+                ) {
+                    Text(
+                        text = "Filipino Grade 2 Dictionary",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 16.sp,
+                        color = Color.White
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            Button(
-                onClick = { navController.navigate("grade2") },
+            // Add InfoPopover at the top right corner
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White.copy(alpha = 0.3f)
-                )
+                    .align(Alignment.TopEnd)
+                    .padding(8.dp)
             ) {
-                Text(
-                    text = "Grade 2 Dictionary",
-                    fontWeight = FontWeight.Medium,
-                    fontSize = 16.sp,
-                    color = Color.White
+                InfoPopover(
+                    title = "Dictionary Information",
+                    infoItems = listOf(
+                        "Grade 1 Dictionary" to "Basic alphabets, numbers, and punctuation references.",
+                        "Grade 2 Dictionary" to "Advanced contractions and shorthand notations."
+                    )
                 )
             }
         }
