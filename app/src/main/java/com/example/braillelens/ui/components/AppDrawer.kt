@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.braillelens.R
 import com.example.braillelens.ui.BackgroundGrey
+import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.ui.FontBlack
 
 @Composable
@@ -37,7 +38,8 @@ fun AppDrawer(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
+            .fillMaxHeight()
             .background(BackgroundGrey)
             .padding(vertical = 24.dp)
     ) {
@@ -77,7 +79,7 @@ fun AppDrawer(
             }
         }
 
-        // Divider between header and navigation items
+        // Divider between header and navigation items - with reduced horizontal padding
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             color = MaterialTheme.colorScheme.outlineVariant
@@ -106,7 +108,6 @@ fun AppDrawer(
             isSelected = currentRoute == "about",
             onClick = { onItemSelected("about") }
         )
-
     }
 }
 
@@ -117,9 +118,15 @@ fun NavigationItem(
     isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
-    val backgroundColor = BackgroundGrey
+    val backgroundColor = if (isSelected) {
+        BrailleLensColors.backgroundGrey.copy(alpha = 0.5f)
+    } else {
+        BackgroundGrey
+    }
 
-    val textColor = FontBlack
+    val textColor =
+        BrailleLensColors.fontBlack
+
 
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -134,9 +141,8 @@ fun NavigationItem(
         Image(
             painter = icon,
             contentDescription = null,
-            modifier = Modifier.size(24.dp)
+            modifier = Modifier.size(24.dp),
         )
-
 
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -144,7 +150,6 @@ fun NavigationItem(
             text = text,
             fontSize = 16.sp,
             color = textColor,
-            fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
         )
     }
 }
