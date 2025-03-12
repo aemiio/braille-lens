@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Dark Theme -->
-    <style name="Theme.BrailleLens.Dark" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.BrailleLens.Dark" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color -->
         <item name="colorPrimary">@color/pastel_orange</item>
         <item name="colorPrimaryVariant">@color/dark_orange</item>
