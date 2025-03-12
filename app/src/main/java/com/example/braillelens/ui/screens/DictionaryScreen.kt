@@ -221,7 +221,7 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
                 }
             }
 
-            // Dictionary Card (removed the Spacer to match HomeScreen)
+            // Dictionary Card
             DictionaryCard(navController = navController)
         }
     }
