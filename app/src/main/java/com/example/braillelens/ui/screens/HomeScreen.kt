@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,21 +31,24 @@ import com.example.braillelens.R
 import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.ui.components.MediumRecognitionCard
 import com.example.braillelens.ui.components.RecognitionCard
+import com.example.braillelens.utils.EnableFullScreen
 import com.example.braillelens.utils.WindowType
 import com.example.braillelens.utils.rememberWindowSize
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.Arrangement
 
 @Composable
 fun HomeScreen(openDrawer: () -> Unit) {
+    EnableFullScreen()
     val windowSize = rememberWindowSize()
     when (windowSize.height) {
         WindowType.Compact -> {
-            SmallHomeScreen(openDrawer = {})
+            SmallHomeScreen(openDrawer = openDrawer)
         } else -> {
-            MediumHomeScreen(openDrawer = {})
+            MediumHomeScreen(openDrawer = openDrawer)
         }
     }
 }
-
 
 @Composable
 fun SmallHomeScreen(openDrawer: () -> Unit) {
@@ -67,15 +71,14 @@ fun SmallHomeScreen(openDrawer: () -> Unit) {
                 .zIndex(1f)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
         // App Drawer Button
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
+                .statusBarsPadding()
                 .padding(16.dp)
                 .align(Alignment.TopStart)
-                .zIndex(2f)
+                .zIndex(3f)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.menu_24px),
@@ -101,40 +104,36 @@ fun SmallHomeScreen(openDrawer: () -> Unit) {
                 .padding(20.dp)
                 .zIndex(0f)
         ) {
+            // Centered Logo & Title with minimal padding
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.braille_logo),
+                    contentDescription = "Braille Lens Logo",
+                    modifier = Modifier.size(40.dp)
+                )
 
-//            Spacer(modifier = Modifier.height(20.dp))
-//            // Logo & Title
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Spacer(modifier = Modifier.weight(1f))
-//
-//                Image(
-//                    painter = painterResource(id = R.drawable.braille_logo),
-//                    contentDescription = "Braille Lens Logo",
-//                    modifier = Modifier.size(80.dp)
-//                )
-//
-//                Column(modifier = Modifier.padding(start = 16.dp)) {
-//                    Text(
-//                        text = "Braille Lens",
-//                        fontSize = 23.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = BrailleLensColors.darkOrange
-//                    )
-//                    Text(
-//                        text = "Your Vision, Our Mission",
-//                        fontSize = 16.sp,
-//                        color = BrailleLensColors.fontBlack
-//                    )
-//                }
-//                Spacer(modifier = Modifier.weight(1f))
-//            }
+                Column(modifier = Modifier.padding(start = 12.dp)) {
+                    Text(
+                        text = "Braille Lens",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BrailleLensColors.darkOrange
+                    )
+                    Text(
+                        text = "Your Vision, Our Mission",
+                        fontSize = 10.sp,
+                        color = BrailleLensColors.fontBlack
+                    )
+                }
+            }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
             // Recognition Card
             RecognitionCard(
@@ -166,21 +165,19 @@ fun MediumHomeScreen(openDrawer: () -> Unit) {
                 .zIndex(1f)
         )
 
-        Spacer(modifier = Modifier.height(20.dp))
-
         // App Drawer Button
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
+                .statusBarsPadding()
                 .padding(16.dp)
                 .align(Alignment.TopStart)
-                .zIndex(2f)
+                .zIndex(3f)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.menu_24px),
                 contentDescription = "Open Drawer",
                 tint = BrailleLensColors.accentRed
-
             )
         }
 
@@ -198,40 +195,39 @@ fun MediumHomeScreen(openDrawer: () -> Unit) {
                     BrailleLensColors.backgroundGrey,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
                 )
-                .padding(20.dp)
+                .padding(16.dp)
                 .zIndex(0f)
         ) {
-//            // Logo & Title
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(vertical = 8.dp),
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Spacer(modifier = Modifier.weight(1f))
-//
-//                Image(
-//                    painter = painterResource(id = R.drawable.braille_logo),
-//                    contentDescription = "Braille Lens Logo",
-//                    modifier = Modifier.size(50.dp)
-//                )
-//
-//                Column(modifier = Modifier.padding(start = 16.dp)) {
-//                    Text(
-//                        text = "Braille Lens",
-//                        fontSize = 16.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = BrailleLensColors.darkOrange
-//                    )
-//                    Text(
-//                        text = "Your Vision, Our Mission",
-//                        fontSize = 8.sp,
-//                        color = BrailleLensColors.fontBlack
-//                    )
-//                }
-//            }
+            Spacer(modifier = Modifier.height(8.dp))
+            // Centered Logo & Title with minimal padding
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.braille_logo),
+                    contentDescription = "Braille Lens Logo",
+                    modifier = Modifier.size(50.dp)
+                )
 
-            Spacer(modifier = Modifier.height(5.dp))
+                Column(modifier = Modifier.padding(start = 16.dp)) {
+                    Text(
+                        text = "Braille Lens",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = BrailleLensColors.darkOrange
+                    )
+                    Text(
+                        text = "Your Vision, Our Mission",
+                        fontSize = 12.sp,
+                        color = BrailleLensColors.fontBlack
+                    )
+                }
+            }
+
 
             // Recognition Card
             MediumRecognitionCard(

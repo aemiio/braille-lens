@@ -18,8 +18,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -34,7 +32,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -316,7 +313,14 @@ fun MediumRecognitionCard(
                     .align(Alignment.TopEnd)
                     .padding(8.dp)
             ) {
-                InfoPopover()
+                InfoPopover(
+                    title = "Detection Modes",
+                    infoItems = listOf(
+                        "Grade 1 Braille" to "Includes alphabets, composition signs, and digits.",
+                        "Grade 2 Braille" to "Includes one-cell and two-cell contractions.",
+                        "Both Grades" to "Detects and translates both Grade 1 and Grade 2 Braille."
+                    )
+                )
             }
         }
     }
@@ -399,84 +403,5 @@ private fun SampleItem(
                 .padding(6.dp)
         )
         Text("Sample $index", fontSize = 14.sp)
-    }
-}
-
-@Composable
-fun InfoItem(title: String, description: String) {
-
-    Column {
-        Text(
-            text = title,
-            color = BrailleLensColors.accentRed,
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp
-        )
-        Text(
-            text = description,
-            color = BrailleLensColors.fontBlack,
-            fontSize = 13.sp
-        )
-    }
-}
-
-@Composable
-fun InfoPopover() {
-    var showPopover by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.wrapContentSize(Alignment.TopEnd)) {
-        IconButton(
-            onClick = { showPopover = true },
-            modifier = Modifier
-                .background(
-                    color = BrailleLensColors.backgroundGrey.copy(alpha = 0.2f),
-                    shape = CircleShape
-                )
-                .size(36.dp)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.info_24px),
-                contentDescription = "Info",
-                tint = BrailleLensColors.darkOrange
-            )
-        }
-
-        DropdownMenu(
-            expanded = showPopover,
-            onDismissRequest = { showPopover = false },
-            modifier = Modifier
-                .background(BrailleLensColors.lightCream)
-                .padding(4.dp)
-                .width(240.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "Detection Modes",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp,
-                    color = BrailleLensColors.darkTeal
-                )
-
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    InfoItem(
-                        title = "Grade 1 Braille",
-                        description = "Includes alphabets, composition signs, and digits."
-                    )
-
-                    InfoItem(
-                        title = "Grade 2 Braille",
-                        description = "Includes one-cell and two-cell contractions."
-                    )
-
-                    InfoItem(
-                        title = "Both Grades",
-                        description = "Detects and translates both Grade 1 and Grade 2 Braille."
-                    )
-                }
-            }
-        }
     }
 }
