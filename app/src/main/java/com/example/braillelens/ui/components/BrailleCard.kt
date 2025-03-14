@@ -94,53 +94,81 @@ fun BrailleCard(card: BrailleCardData) {
     val ttsManager = remember { TTSManager.getInstance(context) }
     val isTTSReady by ttsManager.isTTSReady.collectAsState()
 
-
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = BrailleLensColors.backgroundCream
-        )
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Removed elevation
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            // Braille (large text + bold)
             Text(
-                text = card.label,
+                text = card.braille,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 28.sp,
                 textAlign = TextAlign.Center
             )
-            Text(
-                text = "Braille: ${card.braille}",
-                fontSize = 18.sp,
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = "Category: ${card.category}",
-                fontSize = 16.sp,
-                textAlign = TextAlign.Center
-            )
+
+            // Meaning with label
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Meaning: ",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = card.label,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            // Category with label
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Category: ",
+                    fontSize = 16.sp,
+                    color = BrailleLensColors.fontBlack,
+                    fontWeight = FontWeight.Medium
+                )
+                Text(
+                    text = card.category,
+                    fontSize = 16.sp,
+                    color = BrailleLensColors.fontBlack,
+                    textAlign = TextAlign.Center
+                )
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            // Buttons
             Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Button(
                     onClick = {
-                        val clipboard =
-                            context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText("Braille", card.braille)
                         clipboard.setPrimaryClip(clip)
-                        Toast.makeText(context, "Braille Copied to clipboard", Toast.LENGTH_SHORT)
+                        Toast.makeText(context, "Braille copied to clipboard", Toast.LENGTH_SHORT)
                             .show()
                     },
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text("Copy")
                 }
@@ -148,7 +176,7 @@ fun BrailleCard(card: BrailleCardData) {
                 Button(
                     onClick = { ttsManager.speak(card.label) },
                     enabled = isTTSReady,
-                    modifier = Modifier.padding(horizontal = 4.dp)
+                    modifier = Modifier.weight(1f)
                 ) {
                     Text("Speak")
                 }
