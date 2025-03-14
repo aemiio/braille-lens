@@ -1,7 +1,5 @@
 package com.example.braillelens.ui.screens
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,17 +8,21 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,129 +30,302 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.braillelens.R
+import com.example.braillelens.ui.components.about.BrailleSection
+import com.example.braillelens.ui.components.about.FilipinoBrailleSection
+import com.example.braillelens.ui.components.about.BrailleGradesSection
+import com.example.braillelens.ui.components.about.PurposeSection
+import com.example.braillelens.ui.components.about.ResourcesSection
 
 
+data class MenuItem(
+    val title: String,
+    val icon: Int,
+    val color: Color,
+    val description: String = ""
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutScreen() {
     var selectedItem by remember { mutableStateOf<MenuItem?>(null) }
     var modalVisible by remember { mutableStateOf(false) }
-    val modalAlpha by animateFloatAsState(
-        targetValue = if (modalVisible) 1f else 0f,
-        animationSpec = tween(durationMillis = 300), label = ""
-    )
 
-    Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-        HeaderSection()
-        GridMenu(onItemClick = { item ->
-            selectedItem = item
-            modalVisible = true
-        })
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+    ) {
+        // Make the content scrollable
+        androidx.compose.foundation.lazy.LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                HeaderSection()
+            }
+
+            item {
+                GridMenu(onItemClick = { item ->
+                    selectedItem = item
+                    modalVisible = true
+                })
+            }
+        }
     }
 
     if (modalVisible && selectedItem != null) {
-        ModalDialog(selectedItem!!, onClose = { modalVisible = false })
+        ModalBottomSheetContent(
+            menuItem = selectedItem!!,
+            onDismiss = { modalVisible = false }
+        )
     }
 }
 
 @Composable
 fun HeaderSection() {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(20.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(painter = painterResource(id = R.drawable.braille_logo), contentDescription = "Logo")
-        Spacer(modifier = Modifier.height(10.dp))
-        Text("Braille-Lens", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-        Text("Making Braille accessible for everyone", fontSize = 16.sp, color = Color.Gray)
+        Icon(
+            painter = painterResource(id = R.drawable.braille_logo),
+            contentDescription = "Logo",
+            tint = Color.Gray,
+            modifier = Modifier.size(70.dp)
+        )
+
+        Text("Braille-Lens", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Text("Making Braille accessible for everyone", fontSize = 14.sp, color = Color.Gray)
     }
 }
 
 @Composable
 fun GridMenu(onItemClick: (MenuItem) -> Unit) {
     val menuItems = listOf(
-        MenuItem("Braille", R.drawable.braille_logo, Color.Blue),
-        MenuItem("Filipino Braille", R.drawable.braille_logo, Color.Green),
-        MenuItem("Grades", R.drawable.braille_logo, Color.Cyan),
-        MenuItem("Team", R.drawable.braille_logo, Color.Magenta)
+        MenuItem("Braille", R.drawable.ic_braille, Color(0xFFF28B82)),
+        MenuItem("Filipino Braille", R.drawable.ic_filipino, Color(0xFFFFAB91)),
+        MenuItem("Braille Grades", R.drawable.ic_grades, Color(0xFFFFF176)),
+        MenuItem("Purpose", R.drawable.ic_purpose, Color(0xFFCCFF90)),
+        MenuItem("Team", R.drawable.ic_team, Color(0xFF80D8FF)),
+        MenuItem("Resources", R.drawable.ic_resources, Color(0xFFCF93D9))
     )
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 8.dp)
+    ) {
         menuItems.chunked(2).forEach { rowItems ->
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 rowItems.forEach { item ->
                     Card(
                         modifier = Modifier
-                            .size(150.dp)
+                            .weight(1f)
+                            .aspectRatio(1f)
                             .clickable { onItemClick(item) },
                         shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = CardDefaults.cardColors(containerColor = item.color)
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize().padding(16.dp),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = item.icon),
-                                contentDescription = null
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            Text(
+                                text = item.title,
+                                modifier = Modifier
+                                    .align(Alignment.TopStart)
+                                    .padding(12.dp),
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = item.title, color = Color.White)
+                            Icon(
+                                painter = painterResource(id = item.icon),
+                                contentDescription = null,
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(12.dp)
+                                    .size(80.dp)
+                            )
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ModalBottomSheetContent(menuItem: MenuItem, onDismiss: () -> Unit) {
+    val sheetState = rememberModalBottomSheetState()
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState
+    ) {
+
+        androidx.compose.foundation.lazy.LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 0.dp)
+        ) {
+            item {
+                Text(
+                    text = menuItem.title,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                when (menuItem.title) {
+                    "Team" -> TeamSection()
+                    "Braille" -> BrailleSection()
+                    "Filipino Braille" -> FilipinoBrailleSection()
+                    "Braille Grades" -> BrailleGradesSection()
+                    "Purpose" -> PurposeSection()
+                    "Resources" -> ResourcesSection()
+                    else -> {
+                        Text(
+                            text = "Content for ${menuItem.title} section",
+                            fontSize = 16.sp,
+                            color = Color.Gray
+                        )
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(40.dp))
+            }
         }
     }
 }
 
 @Composable
-fun ModalDialog(item: MenuItem, onClose: () -> Unit) {
-    val context = LocalContext.current
-    Box(
+fun TeamSection() {
+    Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f))
-            .clickable { onClose() },
-        contentAlignment = Alignment.Center
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Card(
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier.fillMaxWidth(0.8f).padding(16.dp),
-            elevation = CardDefaults.cardElevation(8.dp)
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = item.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(text = getDescription(item.title))
-                Spacer(modifier = Modifier.height(10.dp))
-                Button(onClick = onClose) {
-                    Text("Close")
-                }
-            }
-        }
+        Text(
+            text = "Meet Our Team",
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+
+        // Display team members
+        TeamMemberCard(
+            name = "Jyra Mae Celajes",
+            role = "Developer",
+            imageRes = R.drawable.celajes,
+            backgroundColor = Color(0xFFF5F5F5)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TeamMemberCard(
+            name = "Louie Jenn Jaspe",
+            role = "Researcher",
+            imageRes = R.drawable.jaspe,
+            backgroundColor = Color(0xFFF5F5F5)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TeamMemberCard(
+            name = "Crestalyn Luardo",
+            role = "Designer",
+            imageRes = R.drawable.luardo,
+            backgroundColor = Color(0xFFF5F5F5)
+        )
     }
 }
 
-data class MenuItem(val title: String, val icon: Int, val color: Color)
+@Composable
+fun TeamMemberCard(
+    name: String,
+    role: String,
+    imageRes: Int,
+    backgroundColor: Color
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = backgroundColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
-fun getDescription(title: String): String {
-    return when (title) {
-        "Braille" -> "Braille is a tactile writing system used by visually impaired people."
-        "Filipino Braille" -> "Filipino Braille follows Unified English Braille with specific contractions."
-        "Grades" -> "Braille has different grades, from Grade 1 (letter-for-letter) to Grade 2 (contractions)."
-        "Team" -> "Meet the developers behind Braille-Lens."
-        else -> "Information not available."
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Profile image of $name",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Name
+            Text(
+                text = name,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            // Role tag
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = when (role) {
+                        "Developer" -> Color(0xFF90CAF9)
+                        "Researcher" -> Color(0xFF42A5F5)
+                        "Designer" -> Color(0xFF1E88E5)
+                        else -> Color(0xFF90CAF9)
+                    }
+                ),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = role,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.White,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)  // Reduced padding
+                )
+            }
+        }
     }
 }
