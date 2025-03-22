@@ -160,8 +160,7 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .align(Alignment.TopStart)
                 .zIndex(3f)
         ) {
