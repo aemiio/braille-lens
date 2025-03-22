@@ -36,11 +36,15 @@ import com.example.braillelens.ui.BrailleLensTheme
 import com.example.braillelens.ui.components.AppDrawer
 import com.example.braillelens.ui.components.CustomNavigationBar
 import com.example.braillelens.ui.screens.AboutScreen
+import com.example.braillelens.ui.screens.CaptureScreen
 import com.example.braillelens.ui.screens.DictionaryScreen
 import com.example.braillelens.ui.screens.Grade1Screen
 import com.example.braillelens.ui.screens.Grade2Screen
 import com.example.braillelens.ui.screens.HomeScreen
+import com.example.braillelens.ui.screens.ImportScreen
 import com.example.braillelens.ui.screens.OnboardingScreen
+import com.example.braillelens.ui.screens.RecognitionResultScreen
+import com.example.braillelens.ui.screens.SampleScreen
 import com.example.braillelens.ui.screens.findActivity
 import com.example.braillelens.ui.screens.hasCompletedOnboarding
 import com.example.braillelens.ui.screens.setOnboardingComplete
@@ -139,7 +143,10 @@ fun MainScreen() {
             ) { innerPadding ->
                 Box(modifier = Modifier.padding(innerPadding)) {
                     NavHost(navController = navController, startDestination = selectedScreen) {
-                        composable("home") { HomeScreen { scope.launch { drawerState.open() } } }
+                        composable("home") { HomeScreen(
+                            openDrawer = { scope.launch { drawerState.open() } },
+                            navController = navController
+                        )  }
                         composable("dictionary") {
                             DictionaryScreen(
                                 openDrawer = { scope.launch { drawerState.open() } },
@@ -149,6 +156,35 @@ fun MainScreen() {
                         composable("about") { AboutScreen() }
                         composable("grade1") { Grade1Screen() }
                         composable("grade2") { Grade2Screen() }
+
+
+                        composable("capture/{mode}") { backStackEntry ->
+                            CaptureScreen(
+                                navController = navController,
+                                detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille"
+                            )
+                        }
+                        composable("import/{mode}") { backStackEntry ->
+                            ImportScreen(
+                                navController = navController,
+                                detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille"
+                            )
+                        }
+                        composable("sample/{mode}/{sampleId}") { backStackEntry ->
+                            SampleScreen(
+                                navController = navController,
+                                detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille",
+                                sampleId = backStackEntry.arguments?.getString("sampleId")?.toIntOrNull() ?: R.drawable.sample1
+                            )
+                        }
+                        composable("result/{mode}/{imagePath}") { backStackEntry ->
+                            RecognitionResultScreen(
+                                navController = navController,
+                                detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille",
+                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
+                                recognizedText = ""  // This will be populated by the service
+                            )
+                        }
                     }
                 }
             }
