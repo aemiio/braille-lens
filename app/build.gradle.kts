@@ -35,6 +35,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.14"
@@ -61,9 +62,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
-    implementation("androidx.compose.material3:material3:1.2.0")
+    implementation(libs.material3)
     implementation("androidx.compose.foundation:foundation:1.5.0")
-    implementation ("com.google.code.gson:gson:2.10.1")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Debug tools
     debugImplementation(libs.androidx.ui.tooling)
@@ -71,4 +73,17 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation ("androidx.core:core-ktx:1.7.0")
+    implementation ("androidx.appcompat:appcompat:1.5.1")
+    implementation ("com.google.android.material:material:1.12.0")
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    implementation ("org.tensorflow:tensorflow-lite:2.9.0")
+    implementation ("org.tensorflow:tensorflow-lite-support:0.4.2")
+
+    testImplementation ("io.mockk:mockk:1.13.5")
+
+    testImplementation ("org.robolectric:robolectric:4.10.3")
+    implementation (libs.kotlin.test)
 }
