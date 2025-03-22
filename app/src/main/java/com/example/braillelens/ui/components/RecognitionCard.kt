@@ -212,7 +212,7 @@ fun MediumRecognitionCard(
                     // Capture Button
                     Button(
                         onClick = { navController?.navigate("capture/$selectedMode") },
-                        shape = RoundedCornerShape(8.dp),
+                                shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(
                             horizontal = 4.dp,
                             vertical = 0.dp
@@ -343,7 +343,7 @@ fun MediumRecognitionCard(
                         ).forEachIndexed { index, sample ->
                             SampleItem(sample, index + 1) {
                                 showSampleDialog = false
-                                navController?.navigate("result/$selectedMode/$sample")
+                                navController?.navigate("sample/$selectedMode/$sample")
                             }
                         }
                     }
@@ -361,7 +361,7 @@ fun MediumRecognitionCard(
                         ).forEachIndexed { index, sample ->
                             SampleItem(sample, index + 4) {
                                 showSampleDialog = false
-                                navController?.navigate("result/$selectedMode/$sample")
+                                navController?.navigate("sample/$selectedMode/$sample")
                             }
                         }
                     }
