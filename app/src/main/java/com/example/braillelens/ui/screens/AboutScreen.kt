@@ -39,9 +39,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.braillelens.R
+import com.example.braillelens.ui.BrailleLensColors
+import com.example.braillelens.ui.components.about.BrailleGradesSection
 import com.example.braillelens.ui.components.about.BrailleSection
 import com.example.braillelens.ui.components.about.FilipinoBrailleSection
-import com.example.braillelens.ui.components.about.BrailleGradesSection
 import com.example.braillelens.ui.components.about.PurposeSection
 import com.example.braillelens.ui.components.about.ResourcesSection
 
@@ -62,7 +63,7 @@ fun AboutScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White),
+            .background(BrailleLensColors.backgroundGrey),
     ) {
         // Make the content scrollable
         androidx.compose.foundation.lazy.LazyColumn(
@@ -113,12 +114,12 @@ fun HeaderSection() {
 @Composable
 fun GridMenu(onItemClick: (MenuItem) -> Unit) {
     val menuItems = listOf(
-        MenuItem("Braille", R.drawable.ic_braille, Color(0xFFF28B82)),
-        MenuItem("Filipino Braille", R.drawable.ic_filipino, Color(0xFFFFAB91)),
-        MenuItem("Braille Grades", R.drawable.ic_grades, Color(0xFFFFF176)),
-        MenuItem("Purpose", R.drawable.ic_purpose, Color(0xFFCCFF90)),
-        MenuItem("Team", R.drawable.ic_team, Color(0xFF80D8FF)),
-        MenuItem("Resources", R.drawable.ic_resources, Color(0xFFCF93D9))
+        MenuItem("Braille", R.drawable.ic_braille, Color(0xFFFFDEAB)),
+        MenuItem("Filipino Braille", R.drawable.ic_filipino, Color(0xFFD3DB9B)),
+        MenuItem("Braille Grades", R.drawable.ic_grades, Color(0xFFf7e1d7)),
+        MenuItem("Purpose", R.drawable.ic_purpose, Color(0xFFd8e2dc)),
+        MenuItem("Team", R.drawable.ic_team, Color(0xFFBE9DAF)),
+        MenuItem("Resources", R.drawable.ic_resources, Color(0xFFBBAAA0))
     )
 
     Column(
@@ -155,11 +156,11 @@ fun GridMenu(onItemClick: (MenuItem) -> Unit) {
                             Icon(
                                 painter = painterResource(id = item.icon),
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = Color(0xB4131010),
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
                                     .padding(12.dp)
-                                    .size(80.dp)
+                                    .size(60.dp)
                             )
                         }
                     }
@@ -235,11 +236,20 @@ fun TeamSection() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Display team members
+
         TeamMemberCard(
             name = "Jyra Mae Celajes",
             role = "Developer",
             imageRes = R.drawable.celajes,
+            backgroundColor = Color(0xFFF5F5F5)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TeamMemberCard(
+            name = "Crestalyn Luardo",
+            role = "Designer",
+            imageRes = R.drawable.luardo,
             backgroundColor = Color(0xFFF5F5F5)
         )
 
@@ -252,14 +262,7 @@ fun TeamSection() {
             backgroundColor = Color(0xFFF5F5F5)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
 
-        TeamMemberCard(
-            name = "Crestalyn Luardo",
-            role = "Designer",
-            imageRes = R.drawable.luardo,
-            backgroundColor = Color(0xFFF5F5F5)
-        )
     }
 }
 
@@ -296,7 +299,7 @@ fun TeamMemberCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Name
+
             Text(
                 text = name,
                 fontSize = 16.sp,
@@ -306,14 +309,14 @@ fun TeamMemberCard(
 
             Spacer(modifier = Modifier.height(6.dp))
 
-            // Role tag
+
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = when (role) {
-                        "Developer" -> Color(0xFF90CAF9)
-                        "Researcher" -> Color(0xFF42A5F5)
-                        "Designer" -> Color(0xFF1E88E5)
-                        else -> Color(0xFF90CAF9)
+                        "Developer" -> Color(0xFFFFDEAB)
+                        "Researcher" -> Color(0xFFD3DB9B)
+                        "Designer" -> Color(0xFFf7e1d7)
+                        else -> Color(0xFFD3DB9B)
                     }
                 ),
                 shape = RoundedCornerShape(12.dp)
@@ -322,8 +325,8 @@ fun TeamMemberCard(
                     text = role,
                     fontSize = 12.sp,
                     fontWeight = FontWeight.Medium,
-                    color = Color.White,
-                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)  // Reduced padding
+                    color = Color.Black,
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
                 )
             }
         }
