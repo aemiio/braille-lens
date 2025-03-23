@@ -10,11 +10,9 @@ import com.example.braillelens.objectdetection.BrailleClassIdMapper
 import com.example.braillelens.objectdetection.BraillePostProcessor
 import com.example.braillelens.objectdetection.ObjectDetector
 import com.example.braillelens.objectdetection.ProcessedDetectionResult
-import com.example.braillelens.objectdetection.Result as DetectionResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
-import java.nio.ByteBuffer
 
 class ObjectDetectionService {
     private val objDetector = ObjectDetector()
