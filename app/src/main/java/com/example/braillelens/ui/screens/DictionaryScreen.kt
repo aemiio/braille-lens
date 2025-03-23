@@ -52,111 +52,19 @@ fun SmallDictionaryScreen(openDrawer: () -> Unit, navController: NavController) 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BrailleLensColors.backgroundGrey)
-    ) {
-        // Top Image reaching the status bar
-        Image(
-            painter = painterResource(id = R.drawable.dictionary),
-            contentDescription = "Book Image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(400.dp)
-                .align(Alignment.TopCenter)
-                .zIndex(1f)
-        )
-
-        // App Drawer Button
-        IconButton(
-            onClick = openDrawer,
-            modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp)
-                .align(Alignment.TopStart)
-                .zIndex(3f)
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.menu_24px),
-                contentDescription = "Open Drawer",
-                tint = BrailleLensColors.accentRed
-            )
-        }
-
-        // Main Content
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 300.dp)
-                .shadow(
-                    elevation = 8.dp,
-                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp),
-                    clip = false
-                )
-                .background(
-                    BrailleLensColors.backgroundGrey,
-                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
-                )
-                .padding(20.dp)
-                .zIndex(0f)
-        ) {
-            // Add a small spacer to match HomeScreen
-            Spacer(modifier = Modifier.height(6.dp))
-
-            // Centered Logo & Title
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.braille_logo),
-                    contentDescription = "Braille Lens Logo",
-                    modifier = Modifier.size(40.dp)
-                )
-
-                Column(modifier = Modifier.padding(start = 12.dp)) {
-                    Text(
-                        text = "Braille Lens",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = BrailleLensColors.darkOrange
-                    )
-                    Text(
-                        text = "Your Vision, Our Mission",
-                        fontSize = 10.sp,
-                        color = BrailleLensColors.fontBlack
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Dictionary Card
-            DictionaryCard(navController = navController)
-        }
-    }
-}
-
-@Composable
-fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
             .background(color = BrailleLensColors.pastelGreen)
     ) {
-        // Top Image reaching the status bar
+
         Image(
             painter = painterResource(id = R.drawable.dictionary),
             contentDescription = "Book Image",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                .height(280.dp)
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
         )
 
-        // App Drawer Button
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
@@ -171,7 +79,61 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
             )
         }
 
-        // Main Content
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = 200.dp)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp),
+                    clip = false
+                )
+                .background(
+                    BrailleLensColors.backgroundGrey,
+                    shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
+                )
+                .padding(20.dp)
+                .zIndex(0f)
+        ) {
+
+
+            DictionaryCard(navController = navController)
+        }
+    }
+}
+
+@Composable
+fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = BrailleLensColors.pastelGreen)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.dictionary),
+            contentDescription = "Book Image",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(450.dp)
+                .align(Alignment.TopCenter)
+                .zIndex(1f)
+        )
+
+        IconButton(
+            onClick = openDrawer,
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .align(Alignment.TopStart)
+                .zIndex(3f)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.menu_24px),
+                contentDescription = "Open Drawer",
+                tint = BrailleLensColors.accentRed
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -188,10 +150,10 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
                 .padding(16.dp)
                 .zIndex(0f)
         ) {
-            // Add a small spacer to match HomeScreen
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Centered Logo & Title - update padding to match HomeScreen
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -220,7 +182,7 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
                 }
             }
 
-            // Dictionary Card
+
             DictionaryCard(navController = navController)
         }
     }
