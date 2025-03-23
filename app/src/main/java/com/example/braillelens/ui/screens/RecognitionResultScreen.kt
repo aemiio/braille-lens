@@ -1,20 +1,54 @@
 package com.example.braillelens.ui.screens
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -29,12 +63,6 @@ import com.example.braillelens.services.ObjectDetectionService
 import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
-import kotlin.text.toInt
-import kotlin.times
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +78,6 @@ fun RecognitionResultScreen(
     val ttsManager = remember { TTSManager.getInstance(context) }
     val objectDetectionService = remember { ObjectDetectionService() }
 
-    // Separate slider UI value from actual threshold used for detection
     var sliderValue by remember { mutableStateOf(0.25f) }
     var activeThreshold by remember { mutableStateOf(0.25f) }
 
@@ -59,14 +86,14 @@ fun RecognitionResultScreen(
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var originalBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Process image function remains the same
+    var selectedModel by remember { mutableStateOf(detectionMode) }
+
     val processImage = {
         coroutineScope.launch {
             try {
                 isLoading = true
                 errorMessage = null
 
-                // Processing logic remains unchanged
                 if (imagePath.startsWith("file:") || imagePath.startsWith("content:")) {
                     val uri = Uri.parse(imagePath)
                     val inputStream = context.contentResolver.openInputStream(uri)
@@ -76,7 +103,7 @@ fun RecognitionResultScreen(
                     detectionResult = objectDetectionService.detectBrailleFromUri(
                         context,
                         uri,
-                        detectionMode
+                        selectedModel
                     )
                 } else {
                     // Handle sample images
@@ -121,7 +148,7 @@ fun RecognitionResultScreen(
         onDispose { }
     }
 
-    // Only update the service threshold when activeThreshold changes
+
     LaunchedEffect(activeThreshold) {
         objectDetectionService.confidenceThreshold = activeThreshold
         if (!isLoading && detectionResult != null) {
@@ -159,7 +186,7 @@ fun RecognitionResultScreen(
                     }
 
                     Text(
-                        text = "Result - $detectionMode",
+                        text = "Result - $selectedModel",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
                         color = androidx.compose.ui.graphics.Color.Black,
@@ -178,7 +205,7 @@ fun RecognitionResultScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Loading and error states remain unchanged
+
             if (isLoading) {
                 CircularProgressIndicator(
                     modifier = Modifier
@@ -204,7 +231,7 @@ fun RecognitionResultScreen(
                     Text("Retry")
                 }
             } else {
-                // Original image display remains unchanged
+
                 Text(
                     "Original Image",
                     fontSize = 16.sp,
@@ -223,7 +250,7 @@ fun RecognitionResultScreen(
                 }
 
                 detectionResult?.let { result ->
-                    // Processed Image display remains unchanged
+                    // Processed Image display
                     Text(
                         "Detected Braille",
                         fontSize = 16.sp,
@@ -239,7 +266,53 @@ fun RecognitionResultScreen(
                             .background(MaterialTheme.colorScheme.surfaceVariant)
                     )
 
-                    // Modified confidence threshold slider
+                    Text(
+                        "Recognition Mode",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        val gradeOptions = listOf("Grade 1 Braille", "Grade 2 Braille", "Both Grades")
+
+                        gradeOptions.forEach { grade ->
+                            FilterChip(
+                                selected = selectedModel == grade,
+                                onClick = {
+                                    if (selectedModel != grade) {
+                                        selectedModel = grade
+                                        // Reprocess with new model
+                                        processImage()
+                                    }
+                                },
+                                label = {
+                                    Text(
+                                        text = grade.replace(" Braille", ""),
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = BrailleLensColors.accentRed,
+                                    selectedLabelColor = Color.White
+                                ),
+                                border = FilterChipDefaults.filterChipBorder(
+                                    enabled = true,
+                                    selected = selectedModel == grade,
+                                    borderColor = BrailleLensColors.darkOlive,
+                                    selectedBorderColor = BrailleLensColors.accentRed
+                                ),
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
+
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -261,11 +334,11 @@ fun RecognitionResultScreen(
                             value = sliderValue,
                             onValueChange = { sliderValue = it },
                             onValueChangeFinished = {
-                                // Only update active threshold when sliding is complete
+
                                 activeThreshold = sliderValue
                             },
                             valueRange = 0.05f..1.0f,
-                            steps = 18, // Creates 19 positions (0.05, 0.10, 0.15, ..., 0.95)
+                            steps = 18,
                             colors = SliderDefaults.colors(
                                 thumbColor = BrailleLensColors.accentRed,
                                 activeTrackColor = BrailleLensColors.accentRed,
@@ -276,7 +349,6 @@ fun RecognitionResultScreen(
                         )
                     }
 
-                    // Rest of the UI remains unchanged
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
@@ -284,19 +356,30 @@ fun RecognitionResultScreen(
                         ),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
-                        // Card content unchanged
+
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text("Detection Results", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                "Detection Results",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Detected Text:", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                "Detected Text:",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                             Text(result.detectionText, fontSize = 14.sp)
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text("Translated Text:", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                            Text(
+                                "Translated Text:",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium
+                            )
                             Text(result.translatedText, fontSize = 14.sp)
                         }
                     }
 
-                    // Buttons row unchanged
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
