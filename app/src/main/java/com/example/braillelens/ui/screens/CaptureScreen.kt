@@ -54,6 +54,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
+import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.utils.BrailleImageUtils
 import java.io.File
 
@@ -143,7 +144,7 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
                         modifier = Modifier
                             .fillMaxWidth(0.8f)  // Use 80% of screen width
                             .aspectRatio(1f)     // Make the preview to be square
-                            .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
+                            .border(width = 2.dp, color = BrailleLensColors.pastelGreen, shape = RoundedCornerShape(16.dp))
                             .clip(RoundedCornerShape(16.dp))
                     ) {
                         AndroidView(
@@ -187,12 +188,12 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
 
                     Surface(
                         shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer
+                        color = BrailleLensColors.pastelOrange
                     ) {
                         Text(
                             text = detectionMode,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            color = BrailleLensColors.fontBlack,
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -231,7 +232,7 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
                                 }
                             )
                         },
-                        containerColor = MaterialTheme.colorScheme.primary,
+                        containerColor = BrailleLensColors.darkOlive,
                         contentColor = MaterialTheme.colorScheme.onPrimary,
                         shape = CircleShape,
                         modifier = Modifier.size(72.dp)
@@ -290,7 +291,7 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
                     Button(
                         onClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
                         modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive)
                     ) {
                         Text(
                             "GRANT ACCESS",
