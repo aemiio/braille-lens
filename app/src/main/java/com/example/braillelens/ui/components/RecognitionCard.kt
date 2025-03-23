@@ -121,13 +121,13 @@ fun MediumRecognitionCard(
                     color = Color.Black.copy(alpha = 0.7f)
                 )
 
-                // Detection Mode and Tagalog text in a row
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Dropdown Menu
+
                     ExposedDropdownMenuBox(
                         expanded = expanded,
                         onExpandedChange = { expanded = !expanded },
@@ -178,7 +178,7 @@ fun MediumRecognitionCard(
                         }
                     }
 
-                    // Icon and Tagalog text
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(start = 8.dp)
@@ -209,20 +209,20 @@ fun MediumRecognitionCard(
                         .weight(1f)
                         .height(90.dp)
 
-                    // Capture Button
+
                     Button(
                         onClick = { navController?.navigate("capture/$selectedMode") },
                                 shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(
                             horizontal = 4.dp,
                             vertical = 0.dp
-                        ),  // Removed vertical padding
+                        ),
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            verticalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
@@ -241,20 +241,20 @@ fun MediumRecognitionCard(
                         }
                     }
 
-                    // Import Button
+
                     Button(
                         onClick = { navController?.navigate("import/$selectedMode") },
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(
                             horizontal = 4.dp,
                             vertical = 0.dp
-                        ),  // Removed vertical padding
+                        ),
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            verticalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
@@ -273,20 +273,20 @@ fun MediumRecognitionCard(
                         }
                     }
 
-                    // Sample Button
+
                     Button(
                         onClick = { showSampleDialog = true },
                         shape = RoundedCornerShape(8.dp),
                         contentPadding = PaddingValues(
                             horizontal = 4.dp,
                             vertical = 0.dp
-                        ),  // Removed vertical padding
+                        ),
                         colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive),
                         modifier = buttonModifier
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,  // This centers the content vertically
+                            verticalArrangement = Arrangement.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
                             Icon(
@@ -307,7 +307,7 @@ fun MediumRecognitionCard(
                 }
             }
 
-            // Add InfoPopover at the top right corner
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)
