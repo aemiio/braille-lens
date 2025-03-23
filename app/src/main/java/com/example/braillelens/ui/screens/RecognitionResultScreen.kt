@@ -64,6 +64,7 @@ import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecognitionResultScreen(
@@ -113,7 +114,7 @@ fun RecognitionResultScreen(
                         detectionResult = objectDetectionService.detectBrailleFromDrawableResource(
                             context,
                             resourceId,
-                            detectionMode
+                            selectedModel
                         )
                     } catch (e: NumberFormatException) {
                         val resourceId = when (imagePath) {
@@ -128,7 +129,7 @@ fun RecognitionResultScreen(
                         detectionResult = objectDetectionService.detectBrailleFromDrawableResource(
                             context,
                             resourceId,
-                            detectionMode
+                            selectedModel
                         )
                     }
                 }
@@ -276,7 +277,7 @@ fun RecognitionResultScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 2.dp),
+                            .padding(vertical = 1.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         val gradeOptions = listOf("Grade 1 Braille", "Grade 2 Braille", "Both Grades")
@@ -299,14 +300,14 @@ fun RecognitionResultScreen(
                                     )
                                 },
                                 colors = FilterChipDefaults.filterChipColors(
-                                    selectedContainerColor = BrailleLensColors.accentRed,
+                                    selectedContainerColor = BrailleLensColors.darkOlive,
                                     selectedLabelColor = Color.White
                                 ),
                                 border = FilterChipDefaults.filterChipBorder(
                                     enabled = true,
                                     selected = selectedModel == grade,
                                     borderColor = BrailleLensColors.darkOlive,
-                                    selectedBorderColor = BrailleLensColors.accentRed
+                                    selectedBorderColor = BrailleLensColors.darkOlive
                                 ),
                                 modifier = Modifier.weight(1f)
                             )
@@ -340,10 +341,10 @@ fun RecognitionResultScreen(
                             valueRange = 0.05f..1.0f,
                             steps = 18,
                             colors = SliderDefaults.colors(
-                                thumbColor = BrailleLensColors.accentRed,
-                                activeTrackColor = BrailleLensColors.accentRed,
+                                thumbColor = BrailleLensColors.darkOlive,
+                                activeTrackColor = BrailleLensColors.pastelGreen,
                                 activeTickColor = BrailleLensColors.darkOlive,
-                                inactiveTickColor = BrailleLensColors.darkOlive
+                                inactiveTickColor = BrailleLensColors.accentBeige
                             ),
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
@@ -394,7 +395,8 @@ fun RecognitionResultScreen(
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.volume_up),
-                                contentDescription = "Text to Speech"
+                                contentDescription = "Text to Speech",
+                                modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Read Aloud")
@@ -408,7 +410,8 @@ fun RecognitionResultScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
-                                contentDescription = "Retry Detection"
+                                contentDescription = "Retry Detection",
+                                modifier = Modifier.size(20.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Retry")
