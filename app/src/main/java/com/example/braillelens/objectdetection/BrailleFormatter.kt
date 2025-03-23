@@ -1,4 +1,5 @@
 package com.example.braillelens.objectdetection
+
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.Log
@@ -141,7 +142,8 @@ class BrailleFormatter {
 
             // If this is the last cell or there's significant spacing to the next cell
             if (i == line.size - 1 ||
-                (line[i+1].x - (line[i].x + line[i].width)) > wordSpacingThreshold) {
+                (line[i + 1].x - (line[i].x + line[i].width)) > wordSpacingThreshold
+            ) {
                 words.add(currentWord)
                 currentWord = mutableListOf()
             }
@@ -159,8 +161,10 @@ class BrailleFormatter {
 
         for (i in cells.indices) {
             val cell = cells[i]
-            results.append("Cell $i: ${cell.meaning} (${(cell.confidence * 100).toInt()}%), " +
-                    "Binary: ${cell.binaryPattern}\n")
+            results.append(
+                "Cell $i: ${cell.meaning} (${(cell.confidence * 100).toInt()}%), " +
+                        "Binary: ${cell.binaryPattern}\n"
+            )
         }
 
         return results.toString()
@@ -183,8 +187,16 @@ class BrailleFormatter {
                 val wordBuilder = StringBuilder()
                 var i = 0
 
+                numberMode = false
+
                 while (i < word.size) {
                     val cell = word[i]
+
+                    if (cell.meaning == "number") {
+                        numberMode = true
+                        i++
+                        continue
+                    }
 
                     // Handle special characters and modifiers
                     when (cell.meaning) {
@@ -193,11 +205,7 @@ class BrailleFormatter {
                             i++
                             continue
                         }
-                        "number" -> {
-                            numberMode = true
-                            i++
-                            continue
-                        }
+
                         "dot_4" -> {
                             // Check if next cell is 'n' or 'N' to form ñ/Ñ
                             if (i + 1 < word.size) {
@@ -224,11 +232,13 @@ class BrailleFormatter {
                             i++
                             continue
                         }
+
                         "dot_5" -> {
                             // Skip prefix indicators but continue with next cell
                             i++
                             continue
                         }
+
                         else -> {
                             // Process regular cells
                             var text = cell.meaning
@@ -241,7 +251,7 @@ class BrailleFormatter {
 
                             // Apply number mode if active
                             if (numberMode && text.length == 1 && text[0] in 'a'..'j') {
-                                text = when(text) {
+                                text = when (text) {
                                     "a" -> "1"
                                     "b" -> "2"
                                     "c" -> "3"
@@ -254,11 +264,16 @@ class BrailleFormatter {
                                     "j" -> "0"
                                     else -> text
                                 }
+                            } else if (text.length > 1) {
+                                // Turn off number mode when encountering a multi-character cell
+                                numberMode = false
+
                             }
 
                             // Handle whole words in Grade 2 or combined mode
                             if ((currentModel == ObjectDetector.MODEL_G2 || currentModel == ObjectDetector.BOTH_MODELS) &&
-                                isWholeWord(text) && !isPartWord(text)) {
+                                isWholeWord(text) && !isPartWord(text)
+                            ) {
                                 // This is a whole word (not a part word), add it separately with spaces
                                 if (wordBuilder.isNotEmpty()) {
                                     result.append(wordBuilder.toString()).append(" ")
