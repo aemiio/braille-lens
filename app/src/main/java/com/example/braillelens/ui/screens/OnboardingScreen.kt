@@ -69,13 +69,12 @@ import androidx.navigation.NavController
 import com.example.braillelens.R
 import com.example.braillelens.ui.DarkOlive
 import com.example.braillelens.ui.DarkOrange
-import com.example.braillelens.ui.DarkTeal
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
-// Extension function to get Activity from Context
+
 fun Context.findActivity(): android.app.Activity? {
     var context = this
     while (context is android.content.ContextWrapper) {
@@ -184,7 +183,7 @@ fun OnboardingScreen(
                     .statusBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Top Spacer
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Pager for onboarding pages with page transition animations
@@ -233,7 +232,7 @@ fun OnboardingScreen(
                     }
                 }
 
-                // Page indicator
+
                 PageIndicator(
                     pageCount = pages.size,
                     currentPage = pagerState.currentPage,
@@ -363,7 +362,7 @@ fun FirstPageLayout(page: OnboardingPage) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Title
+
         Text(
             text = page.title,
             style = MaterialTheme.typography.headlineSmall,
@@ -377,7 +376,7 @@ fun FirstPageLayout(page: OnboardingPage) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Subtitle
+
         Text(
             text = page.subtitle,
             style = MaterialTheme.typography.bodyLarge,
@@ -423,7 +422,7 @@ fun OtherPagesLayout(page: OnboardingPage) {
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        // Title
+
         Text(
             text = page.title,
             style = MaterialTheme.typography.headlineSmall,
@@ -437,7 +436,7 @@ fun OtherPagesLayout(page: OnboardingPage) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Subtitle
+
         Text(
             text = page.subtitle,
             style = MaterialTheme.typography.bodyLarge,
