@@ -57,6 +57,10 @@ import androidx.navigation.NavController
 import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.utils.BrailleImageUtils
 import java.io.File
+import androidx.camera.core.Camera
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.ui.input.pointer.pointerInput
+
 
 @Composable
 fun CaptureScreen(navController: NavController, detectionMode: String) {
@@ -142,13 +146,25 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
 
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth(0.8f)  // Use 80% of screen width
-                            .aspectRatio(1f)     // Make the preview to be square
+                            .fillMaxWidth(0.8f)
+                            .aspectRatio(1f)
                             .border(width = 2.dp, color = BrailleLensColors.pastelGreen, shape = RoundedCornerShape(16.dp))
                             .clip(RoundedCornerShape(16.dp))
                     ) {
+                        var camera by remember { mutableStateOf<Camera?>(null) }
+                        var minZoom by remember { mutableStateOf(1f) }
+                        var maxZoom by remember { mutableStateOf(5f) }
+                        var scaleFactor by remember { mutableStateOf(1f) }
+
                         AndroidView(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .pointerInput(Unit) {
+                                    detectTransformGestures { _, _, zoom, _ ->
+                                        scaleFactor = (scaleFactor * zoom).coerceIn(minZoom, maxZoom)
+                                        camera?.cameraControl?.setZoomRatio(scaleFactor)
+                                    }
+                                },
                             factory = { context ->
                                 val previewView = PreviewView(context).apply {
                                     implementationMode = PreviewView.ImplementationMode.COMPATIBLE
@@ -167,12 +183,20 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
 
                                     try {
                                         cameraProvider.unbindAll()
-                                        cameraProvider.bindToLifecycle(
+                                        camera = cameraProvider.bindToLifecycle(
                                             lifecycleOwner,
                                             CameraSelector.DEFAULT_BACK_CAMERA,
                                             preview,
                                             imageCaptureUseCase
                                         )
+
+                                        // Get zoom limits
+                                        val cameraInfo = camera?.cameraInfo
+                                        if (cameraInfo?.zoomState?.value != null) {
+                                            minZoom = cameraInfo.zoomState.value?.minZoomRatio ?: 1f
+                                            maxZoom = cameraInfo.zoomState.value?.maxZoomRatio ?: 5f
+                                        }
+
                                     } catch (exc: Exception) {
                                         exc.printStackTrace()
                                     }
