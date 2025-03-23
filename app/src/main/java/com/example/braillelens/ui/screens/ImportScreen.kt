@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.braillelens.R
+import com.example.braillelens.ui.BrailleLensColors
 import com.example.braillelens.utils.BrailleImageUtils
 import java.io.File
 
@@ -134,7 +136,8 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
 
 
             Button(
-                onClick = { launcher.launch("image/*") }
+                onClick = { launcher.launch("image/*") },
+                colors = ButtonDefaults.buttonColors(containerColor = BrailleLensColors.darkOlive)
             ) {
                 Text(if (selectedImageUri == null) "Select Image" else "Select Another Image")
             }
