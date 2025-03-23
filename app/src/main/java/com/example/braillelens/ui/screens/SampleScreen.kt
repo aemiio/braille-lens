@@ -1,33 +1,22 @@
 package com.example.braillelens.ui.screens
 
-import android.R
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -55,7 +44,7 @@ fun SampleScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Custom header area with white background
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -63,14 +52,14 @@ fun SampleScreen(
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
         ) {
-            // Row containing back button and text
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Back button with black color
+
                 IconButton(
                     onClick = { navController.popBackStack() }
                 ) {
@@ -82,7 +71,7 @@ fun SampleScreen(
                     )
                 }
 
-                // Title text in black
+
                 Text(
                     text = "Sample - $detectionMode",
                     fontSize = 18.sp,
@@ -93,7 +82,7 @@ fun SampleScreen(
             }
         }
 
-        // Rest of the content remains the same
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +90,7 @@ fun SampleScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Display the sample image
+
             Image(
                 painter = painterResource(id = sampleId),
                 contentDescription = "Sample Braille Image",
