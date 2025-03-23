@@ -42,7 +42,7 @@ fun Grade1Screen() {
 
     val brailleCards = remember { loadBrailleCards(context, "grade1") }
     val categories = remember {
-        listOf("All", "Letters", "Numbers", "Composition Signs")
+        listOf("All", "Letters", "Numbers", "Signs")
     }
 
     // Filter Braille cards based on category and search query

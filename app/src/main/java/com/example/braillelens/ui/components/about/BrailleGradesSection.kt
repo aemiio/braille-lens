@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.braillelens.ui.BrailleLensColors
 
 
 @Composable
@@ -89,7 +90,7 @@ fun BrailleGradesSection() {
                 .align(Alignment.End)
                 .padding(end = 8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF3700B3)
+                BrailleLensColors.darkOlive
             ),
             shape = RoundedCornerShape(8.dp),
             elevation = ButtonDefaults.buttonElevation(

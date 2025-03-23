@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.ui.layout.ContentScale
+import com.example.braillelens.ui.BrailleLensColors
 
 @Composable
 fun FilipinoBrailleSection() {
@@ -103,7 +104,7 @@ fun FilipinoBrailleSection() {
                 .align(Alignment.End)
                 .padding(end = 8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF3700B3)
+                BrailleLensColors.darkOlive
             ),
             shape = RoundedCornerShape(8.dp),
             elevation = ButtonDefaults.buttonElevation(
