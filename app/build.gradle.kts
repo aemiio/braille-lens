@@ -86,4 +86,13 @@ dependencies {
 
     testImplementation ("org.robolectric:robolectric:4.10.3")
     implementation (libs.kotlin.test)
+
+    implementation ("androidx.camera:camera-core:1.3.0")
+    implementation ("androidx.camera:camera-camera2:1.3.0")
+    implementation ("androidx.camera:camera-lifecycle:1.3.0")
+    implementation ("androidx.camera:camera-view:1.3.0")
+    implementation ("androidx.camera:camera-extensions:1.3.0")
+
+    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
+    implementation ("io.coil-kt:coil-compose:2.4.0")
 }
