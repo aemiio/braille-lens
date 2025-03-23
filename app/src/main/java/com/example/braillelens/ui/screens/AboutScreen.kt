@@ -99,11 +99,11 @@ fun HeaderSection() {
             .padding(horizontal = 20.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
+        Image(
             painter = painterResource(id = R.drawable.braille_logo),
             contentDescription = "Logo",
-            tint = Color.Gray,
-            modifier = Modifier.size(70.dp)
+            modifier = Modifier.size(70.dp),
+            contentScale = ContentScale.Fit
         )
 
         Text("Braille-Lens", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
