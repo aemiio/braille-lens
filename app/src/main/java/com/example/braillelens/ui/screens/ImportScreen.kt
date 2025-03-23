@@ -69,7 +69,6 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
             val encodedDetectionMode = Uri.encode(detectionMode)
             val encodedFilePath = Uri.encode(fileUri)
 
-            // Navigate to result screen with encoded URI
             navController.navigate("result/$encodedDetectionMode/$encodedFilePath")
         }
     }

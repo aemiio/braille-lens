@@ -1,8 +1,6 @@
 package com.example.braillelens.utils
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import java.io.File
 import java.io.FileOutputStream
@@ -44,16 +42,16 @@ object BrailleImageUtils {
         }
     }
 
-    fun cropToSquare(imagePath: String, width: Int, height: Int): Bitmap {
-        val bitmap = BitmapFactory.decodeFile(imagePath)
-        val x = (bitmap.width - width) / 2
-        val y = (bitmap.height - height) / 2
-        return Bitmap.createBitmap(bitmap, x, y, width, height)
-    }
-
-    fun saveBitmapToFile(bitmap: Bitmap, file: File) {
-        FileOutputStream(file).use { out ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-        }
-    }
+//    fun cropToSquare(imagePath: String, width: Int, height: Int): Bitmap {
+//        val bitmap = BitmapFactory.decodeFile(imagePath)
+//        val x = (bitmap.width - width) / 2
+//        val y = (bitmap.height - height) / 2
+//        return Bitmap.createBitmap(bitmap, x, y, width, height)
+//    }
+//
+//    fun saveBitmapToFile(bitmap: Bitmap, file: File) {
+//        FileOutputStream(file).use { out ->
+//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
+//        }
+//    }
 }

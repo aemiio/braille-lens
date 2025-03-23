@@ -65,7 +65,7 @@ fun AboutScreen() {
             .fillMaxSize()
             .background(BrailleLensColors.backgroundGrey),
     ) {
-        // Make the content scrollable
+
         androidx.compose.foundation.lazy.LazyColumn(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally

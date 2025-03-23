@@ -33,14 +33,14 @@ import com.google.gson.reflect.TypeToken
 import java.io.InputStream
 
 
-// Data class for Braille card
+
 data class BrailleCardData(
     val label: String,
     val braille: String,
     val category: String
 )
 
-// Load Braille cards from JSON
+
 fun loadBrailleCards(context: Context, grade: String): List<BrailleCardData> {
     val jsonString = readJsonFromAssets(context, "dictionary.json")
     val gson = Gson()
@@ -76,7 +76,7 @@ fun loadBrailleCards(context: Context, grade: String): List<BrailleCardData> {
     return brailleCards
 }
 
-// Read JSON from assets
+
 fun readJsonFromAssets(context: Context, fileName: String): String {
     return try {
         val inputStream: InputStream = context.assets.open(fileName)
@@ -101,14 +101,14 @@ fun BrailleCard(card: BrailleCardData) {
         colors = CardDefaults.cardColors(
             containerColor = BrailleLensColors.backgroundCream
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Removed elevation
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Column(
             modifier = Modifier.padding(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Braille (large text + bold)
+
             Text(
                 text = card.braille,
                 fontWeight = FontWeight.Bold,
@@ -116,7 +116,7 @@ fun BrailleCard(card: BrailleCardData) {
                 textAlign = TextAlign.Center
             )
 
-            // Meaning with label
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -133,7 +133,7 @@ fun BrailleCard(card: BrailleCardData) {
                 )
             }
 
-            // Category with label
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center
@@ -154,7 +154,7 @@ fun BrailleCard(card: BrailleCardData) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Buttons
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth(),

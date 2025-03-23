@@ -46,7 +46,7 @@ fun ResourcesSection() {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Braille Resources
+
         Text(
             text = "Braille:",
             fontSize = 20.sp,
@@ -61,7 +61,7 @@ fun ResourcesSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Filipino Braille Resources
+
         Text(
             text = "Filipino Braille:",
             fontSize = 20.sp,

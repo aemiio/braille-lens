@@ -37,7 +37,7 @@ fun BrailleGradesSection() {
             .padding(horizontal = 16.dp, vertical = 8.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        // Grade 1 Description
+
         Text(
             text = "Grade 1",
             fontSize = 20.sp,
@@ -54,7 +54,7 @@ fun BrailleGradesSection() {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Grade 2 Description
+
         Text(
             text = "Grade 2",
             fontSize = 20.sp,

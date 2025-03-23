@@ -85,7 +85,7 @@ fun Grade1Screen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Horizontally scrollable category filter bubbles
+
         Row(
             modifier = Modifier
                 .horizontalScroll(rememberScrollState())
@@ -103,7 +103,7 @@ fun Grade1Screen() {
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // 2-Column Grid of Square Braille Cards
+
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(vertical = 8.dp),
@@ -119,7 +119,7 @@ fun Grade1Screen() {
                             BrailleCardItem(card = card)
                         }
                     }
-                    // Add spacers if less than 2 cards in row
+
                     repeat(2 - rowCards.size) {
                         Spacer(modifier = Modifier.weight(1f))
                     }

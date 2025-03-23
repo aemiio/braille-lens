@@ -46,7 +46,7 @@ fun CustomNavigationBar(
             contentColor = BrailleLensColors.pastelGreen,
             tonalElevation = 0.dp
         ) {
-            // Home tab
+
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -73,7 +73,7 @@ fun CustomNavigationBar(
                 )
             )
 
-            // Dictionary tab
+
             NavigationBarItem(
                 icon = {
                     Icon(
@@ -100,7 +100,7 @@ fun CustomNavigationBar(
                 )
             )
 
-            // About tab
+
             NavigationBarItem(
                 icon = {
                     Icon(

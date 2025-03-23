@@ -98,7 +98,7 @@ fun DictionaryCard(navController: NavController) {
                 }
             }
 
-            // Add InfoPopover at the top right corner
+
             Box(
                 modifier = Modifier
                     .align(Alignment.TopEnd)

@@ -8,9 +8,6 @@ import android.graphics.Color
 import android.graphics.Typeface
 import android.util.Log
 import kotlin.math.max
-import kotlin.math.roundToInt
-// Import the custom Result class, not kotlin.Result
-import com.example.braillelens.objectdetection.Result
 
 data class ProcessedDetectionResult(
     val displayBitmap: Bitmap,
@@ -140,7 +137,7 @@ object BraillePostProcessor {
             color = Color.WHITE
             textSize = 20f
             setShadowLayer(2f, 0f, 0f, Color.BLACK)
-            typeface = Typeface.DEFAULT_BOLD // Fixed typeface setting
+            typeface = Typeface.DEFAULT_BOLD
         }
 
         // Draw boxes with braille character labels

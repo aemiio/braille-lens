@@ -43,7 +43,7 @@ fun AppDrawer(
             .background(BackgroundGrey)
             .padding(vertical = 24.dp)
     ) {
-        // Header with Logo and App Title
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -79,7 +79,7 @@ fun AppDrawer(
             }
         }
 
-        // Divider between header and navigation items - with reduced horizontal padding
+
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
             color = MaterialTheme.colorScheme.outlineVariant
@@ -87,7 +87,7 @@ fun AppDrawer(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Navigation Items
+
         NavigationItem(
             icon = painterResource(id = R.drawable.home_24px),
             text = "Home",

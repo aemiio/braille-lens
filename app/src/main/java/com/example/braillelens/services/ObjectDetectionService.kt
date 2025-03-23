@@ -112,7 +112,7 @@ class ObjectDetectionService {
             "Grade 1 Braille" -> ObjectDetector.MODEL_G1
             "Grade 2 Braille" -> ObjectDetector.MODEL_G2
             "Both Grades" -> ObjectDetector.BOTH_MODELS
-            else -> ObjectDetector.MODEL_G1 // Default to G1 if unknown
+            else -> ObjectDetector.MODEL_G1
         }
     }
 

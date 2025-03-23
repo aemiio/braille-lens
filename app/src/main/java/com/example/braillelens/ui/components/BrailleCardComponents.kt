@@ -58,7 +58,7 @@ fun BrailleCardItem(card: BrailleCardData) {
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.padding(4.dp)
             ) {
-                // Braille character
+
                 Text(
                     text = card.braille,
                     style = MaterialTheme.typography.headlineLarge,
@@ -68,7 +68,7 @@ fun BrailleCardItem(card: BrailleCardData) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                // Label
+
                 Text(
                     text = card.label,
                     style = MaterialTheme.typography.bodyMedium,
