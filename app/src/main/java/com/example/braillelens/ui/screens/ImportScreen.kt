@@ -40,8 +40,6 @@ import com.example.braillelens.R
 import com.example.braillelens.utils.BrailleImageUtils
 import java.io.File
 
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 @Composable
 fun ImportScreen(navController: NavController, detectionMode: String) {
@@ -59,18 +57,18 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
             val file = File(context.getExternalFilesDir(null), fileName)
             val filePath = BrailleImageUtils.saveImageToFile(context, uri, file)
 
-            // Save the detection mode and image path
-            BrailleImageUtils.saveCapturedData(context, detectionMode, filePath)
+            // Create proper file:// URI from the saved file
+            val fileUri = Uri.fromFile(file).toString()
 
-            // Encode the detection mode and file path
-            val encodedDetectionMode = URLEncoder.encode(detectionMode, StandardCharsets.UTF_8.toString())
-            val encodedFilePath = URLEncoder.encode(filePath, StandardCharsets.UTF_8.toString())
+            // Save the detection mode and file URI
+            BrailleImageUtils.saveCapturedData(context, detectionMode, fileUri)
 
-            // Navigate to result screen
+            // Encode the detection mode and file URI for navigation
+            val encodedDetectionMode = Uri.encode(detectionMode)
+            val encodedFilePath = Uri.encode(fileUri)
+
+            // Navigate to result screen with encoded URI
             navController.navigate("result/$encodedDetectionMode/$encodedFilePath")
-        } else {
-            // Handle image selection cancellation
-            navController.popBackStack()
         }
     }
 
@@ -84,7 +82,7 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
             .background(Color.White)
             .padding(16.dp)
     ) {
-        // Back button
+
         IconButton(
             onClick = { navController.popBackStack() },
             modifier = Modifier.align(Alignment.TopStart)
@@ -99,7 +97,7 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
             modifier = Modifier.align(Alignment.Center),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Preview box
+
             Box(
                 modifier = Modifier
                     .size(300.dp)
@@ -134,11 +132,11 @@ fun ImportScreen(navController: NavController, detectionMode: String) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Select another image button
+
             Button(
                 onClick = { launcher.launch("image/*") }
             ) {
-                Text("Select Another Image")
+                Text(if (selectedImageUri == null) "Select Image" else "Select Another Image")
             }
         }
     }
