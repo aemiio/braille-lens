@@ -1,6 +1,8 @@
 package com.example.braillelens.ui.screens
 
+import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedVisibility
@@ -62,6 +64,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.core.view.WindowCompat
@@ -69,16 +72,19 @@ import androidx.navigation.NavController
 import com.example.braillelens.R
 import com.example.braillelens.ui.DarkOlive
 import com.example.braillelens.ui.DarkOrange
+import com.example.braillelens.utils.EnableFullScreen
+import com.example.braillelens.utils.WindowType
+import com.example.braillelens.utils.rememberWindowSize
 import kotlin.math.absoluteValue
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.random.Random
 
 
-fun Context.findActivity(): android.app.Activity? {
+fun Context.findActivity(): Activity? {
     var context = this
-    while (context is android.content.ContextWrapper) {
-        if (context is android.app.Activity) {
+    while (context is ContextWrapper) {
+        if (context is Activity) {
             return context
         }
         context = context.baseContext
@@ -105,13 +111,81 @@ fun lerp(start: Float, stop: Float, fraction: Float): Float {
     return start + fraction * (stop - start)
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingScreen(
     navController: NavController,
     onFinishOnboarding: () -> Unit
 ) {
+    EnableFullScreen()
+    val windowSize = rememberWindowSize()
+    when (windowSize.height) {
+        WindowType.Compact -> {
+            SmallOnboardingScreen(
+                navController = navController,
+                onFinishOnboarding = onFinishOnboarding
+            )
+        }
 
+        else -> {
+            MediumOnboardingScreen(
+                navController = navController,
+                onFinishOnboarding = onFinishOnboarding
+            )
+        }
+    }
+}
+
+// Common shared data class for OnboardingScreen
+data class OnboardingPage(
+    val title: String,
+    val subtitle: String,
+    val imageRes: Int,
+    val contentDescription: String,
+    val backgroundColor: Color
+)
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun SmallOnboardingScreen(
+    navController: NavController,
+    onFinishOnboarding: () -> Unit
+) {
+    OnboardingScreenImplementation(
+        navController = navController,
+        onFinishOnboarding = onFinishOnboarding,
+        spacerHeight = 16.dp,
+        buttonWidth = 0.8f,
+        buttonVerticalPadding = 24.dp,
+        isSmallScreen = true
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun MediumOnboardingScreen(
+    navController: NavController,
+    onFinishOnboarding: () -> Unit
+) {
+    OnboardingScreenImplementation(
+        navController = navController,
+        onFinishOnboarding = onFinishOnboarding,
+        spacerHeight = 24.dp,
+        buttonWidth = 0.7f,
+        buttonVerticalPadding = 32.dp,
+        isSmallScreen = false
+    )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun OnboardingScreenImplementation(
+    navController: NavController,
+    onFinishOnboarding: () -> Unit,
+    spacerHeight: Dp,
+    buttonWidth: Float,
+    buttonVerticalPadding: Dp,
+    isSmallScreen: Boolean
+) {
     val view = LocalView.current
     DisposableEffect(Unit) {
         val window = view.context.findActivity()?.window
@@ -183,8 +257,7 @@ fun OnboardingScreen(
                     .statusBarsPadding(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(spacerHeight))
 
                 // Pager for onboarding pages with page transition animations
                 HorizontalPager(
@@ -223,15 +296,19 @@ fun OnboardingScreen(
                             }
                             .fillMaxSize()
                     ) {
-
                         if (position == 0) {
-                            FirstPageLayout(page = pages[position])
+                            FirstPageLayout(
+                                page = pages[position],
+                                isSmallScreen = isSmallScreen
+                            )
                         } else {
-                            OtherPagesLayout(page = pages[position])
+                            OtherPagesLayout(
+                                page = pages[position],
+                                isSmallScreen = isSmallScreen
+                            )
                         }
                     }
                 }
-
 
                 PageIndicator(
                     pageCount = pages.size,
@@ -248,7 +325,7 @@ fun OnboardingScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 24.dp, vertical = 32.dp),
+                            .padding(horizontal = 24.dp, vertical = buttonVerticalPadding),
                         contentAlignment = Alignment.Center
                     ) {
                         Button(
@@ -262,7 +339,7 @@ fun OnboardingScreen(
                             shape = RoundedCornerShape(24.dp),
                             contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)
+                                .fillMaxWidth(buttonWidth)
                                 .semantics {
                                     contentDescription = "Get started and go to home screen"
                                 }
@@ -281,7 +358,6 @@ fun OnboardingScreen(
                     }
                 }
 
-
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -289,9 +365,104 @@ fun OnboardingScreen(
 }
 
 @Composable
+fun FirstPageLayout(
+    page: OnboardingPage,
+    isSmallScreen: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = page.title,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = DarkOlive,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (isSmallScreen) 8.dp else 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(if (isSmallScreen) 8.dp else 16.dp))
+
+        Text(
+            text = page.subtitle,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (isSmallScreen) 16.dp else 24.dp)
+        )
+
+        Spacer(modifier = Modifier.height(if (isSmallScreen) 20.dp else 32.dp))
+
+        Image(
+            painter = painterResource(id = page.imageRes),
+            contentDescription = page.contentDescription,
+            modifier = Modifier
+                .fillMaxWidth(if (isSmallScreen) 0.70f else 1f)
+                .padding(horizontal = if (isSmallScreen) 8.dp else 16.dp),
+            contentScale = ContentScale.FillWidth
+        )
+    }
+}
+
+@Composable
+fun OtherPagesLayout(
+    page: OnboardingPage,
+    isSmallScreen: Boolean
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Image(
+            painter = painterResource(id = page.imageRes),
+            contentDescription = page.contentDescription,
+            modifier = Modifier
+                .fillMaxWidth(if (isSmallScreen) 0.70f else 1f)
+                .padding(horizontal = if (isSmallScreen) 4.dp else 16.dp),
+            contentScale = ContentScale.FillWidth
+        )
+
+        Spacer(modifier = Modifier.height(if (isSmallScreen) 20.dp else 32.dp))
+
+        Text(
+            text = page.title,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = DarkOlive,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (isSmallScreen) 8.dp else 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(if (isSmallScreen) 8.dp else 16.dp))
+
+        Text(
+            text = page.subtitle,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = if (isSmallScreen) 16.dp else 24.dp)
+        )
+    }
+}
+
+@Composable
 fun AnimatedDotBackground(currentPage: Int, pageColor: Color, modifier: Modifier = Modifier) {
     val density = LocalDensity.current
-
 
     class Dot(
         val initialX: Float,
@@ -299,7 +470,6 @@ fun AnimatedDotBackground(currentPage: Int, pageColor: Color, modifier: Modifier
         val radius: Float,
         val animationOffset: Float
     )
-
 
     val dots = remember {
         List(50) {
@@ -311,7 +481,6 @@ fun AnimatedDotBackground(currentPage: Int, pageColor: Color, modifier: Modifier
             )
         }
     }
-
 
     val animationProgress = rememberInfiniteTransition(label = "DotAnimationTransition")
     val progress = animationProgress.animateFloat(
@@ -354,102 +523,6 @@ fun AnimatedDotBackground(currentPage: Int, pageColor: Color, modifier: Modifier
 }
 
 @Composable
-fun FirstPageLayout(page: OnboardingPage) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Text(
-            text = page.title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            color = DarkOlive,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        Text(
-            text = page.subtitle,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-
-        Image(
-            painter = painterResource(id = page.imageRes),
-            contentDescription = page.contentDescription,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            contentScale = ContentScale.FillWidth
-        )
-    }
-}
-
-@Composable
-fun OtherPagesLayout(page: OnboardingPage) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-
-        Image(
-            painter = painterResource(id = page.imageRes),
-            contentDescription = page.contentDescription,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            contentScale = ContentScale.FillWidth
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-
-        Text(
-            text = page.title,
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            color = DarkOlive,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-
-        Text(
-            text = page.subtitle,
-            style = MaterialTheme.typography.bodyLarge,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp)
-        )
-    }
-}
-
-@Composable
 fun PageIndicator(
     pageCount: Int,
     currentPage: Int,
@@ -483,11 +556,3 @@ fun PageIndicator(
         }
     }
 }
-
-data class OnboardingPage(
-    val title: String,
-    val subtitle: String,
-    val imageRes: Int,
-    val contentDescription: String,
-    val backgroundColor: Color
-)
