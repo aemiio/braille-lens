@@ -58,23 +58,21 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             .fillMaxSize()
             .background(color = BrailleLensColors.pastelGreen)
     ) {
-        // Top Image reaching the status bar
+
         Image(
             painter = painterResource(id = R.drawable.home),
             contentDescription = "Home Image",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(350.dp)
+                .height(240.dp)
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
         )
 
-        // App Drawer Button
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
-                .statusBarsPadding()
-                .padding(16.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp)
                 .align(Alignment.TopStart)
                 .zIndex(3f)
         ) {
@@ -85,11 +83,11 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             )
         }
 
-        // Main Content
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(top = 300.dp)
+                .padding(top = 200.dp)
                 .shadow(
                     elevation = 8.dp,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp),
@@ -102,38 +100,8 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 .padding(20.dp)
                 .zIndex(0f)
         ) {
-            // Centered Logo & Title - update padding to match HomeScreen
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.braille_logo),
-                    contentDescription = "Braille Lens Logo",
-                    modifier = Modifier.size(50.dp)
-                )
 
-                Column(modifier = Modifier.padding(start = 16.dp)) {
-                    Text(
-                        text = "Braille Lens",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = BrailleLensColors.darkOrange
-                    )
-                    Text(
-                        text = "Your Vision, Our Mission",
-                        fontSize = 12.sp,
-                        color = BrailleLensColors.fontBlack
-                    )
-                }
-            }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Recognition Card with the passed NavController
             RecognitionCard(
                 navController = navController,
                 context = context
@@ -151,7 +119,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             .fillMaxSize()
             .background(color = BrailleLensColors.pastelGreen)
     ) {
-        // Top Image reaching the status bar
+
         Image(
             painter = painterResource(id = R.drawable.home),
             contentDescription = "Home Image",
@@ -162,7 +130,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 .zIndex(1f)
         )
 
-        // App Drawer Button
+
         IconButton(
             onClick = openDrawer,
             modifier = Modifier
@@ -177,7 +145,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             )
         }
 
-        // Main Content
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -195,7 +163,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 .zIndex(0f)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
-            // Centered Logo & Title - update padding to match HomeScreen
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -224,7 +192,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 }
             }
 
-            // Recognition Card with the passed NavController
+
             RecognitionCard(
                 navController = navController,
                 context = context
