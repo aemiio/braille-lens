@@ -217,21 +217,21 @@ private fun OnboardingScreenImplementation(
             subtitle = "Together, we break barriers with effortless Grade 1 and Grade 2 Braille recognition, fostering a more inclusive society.",
             imageRes = R.drawable.onboarding_1,
             contentDescription = "a visually impaired girl walking to school",
-            backgroundColor = DarkOrange
+            backgroundColor = MaterialTheme.colorScheme.secondary
         ),
         OnboardingPage(
             title = "Easy Braille Recognition",
             subtitle = "Capture or import Filipino Braille and experience detection powered by advanced technology.",
             imageRes = R.drawable.onboarding_2,
             contentDescription = "Father and daughter going to school",
-            backgroundColor = DarkOlive
+            backgroundColor = MaterialTheme.colorScheme.secondary
         ),
         OnboardingPage(
             title = "See Beyond Touch with Braille-Lens",
             subtitle = "Transform Filipino Braille into text and speech with ease, bridging communication and accessibility effortlessly.",
             imageRes = R.drawable.onboarding_3,
             contentDescription = "Diversity of people",
-            backgroundColor = DarkOlive
+            backgroundColor = MaterialTheme.colorScheme.secondary
         )
     )
 
@@ -240,7 +240,7 @@ private fun OnboardingScreenImplementation(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF7F7F7)
+        color = MaterialTheme.colorScheme.background
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Animated dot background
@@ -316,6 +316,7 @@ private fun OnboardingScreenImplementation(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
+
                 // Get Started Button - Only show on last page
                 AnimatedVisibility(
                     visible = pagerState.currentPage == pages.size - 1,
@@ -347,7 +348,8 @@ private fun OnboardingScreenImplementation(
                             Text(
                                 text = "Get Started",
                                 style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
@@ -381,7 +383,7 @@ fun FirstPageLayout(
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = DarkOlive,
+            color = MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = if (isSmallScreen) 8.dp else 16.dp)
@@ -440,7 +442,7 @@ fun OtherPagesLayout(
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            color = DarkOlive,
+            color =  MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = if (isSmallScreen) 8.dp else 16.dp)
