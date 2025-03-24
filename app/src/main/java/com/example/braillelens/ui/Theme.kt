@@ -1,10 +1,12 @@
 package com.example.braillelens.ui
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val DarkOrange = Color(0xFFFF9D23)
@@ -25,11 +27,18 @@ val AccentPurple = Color(0xFF8C3061)
 val FontWhite = Color(0xFFFFFFFF)
 val FontBlack = Color(0xFF131010)
 
+val Night = Color(0xFF121212)
+val Cafe = Color(0xFF3D2200)
+val Ecru = Color(0xFFE7BF74)
+val DarkGreen = Color(0xFF2A320B)
+val Citron = Color(0xFFC2CD79)
+val Navajo = Color(0xFFFFDEAB)
+
 
 private val LightColors = lightColorScheme(
-    primary = DarkOrange,
+    primary = PastelGreen,
     secondary = DarkOlive,
-    tertiary = DarkTeal,
+    tertiary = PastelOrange,
     background = BackgroundGrey,
     surface = LightCream,
     onPrimary = FontWhite,
@@ -41,10 +50,10 @@ private val LightColors = lightColorScheme(
 
 
 private val DarkColors = darkColorScheme(
-    primary = PastelOrange,
-    secondary = PastelGreen,
-    tertiary = PastelTeal,
-    background = DarkTeal,
+    primary = DarkOlive,
+    secondary = Citron,
+    tertiary = DarkOrange,
+    background = Night,
     surface = DarkOlive,
     onPrimary = FontBlack,
     onSecondary = FontBlack,
@@ -76,7 +85,7 @@ fun BrailleLensTheme(
     content: @Composable () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-    val statusBarColor = BrailleLensColors.backgroundGrey
+    val statusBarColor = BrailleLensColors.pastelGreen
 
     SideEffect {
         systemUiController.setStatusBarColor(
@@ -86,7 +95,11 @@ fun BrailleLensTheme(
     }
 
     MaterialTheme(
-        colorScheme = if (useDarkTheme) DarkColors else LightColors,
+        colorScheme = if (useDarkTheme) {
+            DarkColors
+        } else {
+            LightColors
+        },
         content = content
     )
 }
