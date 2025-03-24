@@ -45,7 +45,7 @@ fun BrailleCardItem(card: BrailleCardData) {
             .clickable { showModal = true }
             .padding(4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = BrailleLensColors.backgroundCream
+            containerColor = MaterialTheme.colorScheme.onSecondaryContainer
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -62,7 +62,7 @@ fun BrailleCardItem(card: BrailleCardData) {
                 Text(
                     text = card.braille,
                     style = MaterialTheme.typography.headlineLarge,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold
                 )
 
@@ -72,7 +72,7 @@ fun BrailleCardItem(card: BrailleCardData) {
                 Text(
                     text = card.label,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center
                 )
             }
@@ -117,7 +117,7 @@ fun ShowBrailleCardModal(card: BrailleCardData, onDismiss: () -> Unit) {
                     .fillMaxWidth()
                     .padding(8.dp),
                 shape = RoundedCornerShape(16.dp),
-                color = BrailleLensColors.backgroundCream
+                color = MaterialTheme.colorScheme.onSecondaryContainer
             ) {
                 Box(modifier = Modifier.padding(8.dp)) {
                     BrailleCard(card = card)

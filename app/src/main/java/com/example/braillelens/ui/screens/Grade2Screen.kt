@@ -78,15 +78,15 @@ fun Grade2Screen() {
                 .padding(4.dp),
             shape = RoundedCornerShape(20.dp),
             colors = TextFieldDefaults.colors(
-                focusedIndicatorColor = BrailleLensColors.darkOlive,
-                unfocusedIndicatorColor = BrailleLensColors.fontBlack,
+                focusedIndicatorColor =  BrailleLensColors.darkOlive,
+                unfocusedIndicatorColor = MaterialTheme.colorScheme.onBackground,
                 cursorColor = BrailleLensColors.darkOlive,
                 focusedTextColor = BrailleLensColors.darkOlive,
-                unfocusedTextColor = BrailleLensColors.fontBlack,
+                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
                 focusedContainerColor = Color.Transparent,
-                unfocusedContainerColor = Color.Transparent,
+                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimaryContainer,
                 focusedLabelColor = BrailleLensColors.darkOlive,
-                unfocusedLabelColor = BrailleLensColors.fontBlack
+                unfocusedLabelColor = MaterialTheme.colorScheme.onBackground
             )
         )
 

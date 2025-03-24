@@ -32,6 +32,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -101,7 +102,7 @@ fun MediumRecognitionCard(
 
     Card(
         shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = colorResource(id = R.color.pastel_green)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth(),
@@ -112,13 +113,13 @@ fun MediumRecognitionCard(
                 Text(
                     "Recognize Braille",
                     fontSize = 20.sp,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Bold
                 )
                 HorizontalDivider(
                     modifier = Modifier.padding(vertical = 12.dp),
                     thickness = 1.dp,
-                    color = Color.Black.copy(alpha = 0.7f)
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
 
@@ -140,22 +141,22 @@ fun MediumRecognitionCard(
                             label = {
                                 Text(
                                     "Detection Mode",
-                                    color = Color.Black.copy(alpha = 0.9f)
+                                    color = MaterialTheme.colorScheme.onBackground
                                 )
                             },
                             trailingIcon = {
                                 Icon(
                                     imageVector = Icons.Filled.ArrowDropDown,
                                     contentDescription = "Toggle Dropdown",
-                                    tint = Color.Black
+                                    tint = MaterialTheme.colorScheme.onBackground
                                 )
                             },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = Color.Black,
-                                unfocusedBorderColor = Color.Black.copy(alpha = 0.7f),
-                                focusedTextColor = Color.Black,
-                                unfocusedTextColor = Color.Black,
-                                cursorColor = Color.Black
+                                focusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.onBackground,
+                                focusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                unfocusedTextColor = MaterialTheme.colorScheme.onBackground,
+                                cursorColor = MaterialTheme.colorScheme.onBackground
                             ),
                             modifier = Modifier
                                 .menuAnchor()
@@ -166,7 +167,7 @@ fun MediumRecognitionCard(
                             expanded = expanded,
                             onDismissRequest = { expanded = false },
                             modifier = Modifier
-                                .background(BrailleLensColors.lightCream)
+                                .background(MaterialTheme.colorScheme.surface)
                                 .width(IntrinsicSize.Max)
                         ) {
                             detectionModes.forEach { mode ->
@@ -186,14 +187,14 @@ fun MediumRecognitionCard(
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_right),
                             contentDescription = "Arrow Right",
-                            tint = Color.Black,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
                             "Tagalog",
                             fontSize = 14.sp,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -235,7 +236,7 @@ fun MediumRecognitionCard(
                             Text(
                                 text = "Capture",
                                 fontSize = 12.sp,
-                                color = BrailleLensColors.fontWhite,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 softWrap = false
                             )
                         }

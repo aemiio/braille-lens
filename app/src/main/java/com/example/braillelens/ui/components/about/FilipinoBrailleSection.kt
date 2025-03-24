@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ContentScale
 import com.example.braillelens.ui.BrailleLensColors
 
@@ -46,7 +47,7 @@ fun FilipinoBrailleSection() {
             text = "What is Filipino Braille?",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -75,7 +76,7 @@ fun FilipinoBrailleSection() {
         Text(
             text = "In the Philippines, the Filipino Braille Code was adapted from the English Braille code to provide a standardized method for visually impaired individuals to read and write in Tagalog, as well as in several regional languages such as Ilocano, Cebuano, Hiligaynon, and Bicol. These standards were developed by the Philippine Printing House for the Blind and the Department of Education (World Blind Union, 2013).",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 
@@ -84,7 +85,7 @@ fun FilipinoBrailleSection() {
         Text(
             text = "According to the World Blind Union (2013), Tagalog is the only language with available contracted words derived from five regional languages that have adapted the Filipino Braille Code. The code consists of 28 letters representing the Philippine alphabet, and the numbers and punctuation marks are similar to those found in traditional English Braille.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 

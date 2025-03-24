@@ -15,6 +15,7 @@ import androidx.compose.material.icons.outlined.ArrowForward
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -42,13 +43,13 @@ fun BrailleGradesSection() {
             text = "Grade 1",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "A letter-by-letter transcription where each Braille cell corresponds directly to a letter, number, or symbol. It includes the full alphabet, numerals, and a limited number of punctuation marks but does not include any contractions or shorthand forms that represent whole words or groups of letters.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 
@@ -59,20 +60,20 @@ fun BrailleGradesSection() {
             text = "Grade 2",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "An advanced system including contractions and shorthand, allowing efficient reading and writing through abbreviated representations. In Grade 2 Braille, certain common words and letter groups are represented by single Braille cells (one-cell contractions), which saves time when reading and reduces the amount of paper required for written texts.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Additionally, Grade 2 Braille incorporates part-word contractions, where portions of words can be represented by specific Braille characters. For example, in Filipino Grade 2 Braille, there are specific dot patterns that stand for words like \"kaya\" or \"ngayon,\" thus helping to streamline the reading process.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 

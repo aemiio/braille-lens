@@ -20,6 +20,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -63,7 +64,7 @@ fun AboutScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(BrailleLensColors.backgroundGrey),
+            .background(MaterialTheme.colorScheme.background),
     ) {
 
         androidx.compose.foundation.lazy.LazyColumn(
@@ -106,8 +107,8 @@ fun HeaderSection() {
             contentScale = ContentScale.Fit
         )
 
-        Text("Braille-Lens", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black)
-        Text("Making Braille accessible for everyone", fontSize = 14.sp, color = Color.Gray)
+        Text("Braille-Lens", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
+        Text("Making Braille accessible for everyone", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground)
     }
 }
 
@@ -190,7 +191,7 @@ fun ModalBottomSheetContent(menuItem: MenuItem, onDismiss: () -> Unit) {
                     text = menuItem.title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -208,7 +209,7 @@ fun ModalBottomSheetContent(menuItem: MenuItem, onDismiss: () -> Unit) {
                         Text(
                             text = "Content for ${menuItem.title} section",
                             fontSize = 16.sp,
-                            color = Color.Gray
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     }
                 }
@@ -241,7 +242,7 @@ fun TeamSection() {
             name = "Jyra Mae Celajes",
             role = "Developer",
             imageRes = R.drawable.celajes,
-            backgroundColor = Color(0xFFF5F5F5)
+            backgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -250,7 +251,7 @@ fun TeamSection() {
             name = "Crestalyn Luardo",
             role = "Designer",
             imageRes = R.drawable.luardo,
-            backgroundColor = Color(0xFFF5F5F5)
+            backgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -259,7 +260,7 @@ fun TeamSection() {
             name = "Louie Jenn Jaspe",
             role = "Researcher",
             imageRes = R.drawable.jaspe,
-            backgroundColor = Color(0xFFF5F5F5)
+            backgroundColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
 
 

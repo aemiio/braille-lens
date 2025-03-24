@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,7 +31,7 @@ fun PurposeSection() {
                     "recognizing both Grade 1 and Grade 2 Filipino-Tagalog Braille characters, " +
                     "digits, and contractions.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 
@@ -46,7 +47,7 @@ fun PurposeSection() {
                     "sighted individuals, fostering a more inclusive environment for " +
                     "communication and learning.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 

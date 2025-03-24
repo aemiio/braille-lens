@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowForward
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.layout.ContentScale
 import com.example.braillelens.ui.BrailleLensColors
 
@@ -46,7 +47,7 @@ fun BrailleSection() {
             text = "What is Braille?",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -75,7 +76,7 @@ fun BrailleSection() {
         Text(
             text = "Braille is a tactile writing and reading system designed for visually impaired individuals, enabling them to read and write through the use of raised dots. Each Braille character is formed by a combination of six dots arranged in a 3x2 matrix, allowing for a variety of patterns to represent letters, numbers, punctuation marks, and even whole words.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 
@@ -85,7 +86,7 @@ fun BrailleSection() {
             text = "How to read and write Braille?",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A1A1A)
+            color = MaterialTheme.colorScheme.onBackground
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -93,7 +94,7 @@ fun BrailleSection() {
         Text(
             text = "When reading Braille, the sequence starts from left to right (123-456), to enable tactile recognition of the patterns by feeling the raised dots. However, when writing Braille using a slate and stylus, the sequence is mirrored (456-123). This is because the writer punches dots from right to left on the back of the paper, so the Braille appears correctly embossed on the front.",
             fontSize = 16.sp,
-            color = Color(0xFF333333),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 24.sp
         )
 

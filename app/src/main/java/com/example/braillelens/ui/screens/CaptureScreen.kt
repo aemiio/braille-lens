@@ -101,7 +101,7 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (hasCameraPermission) {
             Column(modifier = Modifier.fillMaxSize()) {
@@ -110,7 +110,7 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         IconButton(
@@ -122,13 +122,13 @@ fun CaptureScreen(navController: NavController, detectionMode: String) {
                             Icon(
                                 imageVector = Icons.Default.ArrowBack,
                                 contentDescription = "Back",
-                                tint = Color.Black
+                                tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
 
                         Text(
                             text = "Capture Braille",
-                            color = Color.Black,
+                            color = MaterialTheme.colorScheme.onBackground,
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.align(Alignment.Center)
                         )

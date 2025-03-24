@@ -181,7 +181,7 @@ fun RecognitionResultScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = androidx.compose.ui.graphics.Color.Black,
+                            tint = MaterialTheme.colorScheme.onBackground,
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -190,7 +190,7 @@ fun RecognitionResultScreen(
                         text = "Result - $selectedModel",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
-                        color = androidx.compose.ui.graphics.Color.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(start = 8.dp)
                     )
                 }
@@ -353,7 +353,7 @@ fun RecognitionResultScreen(
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         colors = CardDefaults.cardColors(
-                            containerColor = BrailleLensColors.lightCream
+                            containerColor = MaterialTheme.colorScheme.surface
                         ),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {

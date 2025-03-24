@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -55,7 +56,7 @@ fun InfoPopover(
             expanded = showPopover,
             onDismissRequest = { showPopover = false },
             modifier = Modifier
-                .background(BrailleLensColors.lightCream)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(4.dp)
                 .width(240.dp)
         ) {
@@ -67,7 +68,7 @@ fun InfoPopover(
                     text = title,
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
-                    color = BrailleLensColors.darkTeal
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -88,13 +89,13 @@ fun InfoItem(title: String, description: String) {
     Column {
         Text(
             text = title,
-            color = BrailleLensColors.accentRed,
+            color = MaterialTheme.colorScheme.secondary,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp
         )
         Text(
             text = description,
-            color = BrailleLensColors.fontBlack,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 13.sp
         )
     }

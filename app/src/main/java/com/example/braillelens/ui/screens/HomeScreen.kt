@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -56,7 +57,7 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BrailleLensColors.pastelGreen)
+            .background(color = MaterialTheme.colorScheme.primary)
     ) {
 
         Image(
@@ -94,7 +95,7 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                     clip = false
                 )
                 .background(
-                    BrailleLensColors.backgroundGrey,
+                    MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
                 )
                 .padding(20.dp)
@@ -117,7 +118,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BrailleLensColors.pastelGreen)
+            .background(color = MaterialTheme.colorScheme.primary)
     ) {
 
         Image(
@@ -156,7 +157,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                     clip = false
                 )
                 .background(
-                    BrailleLensColors.backgroundGrey,
+                    MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
                 )
                 .padding(16.dp)
@@ -187,7 +188,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                     Text(
                         text = "Your Vision, Our Mission",
                         fontSize = 12.sp,
-                        color = BrailleLensColors.fontBlack
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

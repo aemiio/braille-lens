@@ -33,6 +33,7 @@ import com.example.braillelens.utils.EnableFullScreen
 import com.example.braillelens.utils.WindowType
 import com.example.braillelens.utils.rememberWindowSize
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun DictionaryScreen(openDrawer: () -> Unit, navController: NavController) {
@@ -52,7 +53,7 @@ fun SmallDictionaryScreen(openDrawer: () -> Unit, navController: NavController) 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BrailleLensColors.pastelGreen)
+            .background(color = MaterialTheme.colorScheme.primary)
     ) {
 
         Image(
@@ -90,7 +91,7 @@ fun SmallDictionaryScreen(openDrawer: () -> Unit, navController: NavController) 
                     clip = false
                 )
                 .background(
-                    BrailleLensColors.backgroundGrey,
+                    MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
                 )
                 .padding(20.dp)
@@ -108,14 +109,14 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = BrailleLensColors.pastelGreen)
+            .background(color = MaterialTheme.colorScheme.primary)
     ) {
         Image(
             painter = painterResource(id = R.drawable.dictionary),
             contentDescription = "Book Image",
             modifier = Modifier
                 .fillMaxWidth()
-                .height(450.dp)
+                .height(400.dp)
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
         )
@@ -144,7 +145,7 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
                     clip = false
                 )
                 .background(
-                    BrailleLensColors.backgroundGrey,
+                    MaterialTheme.colorScheme.background,
                     shape = RoundedCornerShape(topStart = 55.dp, topEnd = 55.dp)
                 )
                 .padding(16.dp)
@@ -177,7 +178,7 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
                     Text(
                         text = "Your Vision, Our Mission",
                         fontSize = 12.sp,
-                        color = BrailleLensColors.fontBlack
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
             }

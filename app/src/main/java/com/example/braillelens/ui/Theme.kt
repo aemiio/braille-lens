@@ -7,6 +7,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import com.example.braillelens.ui.BackgroundCream
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
 val DarkOrange = Color(0xFFFF9D23)
@@ -28,9 +29,9 @@ val FontWhite = Color(0xFFFFFFFF)
 val FontBlack = Color(0xFF131010)
 
 val Night = Color(0xFF121212)
-val Cafe = Color(0xFF3D2200)
+val Cafe = Color(0xFF504530)
 val Ecru = Color(0xFFE7BF74)
-val DarkGreen = Color(0xFF2A320B)
+val DarkGreen = Color(0xFF39440F)
 val Citron = Color(0xFFC2CD79)
 val Navajo = Color(0xFFFFDEAB)
 
@@ -45,21 +46,25 @@ private val LightColors = lightColorScheme(
     onSecondary = FontWhite,
     onTertiary = FontWhite,
     onBackground = FontBlack,
-    onSurface = FontBlack
+    onSurface = FontBlack,
+    onPrimaryContainer = FontWhite,
+    onSecondaryContainer = BackgroundCream
 )
 
 
 private val DarkColors = darkColorScheme(
-    primary = DarkOlive,
+    primary = DarkGreen,
     secondary = Citron,
     tertiary = DarkOrange,
     background = Night,
-    surface = DarkOlive,
-    onPrimary = FontBlack,
+    surface = Cafe,
+    onPrimary = FontWhite,
     onSecondary = FontBlack,
     onTertiary = FontBlack,
     onBackground = FontWhite,
-    onSurface = FontWhite
+    onSurface = FontWhite,
+    onPrimaryContainer = FontBlack,
+    onSecondaryContainer = Cafe
 )
 
 object BrailleLensColors {
