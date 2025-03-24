@@ -85,12 +85,16 @@ fun BrailleLensTheme(
     content: @Composable () -> Unit
 ) {
     val systemUiController = rememberSystemUiController()
-    val statusBarColor = BrailleLensColors.pastelGreen
+    val statusBarColor = if (useDarkTheme) {
+        DarkColors.secondary
+    } else {
+        LightColors.secondary
+    }
 
     SideEffect {
         systemUiController.setStatusBarColor(
             color = statusBarColor,
-            darkIcons = !useDarkTheme
+            darkIcons = useDarkTheme
         )
     }
 
