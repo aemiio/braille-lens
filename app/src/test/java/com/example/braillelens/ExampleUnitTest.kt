@@ -1,4 +1,4 @@
-package com.example.braillelens
+package com.aemiio.braillelens
 
 import org.junit.Test
 

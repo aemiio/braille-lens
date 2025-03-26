@@ -1,14 +1,15 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.gms.google-services")
 }
 
 android {
-    namespace = "com.example.braillelens"
+    namespace = "com.aemiio.braillelens"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.braillelens"
+        applicationId = "com.aemiio.braillelens"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
@@ -95,4 +96,8 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation ("io.coil-kt:coil-compose:2.4.0")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.7.0")
 }
