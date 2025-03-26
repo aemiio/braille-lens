@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1015310614342",
+    "project_id": "braille-lens",
+    "storage_bucket": "braille-lens.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1015310614342:android:cc8b2df2c786f200fd6f47",
+        "android_client_info": {
+          "package_name": "com.aemiio.braillelens"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA4JG89ftzoRxYxtryKLuC71dWe3PpU1IU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
