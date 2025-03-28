@@ -36,7 +36,6 @@ import com.aemiio.braillelens.ui.BrailleLensTheme
 import com.aemiio.braillelens.ui.components.AppDrawer
 import com.aemiio.braillelens.ui.components.CustomNavigationBar
 import com.aemiio.braillelens.ui.screens.AboutScreen
-import com.aemiio.braillelens.ui.screens.AnnotationScreen
 import com.aemiio.braillelens.ui.screens.CaptureScreen
 import com.aemiio.braillelens.ui.screens.DictionaryScreen
 import com.aemiio.braillelens.ui.screens.Grade1Screen
@@ -50,13 +49,10 @@ import com.aemiio.braillelens.ui.screens.findActivity
 import com.aemiio.braillelens.ui.screens.hasCompletedOnboarding
 import com.aemiio.braillelens.ui.screens.setOnboardingComplete
 import kotlinx.coroutines.launch
-import com.google.firebase.FirebaseApp
-import kotlin.text.get
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
         setContent {
             BrailleLensTheme {
                 Surface() {
@@ -190,12 +186,6 @@ fun MainScreen() {
                             )
                         }
 
-                        composable("annotation/{imagePath}") { backStackEntry ->
-                            AnnotationScreen(
-                                navController = navController,
-                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
-                            )
-                        }
                     }
                 }
             }
