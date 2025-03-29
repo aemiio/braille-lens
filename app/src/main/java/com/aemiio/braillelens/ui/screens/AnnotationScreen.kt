@@ -2,7 +2,6 @@ package com.aemiio.braillelens.ui.screens
 
 import android.graphics.Bitmap
 import android.graphics.Paint
-import android.graphics.Rect
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -53,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -62,10 +60,7 @@ import com.aemiio.braillelens.objectdetection.BrailleClassIdMapper
 import com.aemiio.braillelens.objectdetection.BrailleMap
 import com.aemiio.braillelens.ui.BrailleLensColors
 import com.aemiio.braillelens.utils.AnnotationState
-import kotlin.div
 import kotlin.math.abs
-import kotlin.text.contains
-import kotlin.text.toFloat
 
 data class DetectedBox(
     val x: Float,
@@ -92,7 +87,7 @@ fun AnnotationScreen(
     val selectedModel = AnnotationState.selectedModel.value
 
     val grade = when {
-        selectedModel.contains("Both") -> 3  // Use 3 to represent both models
+        selectedModel.contains("Both") -> 3
         selectedModel.contains("1") -> 1
         selectedModel.contains("2") -> 2
         else -> 1
@@ -106,7 +101,6 @@ fun AnnotationScreen(
     var currentClass by remember { mutableStateOf("") }
     val scrollState = rememberScrollState()
 
-    // Add a new mutable state to store canvas dimensions
     var canvasSize by remember { mutableStateOf(Size(0f, 0f)) }
 
     fun updateBox(index: Int, updatedBox: DetectedBox) {
@@ -142,18 +136,76 @@ fun AnnotationScreen(
     val coroutineScope = rememberCoroutineScope()
     var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
-    // Set initial class if available
+
     LaunchedEffect(classOptions) {
         if (classOptions.isNotEmpty() && currentClass.isEmpty()) {
             currentClass = classOptions[0]
         }
     }
 
-    // Load bitmap from imagePath if needed
+
     LaunchedEffect(imagePath) {
         if (originalBitmap == null && imagePath.isNotEmpty()) {
-            // Path is already in AnnotationState from RecognitionResultScreen
             println("Image path already set in AnnotationState: $imagePath")
+        }
+    }
+
+    // normalize boxes if they're too large
+    LaunchedEffect(canvasSize, boxes) {
+        if (canvasSize.width > 0 && canvasSize.height > 0 && boxes.isNotEmpty()) {
+            // Check if boxes need normalization (very large values)
+            val needsNormalization = boxes.any { box -> 
+                box.x > canvasSize.width * 2 || box.y > canvasSize.height * 2 
+            }
+            
+            if (needsNormalization) {
+                println("DEBUG: Emergency box coordinate normalization needed!")
+                
+                // Find the largest coordinate value
+                val maxX = boxes.maxOfOrNull { it.x } ?: 1f
+                val maxY = boxes.maxOfOrNull { it.y } ?: 1f
+                
+                // Calculate scale factors to fit within canvas
+                val scaleX = canvasSize.width / maxX * 0.8f
+                val scaleY = canvasSize.height / maxY * 0.8f
+                val scaleFactor = minOf(scaleX, scaleY)
+                
+                println("DEBUG: Emergency normalization - Max values: $maxX x $maxY, Scale: $scaleFactor")
+
+                val normalizedBoxes = boxes.mapIndexed { index, box ->
+                    val normalizedBox = DetectedBox(
+                        x = box.x * scaleFactor,
+                        y = box.y * scaleFactor,
+                        width = box.width * scaleFactor,
+                        height = box.height * scaleFactor,
+                        className = box.className,
+                        classId = box.classId,
+                        confidence = box.confidence
+                    )
+                    println("DEBUG: Normalized box $index: ${box.x},${box.y} -> ${normalizedBox.x},${normalizedBox.y}")
+                    normalizedBox
+                }
+
+                AnnotationState.updateBoxes(normalizedBoxes)
+            } else {
+                println("DEBUG: Box coordinates appear to be within reasonable range")
+            }
+        }
+    }
+
+
+    LaunchedEffect(canvasSize) {
+        if (canvasSize.width > 0 && canvasSize.height > 0 && boxes.isNotEmpty()) {
+            // Check if any box is out of reasonable range
+            val needsNormalization = boxes.any { box -> 
+                box.x > canvasSize.width * 2 || box.y > canvasSize.height * 2 || 
+                box.x < -canvasSize.width || box.y < -canvasSize.height
+            }
+            
+            if (needsNormalization) {
+                println("DEBUG: Applying complete box coordinate normalization")
+                AnnotationState.normalizeAllBoxes(canvasSize.width, canvasSize.height)
+            }
         }
     }
 
@@ -286,9 +338,9 @@ fun AnnotationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Class selector
+
             if (currentMode == AnnotationMode.ADD || (currentMode == AnnotationMode.EDIT && selectedBox != null)) {
-                // Store the non-null value in a local variable for safe access
+
                 val currentSelectedBox = selectedBox
                 
                 ClassSelector(
@@ -305,7 +357,7 @@ fun AnnotationScreen(
                             val updatedBox = box.copy(className = newClass, classId = classId)
                             updateBox(currentSelectedBox, updatedBox)
                         } else {
-                            // Just update current class for ADD mode
+                            // update current class
                             currentClass = newClass
                         }
                     }
@@ -313,7 +365,7 @@ fun AnnotationScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // Annotation canvas
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -353,7 +405,7 @@ fun AnnotationScreen(
 
                         // Create and add the new box when drawing is complete
                         if (currentMode == AnnotationMode.ADD && originalBitmap != null) {
-                            // Now use the stored canvas size
+
                             val canvasWidth = canvasSize.width
                             val canvasHeight = canvasSize.height
                             
@@ -363,40 +415,48 @@ fun AnnotationScreen(
                             val width = abs(endPoint.x - startPoint.x)
                             val height = abs(endPoint.y - startPoint.y)
                             
-                            // Calculate center point
+
                             val centerX = left + width / 2
                             val centerY = top + height / 2
 
-                            println("DEBUG: Drawing box dimensions: left=$left, top=$top, width=$width, height=$height")
-                            println("DEBUG: Canvas size: $canvasWidth x $canvasHeight")
-                            println("DEBUG: Bitmap size: ${originalBitmap.width} x ${originalBitmap.height}")
+                            println("DEBUG: Drawing box in canvas coordinates: ($centerX,$centerY), size=${width}x${height}")
+                            
+                            // Convert from canvas coordinates to bitmap coordinates
+                            val canvasScaleX = canvasWidth / originalBitmap.width.toFloat()
+                            val canvasScaleY = canvasHeight / originalBitmap.height.toFloat()
+                            
+                            val bitmapCenterX = centerX / canvasScaleX
+                            val bitmapCenterY = centerY / canvasScaleY
+                            val bitmapWidth = width / canvasScaleX
+                            val bitmapHeight = height / canvasScaleY
+                            
+                            println("DEBUG: Converted to bitmap coordinates: ($bitmapCenterX,$bitmapCenterY), size=${bitmapWidth}x${bitmapHeight}")
 
-                            // Only create the box if it has a reasonable size
+
                             if (width > 10 && height > 10) {
-                                // Create the box using exact canvas coordinates 
+                                // Create the box using bitmap coordinates for consistency with existing boxes
                                 val box = DetectedBox(
-                                    x = centerX,
-                                    y = centerY,
-                                    width = width,
-                                    height = height,
+                                    x = bitmapCenterX,
+                                    y = bitmapCenterY,
+                                    width = bitmapWidth,
+                                    height = bitmapHeight,
                                     className = currentClass,
                                     classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
                                 )
 
-                                println("DEBUG: Adding box: center=(${box.x}, ${box.y}), size=${box.width}x${box.height}")
+                                println("DEBUG: Adding new box in bitmap coordinates: (${box.x},${box.y}), size=${box.width}x${box.height}")
                                 addBox(box)
                             }
                         }
                     },
                     currentClass = currentClass,
                     onCanvasSizeChanged = { size ->
-                        // Store the canvas size when it's reported
                         canvasSize = size
                     }
                 )
             }
 
-            // Box details display
+
             selectedBox?.let { index ->
                 if (index in 0 until boxes.size) {
                     val box = boxes[index]
@@ -418,7 +478,7 @@ fun AnnotationScreen(
                             Text("Confidence: ${(box.confidence * 100).toInt()}%")
                         }
                         
-                        // Add instruction text for editing
+
                         if (currentMode == AnnotationMode.EDIT) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
@@ -438,18 +498,18 @@ fun AnnotationScreen(
                 }
             }
 
-            // For Edit mode, add a button to apply changes when a box is selected
+
             if (currentMode == AnnotationMode.EDIT && selectedBox != null) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
-                        // Use safe call with let to handle the non-null case
+
                         selectedBox?.let { boxIndex ->
                             val box = boxes[boxIndex]
                             val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
                             val updatedBox = box.copy(className = currentClass, classId = classId)
                             updateBox(boxIndex, updatedBox)
-                            // Optional: provide user feedback
+
                             snackbarMessage = "Box updated successfully"
                         }
                     },
@@ -536,8 +596,6 @@ fun AnnotationCanvas(
     currentClass: String,
     onCanvasSizeChanged: (Size) -> Unit
 ) {
-    val density = LocalDensity.current
-
     Canvas(
         modifier = Modifier
             .fillMaxWidth()
@@ -564,21 +622,30 @@ fun AnnotationCanvas(
                     AnnotationMode.EDIT, AnnotationMode.DELETE, AnnotationMode.VIEW -> {
                         detectTapGestures { offset ->
                             bitmap?.let { bmp ->
-                                val scaleX = size.width / bmp.width
-                                val scaleY = size.height / bmp.height
 
-                                // Find tapped box
+                                val canvasScaleX = size.width / bmp.width
+                                val canvasScaleY = size.height / bmp.height
+                                
+
                                 var tappedBoxIndex: Int? = null
                                 for (i in boxes.indices.reversed()) {
                                     val box = boxes[i]
-                                    val boxLeft = (box.x - box.width / 2) * scaleX
-                                    val boxTop = (box.y - box.height / 2) * scaleY
-                                    val boxRight = boxLeft + box.width * scaleX
-                                    val boxBottom = boxTop + box.height * scaleY
+                                    
+                                    // Scale box coordinates to match canvas size
+                                    val scaledX = box.x * canvasScaleX
+                                    val scaledY = box.y * canvasScaleY
+                                    val scaledWidth = box.width * canvasScaleX
+                                    val scaledHeight = box.height * canvasScaleY
+                                    
+                                    // Calculate box boundaries with scaling applied
+                                    val boxLeft = scaledX - scaledWidth / 2
+                                    val boxTop = scaledY - scaledHeight / 2
+                                    val boxRight = boxLeft + scaledWidth
+                                    val boxBottom = boxTop + scaledHeight
 
-                                    if (offset.x in boxLeft..boxRight &&
-                                        offset.y in boxTop..boxBottom) {
+                                    if (offset.x in boxLeft..boxRight && offset.y in boxTop..boxBottom) {
                                         tappedBoxIndex = i
+                                        println("DEBUG: Box $i selected at tap ($offset)!")
                                         break
                                     }
                                 }
@@ -595,11 +662,11 @@ fun AnnotationCanvas(
                 }
             }
     ) {
-        // Report the canvas size as soon as it's known
+
         onCanvasSizeChanged(size)
         
         bitmap?.let { bmp ->
-            // Draw bitmap
+
             drawContext.canvas.nativeCanvas.drawBitmap(
                 bmp,
                 null,
@@ -607,32 +674,32 @@ fun AnnotationCanvas(
                 null
             )
 
-            // Log canvas and bitmap dimensions for debugging
+
             println("DEBUG: AnnotationCanvas - Canvas size: ${size.width} x ${size.height}, Bitmap size: ${bmp.width} x ${bmp.height}")
             
-            // Calculate canvas-to-bitmap scale factors (for reference only)
+            // Calculate canvas-to-bitmap scale factors
             val canvasScaleX = size.width / bmp.width
             val canvasScaleY = size.height / bmp.height
             println("DEBUG: Canvas scale factors: X=$canvasScaleX, Y=$canvasScaleY")
             
-            // Draw all boxes with enhanced styling
+
             boxes.forEachIndexed { index, box ->
-                // Use box coordinates directly (they're already in canvas space)
-                val boxX = box.x 
-                val boxY = box.y
-                val boxWidth = box.width
-                val boxHeight = box.height
+
+                val scaledX = box.x * canvasScaleX
+                val scaledY = box.y * canvasScaleY
+                val scaledWidth = box.width * canvasScaleX
+                val scaledHeight = box.height * canvasScaleY
                 
-                // Calculate rectangle coordinates for drawing
-                val left = boxX - boxWidth / 2
-                val top = boxY - boxHeight / 2
+
+                val left = scaledX - scaledWidth / 2
+                val top = scaledY - scaledHeight / 2
                 
-                println("DEBUG: Drawing box $index: center=($boxX, $boxY), size=${boxWidth}x${boxHeight}, rect=($left,$top,${left+boxWidth},${top+boxHeight})")
+                println("DEBUG: Box $index: Original=(${box.x},${box.y}), Scaled=($scaledX,$scaledY), size=${scaledWidth}x${scaledHeight}")
                 
-                // Fix: Use safe comparison with selectedBox
+
                 val isSelected = index == (selectedBox ?: -1)
                 
-                // Set color based on selection and mode
+
                 val boxColor = when {
                     isSelected && annotationMode == AnnotationMode.EDIT -> Color.Blue
                     isSelected && annotationMode == AnnotationMode.DELETE -> Color.Red
@@ -642,15 +709,15 @@ fun AnnotationCanvas(
                 
                 val strokeWidth = if (isSelected) 4.dp.toPx() else 3.dp.toPx()
                 
-                // Draw rectangle with appropriate styling
+
                 drawRect(
                     color = boxColor,
                     topLeft = Offset(left, top),
-                    size = Size(boxWidth, boxHeight),
+                    size = Size(scaledWidth, scaledHeight),
                     style = Stroke(width = strokeWidth)
                 )
                 
-                // Draw label
+
                 drawContext.canvas.nativeCanvas.drawText(
                     box.className,
                     left,
@@ -663,18 +730,18 @@ fun AnnotationCanvas(
                     }
                 )
             }
+            
 
-            // Draw temporary box during dragging with more visibility
             if (isDrawing) {
                 val left = minOf(startPoint.x, endPoint.x)
                 val top = minOf(startPoint.y, endPoint.y)
                 val width = abs(endPoint.x - startPoint.x)
                 val height = abs(endPoint.y - startPoint.y)
 
-                // Log the temporary box coordinates for debugging
+
                 println("DEBUG: Drawing temp box: left=$left, top=$top, width=$width, height=$height")
                 
-                // Draw the dragging box with a more visible style
+
                 drawRect(
                     color = Color.Red,
                     topLeft = Offset(left, top),
@@ -682,7 +749,7 @@ fun AnnotationCanvas(
                     style = Stroke(width = 3.dp.toPx())
                 )
                 
-                // Also draw the center point for reference
+
                 val centerX = left + width / 2
                 val centerY = top + height / 2
                 drawCircle(
