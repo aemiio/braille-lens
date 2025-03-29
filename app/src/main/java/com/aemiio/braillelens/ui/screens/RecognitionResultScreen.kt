@@ -59,7 +59,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
-import com.aemiio.braillelens.objectdetection.ObjectDetector
 import com.aemiio.braillelens.objectdetection.ProcessedDetectionResult
 import com.aemiio.braillelens.services.ObjectDetectionService
 import com.aemiio.braillelens.ui.BrailleLensColors
@@ -111,7 +110,7 @@ fun RecognitionResultScreen(
                         selectedModel
                     )
                 } else {
-                    // Handle sample images
+
                     try {
                         val resourceId = imagePath.toInt()
                         originalBitmap = BitmapFactory.decodeResource(context.resources, resourceId)
@@ -426,19 +425,24 @@ fun RecognitionResultScreen(
                             onClick = {
                                 // Store detection results in AnnotationState before navigating
                                 if (detectionResult != null) {
-                                    val detectedBoxes = objectDetectionService.getDetectedBoxes()
+
+                                    val cleanDisplayBitmap = objectDetectionService.getCleanDisplayBitmap()
                                     
-                                    // Store the original detection coordinates without normalization
-                                    // Get the processed bitmap that already has proper dimensions
-                                    val displayBitmap = detectionResult?.displayBitmap
+
+                                    val resultBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap)
+                                    
+                                    println("DEBUG: Using clean display bitmap with matching coordinates:")
+                                    resultBoxes.forEachIndexed { index, box ->
+                                        println("DEBUG: Result Box $index: x=${box.x}, y=${box.y}, w=${box.width}, h=${box.height}")
+                                    }
                                     
                                     AnnotationState.setDetectionResults(
-                                        detectedBoxes = detectedBoxes,
-                                        bitmap = displayBitmap,  // Use the processed display bitmap
+                                        detectedBoxes = resultBoxes,
+                                        bitmap = cleanDisplayBitmap,
                                         model = selectedModel,
                                         path = imagePath
                                     )
-                                    println("Saved ${detectedBoxes.size} boxes to AnnotationState")
+                                    println("DEBUG: Passed ${resultBoxes.size} boxes to AnnotationState with clean display bitmap")
                                 }
                                 navController.navigate("annotation/${imagePath}")
                             },
