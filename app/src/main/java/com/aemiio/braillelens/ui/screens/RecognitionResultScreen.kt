@@ -59,9 +59,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
+import com.aemiio.braillelens.objectdetection.ObjectDetector
 import com.aemiio.braillelens.objectdetection.ProcessedDetectionResult
 import com.aemiio.braillelens.services.ObjectDetectionService
 import com.aemiio.braillelens.ui.BrailleLensColors
+import com.aemiio.braillelens.utils.AnnotationState
 import com.aemiio.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
 
@@ -72,7 +74,8 @@ fun RecognitionResultScreen(
     navController: NavController,
     detectionMode: String,
     imagePath: String,
-    recognizedText: String
+    recognizedText: String,
+
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -162,6 +165,7 @@ fun RecognitionResultScreen(
     LaunchedEffect(imagePath, detectionMode) {
         processImage()
     }
+
 
     Scaffold(
         topBar = {
@@ -420,6 +424,17 @@ fun RecognitionResultScreen(
 
                         Button(
                             onClick = {
+                                // Store detection results in AnnotationState before navigating
+                                if (detectionResult != null) {
+                                    val detectedBoxes = objectDetectionService.getDetectedBoxes()
+                                    AnnotationState.setDetectionResults(
+                                        detectedBoxes = detectedBoxes,
+                                        bitmap = originalBitmap,
+                                        model = selectedModel,
+                                        path = imagePath
+                                    )
+                                    println("Saved ${detectedBoxes.size} boxes to AnnotationState")
+                                }
                                 navController.navigate("annotation/${imagePath}")
                             },
                             colors = ButtonDefaults.buttonColors(
