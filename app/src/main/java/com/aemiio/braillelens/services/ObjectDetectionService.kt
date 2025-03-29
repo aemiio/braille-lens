@@ -6,20 +6,30 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
 import android.net.Uri
+import com.aemiio.braillelens.objectdetection.BothModelsMerger
 import com.aemiio.braillelens.objectdetection.BrailleClassIdMapper
 import com.aemiio.braillelens.objectdetection.BraillePostProcessor
 import com.aemiio.braillelens.objectdetection.ObjectDetector
 import com.aemiio.braillelens.objectdetection.ProcessedDetectionResult
+import com.aemiio.braillelens.ui.screens.DetectedBox
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
+import kotlin.collections.get
+import kotlin.div
+import kotlin.text.toFloat
+import kotlin.text.toInt
 
 class ObjectDetectionService {
     private val objDetector = ObjectDetector()
     private val TAG = "ObjectDetectionService"
 
-    // Expose property for UI control
     var confidenceThreshold: Float = 0.25f
+
+    private var lastResult: com.aemiio.braillelens.objectdetection.Result? = null
+
+    private var currentModel: String = ObjectDetector.MODEL_G1
+
 
     suspend fun detectBrailleFromUri(
         context: Context,
@@ -44,10 +54,14 @@ class ObjectDetectionService {
 
         try {
             // Use the detect method directly instead of accessing internal methods
+            currentModel = modelName
+
             val result = objDetector.detect(inputStream, context, confidenceThreshold, modelName)
 
+            lastResult = result
+
             // Process and return the results
-            BraillePostProcessor.processDetections(
+            return@withContext BraillePostProcessor.processDetections(
                 result = result,
                 context = context,
                 currentModel = modelName,
@@ -90,11 +104,15 @@ class ObjectDetectionService {
                 java.io.ByteArrayInputStream(stream.toByteArray())
             }
 
+            currentModel = modelName
+
             // Use the detect method directly
             val result = objDetector.detect(inputStream, context, confidenceThreshold, modelName)
 
+            lastResult = result
+
             // Process and return the results
-            BraillePostProcessor.processDetections(
+            return@withContext BraillePostProcessor.processDetections(
                 result = result,
                 context = context,
                 currentModel = modelName,
@@ -159,5 +177,80 @@ class ObjectDetectionService {
                 ).bufferedReader().readLines()
             }
         }
+    }
+
+    fun getDetectedBoxes(): List<DetectedBox> {
+        val result = lastResult ?: return emptyList()
+        val boxes = mutableListOf<DetectedBox>()
+
+        // Get scaling info
+        val scaleFactor = ObjectDetector.getScaleFactor()
+        val offsetX = ObjectDetector.getOffsetX()
+        val offsetY = ObjectDetector.getOffsetY()
+
+        // Get preprocessed bitmap
+        val preprocessedBitmap = ObjectDetector.getPreprocessedInputBitmap() ?: return emptyList()
+
+        // Calculate content dimensions
+        val contentWidth = preprocessedBitmap.width - (2 * offsetX)
+        val contentHeight = preprocessedBitmap.height - (2 * offsetY)
+
+        // Calculate original image dimensions
+        val originalWidth = (contentWidth / scaleFactor).toInt().coerceAtLeast(1)
+        val originalHeight = (contentHeight / scaleFactor).toInt().coerceAtLeast(1)
+
+        for (i in 0 until result.outputBox.size) {
+            val box = result.outputBox[i]
+
+            // Get normalized coordinates (0-1) with explicit type casting
+            val normX = box[0].toFloat()
+            val normY = box[1].toFloat()
+            val normWidth = box[2].toFloat()
+            val normHeight = box[3].toFloat()
+            val confidence = box[4].toFloat()
+            val classId = box[5].toInt()
+
+            // Convert to image coordinates
+            val x = normX * originalWidth
+            val y = normY * originalHeight
+            val width = normWidth * originalWidth
+            val height = normHeight * originalHeight
+
+            // Determine grade and meaning
+            val grade: Int
+            val actualClassId: Int
+
+            when (currentModel) {
+                ObjectDetector.MODEL_G2 -> {
+                    grade = 2
+                    actualClassId = classId
+                }
+                ObjectDetector.BOTH_MODELS -> {
+                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
+                    grade = if (isG2) 2 else 1
+                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
+                }
+                else -> {
+                    grade = 1
+                    actualClassId = classId
+                }
+            }
+
+            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
+
+            boxes.add(
+                DetectedBox(
+                    x = x,
+                    y = y,
+                    width = width,
+                    height = height,
+                    className = className,
+                    classId = actualClassId,
+                    confidence = confidence
+                )
+            )
+        }
+
+        return boxes
     }
 }
