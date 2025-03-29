@@ -87,4 +87,15 @@ object BrailleClassIdMapper {
     fun getBinary(classId: Int, grade: Int): String {
         return getBrailleEntry(classId, grade)?.binary ?: "?"
     }
+
+    fun getMeaningToClassId(meaning: String, grade: Int): Int {
+        val brailleMap = when (grade) {
+            1 -> BrailleMap.G1brailleMap
+            2 -> BrailleMap.G2brailleMap
+            else -> BrailleMap.G1brailleMap
+        }
+
+        // Find the entry with the matching meaning
+        return brailleMap.entries.find { it.value.meaning == meaning }?.key ?: -1
+    }
 }
