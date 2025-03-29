@@ -385,17 +385,21 @@ fun RecognitionResultScreen(
                         }
                     }
 
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
+                       
+                        // Read Aloud button - full width
                         Button(
                             onClick = { ttsManager.speak(result.translatedText) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = BrailleLensColors.darkOlive
-                            )
+                            ),
+                            modifier = Modifier.fillMaxWidth()
                         ) {
                             Icon(
                                 painter = painterResource(id = R.drawable.volume_up),
@@ -405,58 +409,66 @@ fun RecognitionResultScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Read Aloud")
                         }
-
-                        Button(
-                            onClick = { processImage() },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = BrailleLensColors.darkOlive
-                            )
+                        
+                        // Two buttons side by side with equal width
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Retry Detection",
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Retry")
-                        }
-
-                        Button(
-                            onClick = {
-                                // Store detection results in AnnotationState before navigating
-                                if (detectionResult != null) {
-
-                                    val cleanDisplayBitmap = objectDetectionService.getCleanDisplayBitmap()
-                                    
-
-                                    val resultBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap)
-                                    
-                                    println("DEBUG: Using clean display bitmap with matching coordinates:")
-                                    resultBoxes.forEachIndexed { index, box ->
-                                        println("DEBUG: Result Box $index: x=${box.x}, y=${box.y}, w=${box.width}, h=${box.height}")
+                            // Retry button
+                            Button(
+                                onClick = { processImage() },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = BrailleLensColors.darkOlive
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Retry Detection",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Retry")
+                            }
+                            
+                            // Correct Annotations button
+                            Button(
+                                onClick = {
+                                    // Store detection results in AnnotationState before navigating
+                                    if (detectionResult != null) {
+                                        val cleanDisplayBitmap = objectDetectionService.getCleanDisplayBitmap()
+                                        
+                                        val resultBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap)
+                                        
+                                        println("DEBUG: Using clean display bitmap with matching coordinates:")
+                                        resultBoxes.forEachIndexed { index, box ->
+                                            println("DEBUG: Result Box $index: x=${box.x}, y=${box.y}, w=${box.width}, h=${box.height}")
+                                        }
+                                        
+                                        AnnotationState.setDetectionResults(
+                                            detectedBoxes = resultBoxes,
+                                            bitmap = cleanDisplayBitmap,
+                                            model = selectedModel,
+                                            path = imagePath
+                                        )
+                                        println("DEBUG: Passed ${resultBoxes.size} boxes to AnnotationState with clean display bitmap")
                                     }
-                                    
-                                    AnnotationState.setDetectionResults(
-                                        detectedBoxes = resultBoxes,
-                                        bitmap = cleanDisplayBitmap,
-                                        model = selectedModel,
-                                        path = imagePath
-                                    )
-                                    println("DEBUG: Passed ${resultBoxes.size} boxes to AnnotationState with clean display bitmap")
-                                }
-                                navController.navigate("annotation/${imagePath}")
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = BrailleLensColors.darkOlive
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Create,
-                                contentDescription = "Correct Annotations",
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Correct Annotations")
+                                    navController.navigate("annotation/${imagePath}")
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = BrailleLensColors.darkOlive
+                                ),
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Create,
+                                    contentDescription = "Correct Annotations",
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Edit")  // Shortened text
+                            }
                         }
                     }
                 }
