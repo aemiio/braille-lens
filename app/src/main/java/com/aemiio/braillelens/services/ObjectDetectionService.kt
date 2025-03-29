@@ -15,10 +15,7 @@ import com.aemiio.braillelens.ui.screens.DetectedBox
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.InputStream
-import kotlin.collections.get
-import kotlin.div
-import kotlin.text.toFloat
-import kotlin.text.toInt
+
 
 class ObjectDetectionService {
     private val objDetector = ObjectDetector()
@@ -39,28 +36,27 @@ class ObjectDetectionService {
         val inputStream: InputStream = context.contentResolver.openInputStream(imageUri)
             ?: throw IllegalArgumentException("Could not open image")
 
-        // Initialize BrailleClassIdMapper
+
         BrailleClassIdMapper.loadMappingsFromResources(context)
 
-        // Reset BraillePostProcessor states for new detection
         BraillePostProcessor.resetStates()
 
         val modelName = mapDetectionModeToModel(detectionMode)
         val classes = readClasses(context, modelName)
 
-        // Configure paint objects for visualization
+
         val boxPaint = createBoxPaint()
         val textPaint = createTextPaint()
 
         try {
-            // Use the detect method directly instead of accessing internal methods
+
             currentModel = modelName
 
             val result = objDetector.detect(inputStream, context, confidenceThreshold, modelName)
 
             lastResult = result
 
-            // Process and return the results
+
             return@withContext BraillePostProcessor.processDetections(
                 result = result,
                 context = context,
@@ -80,24 +76,24 @@ class ObjectDetectionService {
         resourceId: Int,
         detectionMode: String
     ): ProcessedDetectionResult = withContext(Dispatchers.IO) {
-        // Initialize BrailleClassIdMapper
+
         BrailleClassIdMapper.loadMappingsFromResources(context)
 
-        // Reset BraillePostProcessor states for new detection
+
         BraillePostProcessor.resetStates()
 
         val modelName = mapDetectionModeToModel(detectionMode)
         val classes = readClasses(context, modelName)
 
-        // Get bitmap from drawable resource
+
         val bitmap = BitmapFactory.decodeResource(context.resources, resourceId)
 
-        // Configure paint objects for visualization
+
         val boxPaint = createBoxPaint()
         val textPaint = createTextPaint()
 
         try {
-            // Construct an InputStream from the bitmap
+
             val inputStream = bitmap.let {
                 val stream = java.io.ByteArrayOutputStream()
                 it.compress(Bitmap.CompressFormat.PNG, 100, stream)
@@ -106,12 +102,12 @@ class ObjectDetectionService {
 
             currentModel = modelName
 
-            // Use the detect method directly
+
             val result = objDetector.detect(inputStream, context, confidenceThreshold, modelName)
 
             lastResult = result
 
-            // Process and return the results
+
             return@withContext BraillePostProcessor.processDetections(
                 result = result,
                 context = context,
@@ -183,26 +179,26 @@ class ObjectDetectionService {
         val result = lastResult ?: return emptyList()
         val boxes = mutableListOf<DetectedBox>()
 
-        // Get scaling info
+
         val scaleFactor = ObjectDetector.getScaleFactor()
         val offsetX = ObjectDetector.getOffsetX()
         val offsetY = ObjectDetector.getOffsetY()
 
-        // Get preprocessed bitmap
+
         val preprocessedBitmap = ObjectDetector.getPreprocessedInputBitmap() ?: return emptyList()
 
-        // Calculate content dimensions
+
         val contentWidth = preprocessedBitmap.width - (2 * offsetX)
         val contentHeight = preprocessedBitmap.height - (2 * offsetY)
 
-        // Calculate original image dimensions
+
         val originalWidth = (contentWidth / scaleFactor).toInt().coerceAtLeast(1)
         val originalHeight = (contentHeight / scaleFactor).toInt().coerceAtLeast(1)
 
         for (i in 0 until result.outputBox.size) {
             val box = result.outputBox[i]
 
-            // Get normalized coordinates (0-1) with explicit type casting
+
             val normX = box[0].toFloat()
             val normY = box[1].toFloat()
             val normWidth = box[2].toFloat()
@@ -210,13 +206,13 @@ class ObjectDetectionService {
             val confidence = box[4].toFloat()
             val classId = box[5].toInt()
 
-            // Convert to image coordinates
+
             val x = normX * originalWidth
             val y = normY * originalHeight
             val width = normWidth * originalWidth
             val height = normHeight * originalHeight
 
-            // Determine grade and meaning
+
             val grade: Int
             val actualClassId: Int
 
@@ -252,5 +248,317 @@ class ObjectDetectionService {
         }
 
         return boxes
+    }
+
+//    fun getCanvasScaledBoxes(canvasWidth: Float, canvasHeight: Float): List<DetectedBox> {
+//        val rawBoxes = getDetectedBoxes()
+//
+//        // Transform the boxes to fit the canvas
+//        return rawBoxes.map { box ->
+//            // Create a new box with reasonable canvas coordinates
+//            DetectedBox(
+//                x = box.x * canvasWidth / 640f,  // Scale to canvas width
+//                y = box.y * canvasHeight / 480f, // Scale to canvas height
+//                width = box.width * canvasWidth / 640f,
+//                height = box.height * canvasHeight / 480f,
+//                className = box.className,
+//                classId = box.classId,
+//                confidence = box.confidence
+//            )
+//        }
+//    }
+//
+//    fun getDisplayBoxes(displayBitmap: Bitmap?): List<DetectedBox> {
+//        if (displayBitmap == null || lastResult == null) return emptyList()
+//        val result = lastResult ?: return emptyList()
+//        val boxes = mutableListOf<DetectedBox>()
+//
+//        // When drawing on the display bitmap, these coordinates were used:
+//        for (i in 0 until result.outputBox.size) {
+//            val box = result.outputBox[i]
+//
+//            // Get the confidence and class ID
+//            val confidence = box[4].toFloat()
+//            val classId = box[5].toInt()
+//
+//            // These are the coordinates used in BraillePostProcessor
+//            // to draw the boxes on the display bitmap
+//            val modelX = if (box.size > 6) box[6] else (box[0] * ObjectDetector.getScaleFactor() + ObjectDetector.getOffsetX())
+//            val modelY = if (box.size > 7) box[7] else (box[1] * ObjectDetector.getScaleFactor() + ObjectDetector.getOffsetY())
+//            val modelW = if (box.size > 8) box[8] else (box[2] * ObjectDetector.getScaleFactor())
+//            val modelH = if (box.size > 9) box[9] else (box[3] * ObjectDetector.getScaleFactor())
+//
+//            // The display bitmap is cropped to remove padding, so adjust coordinates
+//            val offsetX = ObjectDetector.getOffsetX()
+//            val offsetY = ObjectDetector.getOffsetY()
+//
+//            // Calculate center coordinates relative to the display bitmap
+//            val x = modelX - offsetX
+//            val y = modelY - offsetY
+//
+//            // Determine grade and meaning
+//            val grade: Int
+//            val actualClassId: Int
+//
+//            when (currentModel) {
+//                ObjectDetector.MODEL_G2 -> {
+//                    grade = 2
+//                    actualClassId = classId
+//                }
+//                ObjectDetector.BOTH_MODELS -> {
+//                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
+//                    grade = if (isG2) 2 else 1
+//                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
+//                }
+//                else -> {
+//                    grade = 1
+//                    actualClassId = classId
+//                }
+//            }
+//
+//            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
+//
+//            // Create box with exact display coordinates
+//            boxes.add(
+//                DetectedBox(
+//                    x = x,
+//                    y = y,
+//                    width = modelW,
+//                    height = modelH,
+//                    className = className,
+//                    classId = actualClassId,
+//                    confidence = confidence
+//                )
+//            )
+//        }
+//
+//        println("DEBUG: Generated ${boxes.size} display boxes with exact coordinates")
+//        return boxes
+//    }
+//
+//    // Alternative method to get exact box coordinates
+//    fun getExactBoxCoordinates(): List<DetectedBox> {
+//        val result = lastResult ?: return emptyList()
+//        val boxes = mutableListOf<DetectedBox>()
+//
+//        // Get scaling values
+//        val offsetX = ObjectDetector.getOffsetX()
+//        val offsetY = ObjectDetector.getOffsetY()
+//
+//        for (i in 0 until result.outputBox.size) {
+//            val box = result.outputBox[i]
+//
+//            // These are the exact box coordinates used when drawing on the result bitmap
+//            val modelX = if (box.size > 6) box[6] else (box[0] * ObjectDetector.getScaleFactor() + offsetX)
+//            val modelY = if (box.size > 7) box[7] else (box[1] * ObjectDetector.getScaleFactor() + offsetY)
+//            val modelW = if (box.size > 8) box[8] else (box[2] * ObjectDetector.getScaleFactor())
+//            val modelH = if (box.size > 9) box[9] else (box[3] * ObjectDetector.getScaleFactor())
+//
+//            val confidence = box[4].toFloat()
+//            val classId = box[5].toInt()
+//
+//            // Get the exact coordinates used to draw the rectangles in BraillePostProcessor
+//            val left = modelX - modelW/2
+//            val top = modelY - modelH/2
+//            val right = modelX + modelW/2
+//            val bottom = modelY + modelH/2
+//
+//            // Calculate center and dimensions
+//            val x = left + (right - left) / 2
+//            val y = top + (bottom - top) / 2
+//            val width = right - left
+//            val height = bottom - top
+//
+//            // Determine grade and class name
+//            val grade: Int
+//            val actualClassId: Int
+//
+//            when (currentModel) {
+//                ObjectDetector.MODEL_G2 -> {
+//                    grade = 2
+//                    actualClassId = classId
+//                }
+//                ObjectDetector.BOTH_MODELS -> {
+//                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
+//                    grade = if (isG2) 2 else 1
+//                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
+//                }
+//                else -> {
+//                    grade = 1
+//                    actualClassId = classId
+//                }
+//            }
+//
+//            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
+//
+//            boxes.add(
+//                DetectedBox(
+//                    x = x - offsetX,  // Adjust for cropping in display bitmap
+//                    y = y - offsetY,  // Adjust for cropping in display bitmap
+//                    width = width,
+//                    height = height,
+//                    className = className,
+//                    classId = actualClassId,
+//                    confidence = confidence
+//                )
+//            )
+//        }
+//
+//        println("DEBUG: Created ${boxes.size} boxes with exact coordinates that match the result screen")
+//        return boxes
+//    }
+//
+//    // Get raw detection boxes exactly as detected by the model
+//    fun getRawDetectionBoxes(): List<DetectedBox> {
+//        val result = lastResult ?: return emptyList()
+//        val boxes = mutableListOf<DetectedBox>()
+//
+//        // For each box in the raw detection output
+//        for (i in 0 until result.outputBox.size) {
+//            val box = result.outputBox[i]
+//
+//            // Get the classname and confidence
+//            val classId = box[5].toInt()
+//            val confidence = box[4].toFloat()
+//
+//            // Determine grade and get proper class name
+//            val grade: Int
+//            val actualClassId: Int
+//
+//            when (currentModel) {
+//                ObjectDetector.MODEL_G2 -> {
+//                    grade = 2
+//                    actualClassId = classId
+//                }
+//                ObjectDetector.BOTH_MODELS -> {
+//                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
+//                    grade = if (isG2) 2 else 1
+//                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
+//                }
+//                else -> {
+//                    grade = 1
+//                    actualClassId = classId
+//                }
+//            }
+//
+//            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
+//
+//            // Create a DetectedBox with coordinates that match what's shown in the result screen
+//            boxes.add(
+//                DetectedBox(
+//                    x = box[0] * 640f,  // Scale to original image width
+//                    y = box[1] * 240f,  // Scale to original image height
+//                    width = box[2] * 640f,  // Width scaled to original image width
+//                    height = box[3] * 240f, // Height scaled to original image height
+//                    className = className,
+//                    classId = actualClassId,
+//                    confidence = confidence
+//                )
+//            )
+//        }
+//
+//        println("DEBUG: Created ${boxes.size} raw detection boxes")
+//        return boxes
+//    }
+
+    // Add this method to get the boxes exactly as they are drawn on the display bitmap
+    fun getResultBitmapBoxes(displayBitmap: Bitmap?): List<DetectedBox> {
+        val result = lastResult ?: return emptyList()
+        val boxes = mutableListOf<DetectedBox>()
+        
+        // Get the drawing parameters
+        val offsetX = ObjectDetector.getOffsetX()
+        val offsetY = ObjectDetector.getOffsetY()
+        val scaleFactor = ObjectDetector.getScaleFactor()
+        
+        // Get display bitmap dimensions
+        val displayWidth = displayBitmap?.width ?: return emptyList()
+        val displayHeight = displayBitmap?.height ?: return emptyList()
+        
+        // For each box detected
+        for (i in 0 until result.outputBox.size) {
+            val box = result.outputBox[i]
+            
+            // Get confidence and class ID
+            val confidence = box[4].toFloat()
+            val classId = box[5].toInt()
+            
+            // In PostProcessor, boxes are drawn at these coordinates
+            // These are indices 6-9 in the output array, or calculated from indices 0-3
+            val modelX = if (box.size > 6) box[6] else (box[0] * scaleFactor + offsetX)
+            val modelY = if (box.size > 7) box[7] else (box[1] * scaleFactor + offsetY)
+            val modelW = if (box.size > 8) box[8] else (box[2] * scaleFactor)
+            val modelH = if (box.size > 9) box[9] else (box[3] * scaleFactor)
+            
+            // Calculate box coordinates in the non-padded display bitmap
+            // This exactly matches how they're drawn in BraillePostProcessor
+            val displayX = modelX - offsetX
+            val displayY = modelY - offsetY
+            val displayW = modelW
+            val displayH = modelH
+            
+            // Determine grade and class name
+            val grade: Int
+            val actualClassId: Int
+            
+            when (currentModel) {
+                ObjectDetector.MODEL_G2 -> {
+                    grade = 2
+                    actualClassId = classId
+                }
+                ObjectDetector.BOTH_MODELS -> {
+                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
+                    grade = if (isG2) 2 else 1
+                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
+                }
+                else -> {
+                    grade = 1
+                    actualClassId = classId
+                }
+            }
+            
+            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
+            
+            // Create box with the exact coordinates as shown in the result screen
+            boxes.add(
+                DetectedBox(
+                    x = displayX,
+                    y = displayY,
+                    width = displayW,
+                    height = displayH,
+                    className = className,
+                    classId = actualClassId,
+                    confidence = confidence
+                )
+            )
+            
+            println("DEBUG: Result box $i: x=$displayX, y=$displayY, w=$displayW, h=$displayH")
+        }
+        
+        println("DEBUG: Created ${boxes.size} boxes with display bitmap coordinates")
+        return boxes
+    }
+
+    // Add this new method to get a clean copy of the displayBitmap (without boxes)
+    fun getCleanDisplayBitmap(): Bitmap? {
+        val result = lastResult ?: return null
+        val preprocessedBitmap = ObjectDetector.getPreprocessedInputBitmap() ?: return null
+        
+        // Get the offsets used for padding
+        val offsetX = ObjectDetector.getOffsetX()
+        val offsetY = ObjectDetector.getOffsetY()
+        
+        // Calculate content dimensions (non-padded area)
+        val contentWidth = preprocessedBitmap.width - (2 * offsetX)
+        val contentHeight = preprocessedBitmap.height - (2 * offsetY)
+        
+        // Create a clean crop of the preprocessed bitmap (without any boxes drawn)
+        return Bitmap.createBitmap(
+            preprocessedBitmap,
+            offsetX,
+            offsetY,
+            contentWidth,
+            contentHeight
+        )
     }
 }
