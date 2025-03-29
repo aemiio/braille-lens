@@ -193,6 +193,7 @@ fun MainScreen() {
                             AnnotationScreen(
                                 navController = navController,
                                 imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
+                                onBoxUpdate = { /* Handle box updates if needed */ }
                             )
                         }
 
