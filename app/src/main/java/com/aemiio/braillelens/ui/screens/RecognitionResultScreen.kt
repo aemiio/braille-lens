@@ -427,9 +427,14 @@ fun RecognitionResultScreen(
                                 // Store detection results in AnnotationState before navigating
                                 if (detectionResult != null) {
                                     val detectedBoxes = objectDetectionService.getDetectedBoxes()
+                                    
+                                    // Store the original detection coordinates without normalization
+                                    // Get the processed bitmap that already has proper dimensions
+                                    val displayBitmap = detectionResult?.displayBitmap
+                                    
                                     AnnotationState.setDetectionResults(
                                         detectedBoxes = detectedBoxes,
-                                        bitmap = originalBitmap,
+                                        bitmap = displayBitmap,  // Use the processed display bitmap
                                         model = selectedModel,
                                         path = imagePath
                                     )
