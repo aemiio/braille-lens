@@ -36,6 +36,7 @@ import com.aemiio.braillelens.ui.BrailleLensTheme
 import com.aemiio.braillelens.ui.components.AppDrawer
 import com.aemiio.braillelens.ui.components.CustomNavigationBar
 import com.aemiio.braillelens.ui.screens.AboutScreen
+import com.aemiio.braillelens.ui.screens.AnnotationScreen
 import com.aemiio.braillelens.ui.screens.CaptureScreen
 import com.aemiio.braillelens.ui.screens.DictionaryScreen
 import com.aemiio.braillelens.ui.screens.Grade1Screen
@@ -49,6 +50,7 @@ import com.aemiio.braillelens.ui.screens.findActivity
 import com.aemiio.braillelens.ui.screens.hasCompletedOnboarding
 import com.aemiio.braillelens.ui.screens.setOnboardingComplete
 import kotlinx.coroutines.launch
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,6 +73,7 @@ fun MainScreen() {
     var selectedScreen by remember { mutableStateOf("home") }
     val navController = rememberNavController()
     val context = LocalContext.current
+
 
     val view = LocalView.current
     DisposableEffect(Unit) {
@@ -182,7 +185,14 @@ fun MainScreen() {
                                 navController = navController,
                                 detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille",
                                 imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
-                                recognizedText = ""  // This will be populated by the service
+                                recognizedText = "",
+                            )
+                        }
+
+                        composable("annotation/{imagePath}") { backStackEntry ->
+                            AnnotationScreen(
+                                navController = navController,
+                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
                             )
                         }
 
