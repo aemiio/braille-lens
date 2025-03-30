@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
@@ -42,7 +43,7 @@ fun CustomNavigationBar(
                 .fillMaxWidth()
                 .height(80.dp)
                 .padding(vertical = 0.dp),
-            containerColor = BrailleLensColors.backgroundGrey,
+            containerColor = MaterialTheme.colorScheme.background,
             contentColor = BrailleLensColors.pastelGreen,
             tonalElevation = 0.dp
         ) {
