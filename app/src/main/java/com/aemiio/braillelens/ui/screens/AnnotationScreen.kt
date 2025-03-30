@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -74,13 +75,12 @@ import com.aemiio.braillelens.objectdetection.BrailleMap
 import com.aemiio.braillelens.ui.BrailleLensColors
 import com.aemiio.braillelens.utils.AnnotationState
 import kotlin.math.abs
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.Job
 import com.aemiio.braillelens.utils.constrainBoxToCanvas
 import com.aemiio.braillelens.utils.ClassSelector
 import com.aemiio.braillelens.ui.components.AnnotationCanvas
 import com.aemiio.braillelens.ui.components.BoxDetailsCard
+import com.aemiio.braillelens.services.SupabaseService
 
 data class DetectedBox(
     val x: Float,
@@ -683,6 +683,99 @@ fun AnnotationScreen(
                     )
                 }
             }
+
+            // Add spacer before the save button
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Save Annotations Button
+            var isSaving by remember { mutableStateOf(false) }
+            var saveMessage by remember { mutableStateOf<String?>(null) }
+            var saveMessageColor by remember { mutableStateOf(BrailleLensColors.darkOlive) }
+            
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = {
+                            if (boxes.isNotEmpty() && originalBitmap != null) {
+                                isSaving = true
+                                saveMessage = null
+                                coroutineScope.launch {
+                                    try {
+                                        val result = SupabaseService.saveAnnotations(
+                                            context = context,
+                                            boxes = boxes,
+                                            imagePath = AnnotationState.imagePath.value,
+                                            bitmap = originalBitmap,
+                                            grade = selectedModel
+                                        )
+                                        
+                                        result.fold(
+                                            onSuccess = { message ->
+                                                saveMessage = "Saved successfully!"
+                                                saveMessageColor = BrailleLensColors.darkOlive
+                                                isSaving = false
+                                            },
+                                            onFailure = { error ->
+                                                saveMessage = "Error: ${error.message}"
+                                                saveMessageColor = Color.Red
+                                                isSaving = false
+                                            }
+                                        )
+                                    } catch (e: Exception) {
+                                        saveMessage = "Error: ${e.message}"
+                                        saveMessageColor = Color.Red
+                                        isSaving = false
+                                    }
+                                }
+                            } else {
+                                saveMessage = "Nothing to save. Add annotations first."
+                                saveMessageColor = Color.Red
+                            }
+                        },
+                        enabled = !isSaving && boxes.isNotEmpty(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = BrailleLensColors.darkOlive,
+                            disabledContainerColor = BrailleLensColors.darkOlive.copy(alpha = 0.5f)
+                        ),
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        if (isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        Text(
+                            text = if (isSaving) "Saving..." else "Save Annotations to SupaBase",
+                            fontSize = 16.sp,
+                            color = Color.White
+                        )
+                    }
+                    
+                    // Display success/error message
+                    saveMessage?.let {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = it,
+                            color = saveMessageColor,
+                            fontSize = 14.sp,
+                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        )
+                    }
+                }
+            }
+            
+            // Add some padding at the bottom
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
