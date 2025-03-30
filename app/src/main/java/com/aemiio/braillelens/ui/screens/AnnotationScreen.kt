@@ -540,7 +540,7 @@ fun AnnotationScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
-                        .background(Color.White.copy(alpha = 0.95f))
+                        .background(MaterialTheme.colorScheme.background)
                         .padding(8.dp)
                 ) {
                     ClassSelector(
@@ -755,7 +755,7 @@ fun AnnotationScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                         }
                         Text(
-                            text = if (isSaving) "Saving..." else "Save Annotations to SupaBase",
+                            text = if (isSaving) "Saving..." else "Save Annotations",
                             fontSize = 16.sp,
                             color = Color.White
                         )
