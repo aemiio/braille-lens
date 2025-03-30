@@ -22,6 +22,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -65,6 +67,7 @@ import com.aemiio.braillelens.ui.BrailleLensColors
 import com.aemiio.braillelens.utils.AnnotationState
 import com.aemiio.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.clickable
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -311,8 +314,9 @@ fun RecognitionResultScreen(
                                     enabled = true,
                                     selected = selectedModel == grade,
                                     borderColor = BrailleLensColors.darkOlive,
-                                    selectedBorderColor = BrailleLensColors.darkOlive
+                                    selectedBorderColor = BrailleLensColors.darkOlive,
                                 ),
+                                shape = RoundedCornerShape(16.dp),
                                 modifier = Modifier.weight(1f)
                             )
                         }
@@ -361,26 +365,60 @@ fun RecognitionResultScreen(
                         ),
                         elevation = CardDefaults.cardElevation(4.dp)
                     ) {
+                        var detectionResultExpanded by remember { mutableStateOf(false) }
 
-                        Column(modifier = Modifier.padding(16.dp)) {
+                        // Header row with expand/collapse functionality
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                                .clickable { detectionResultExpanded = !detectionResultExpanded },
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
                                 "Detection Results",
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                "Detected Text:",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium
+                            Icon(
+                                imageVector = if (detectionResultExpanded) 
+                                    Icons.Default.KeyboardArrowUp 
+                                else 
+                                    Icons.Default.KeyboardArrowDown,
+                                contentDescription = if (detectionResultExpanded) 
+                                    "Collapse" 
+                                else 
+                                    "Expand",
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
-                            Text(result.detectionText, fontSize = 14.sp)
-                            Spacer(modifier = Modifier.height(8.dp))
+                        }
+
+                        // Content shown only when expanded
+                        if (detectionResultExpanded) {
+                            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 16.dp)) {
+                                Text(result.detectionText, fontSize = 14.sp)
+                            }
+                        }
+                    }
+
+                    // Separate card for translated text
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface
+                        ),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
                             Text(
-                                "Translated Text:",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium
+                                "Translated Braille",
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
                             )
+                            Spacer(modifier = Modifier.height(8.dp))
                             Text(result.translatedText, fontSize = 14.sp)
                         }
                     }
