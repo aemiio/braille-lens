@@ -68,7 +68,7 @@ fun SampleScreen(
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
-                        tint = androidx.compose.ui.graphics.Color.Black,
+                        tint = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -78,7 +78,7 @@ fun SampleScreen(
                     text = "Sample - $detectionMode",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Medium,
-                    color = androidx.compose.ui.graphics.Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.padding(start = 8.dp)
                 )
             }
