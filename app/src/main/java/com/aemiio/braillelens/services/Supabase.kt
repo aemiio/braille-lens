@@ -116,7 +116,7 @@ object SupabaseService {
         boxes: List<DetectedBox>,
         imagePath: String,
         bitmap: Bitmap? = null,
-        grade: String = "Grade 1"
+        grade: String,
     ): Result<String> {
         return withContext(Dispatchers.IO) {
             try {
@@ -137,11 +137,10 @@ object SupabaseService {
                     }
                 }
 
-                val annotationId = UUID.randomUUID().toString()
 
                 // Set grade flags based on selected grade
-                val isGrade1 = grade == "Grade 1" || grade == "Both"
-                val isGrade2 = grade == "Grade 2" || grade == "Both"
+                val isGrade1 = grade == "1" || grade == "3"
+                val isGrade2 = grade == "2" || grade == "3"
 
                 // Enhanced boxes JSON with class_ids properly formatted
                 val boxesJson = buildJsonArray {
@@ -153,24 +152,18 @@ object SupabaseService {
                             put("height", box.height)
                             put("className", JsonPrimitive(box.className))
 
-                            // Track which grades this annotation is valid for
-                            val isG1 = grade == "Grade 1" || grade == "Both"
-                            val isG2 = grade == "Grade 2" || grade == "Both"
-
-                            put("isG1", isG1)
-                            put("isG2", isG2)
                         })
                     }
                 }
 
+
                 // Updated annotation data object
                 val data = buildJsonObject {
-                    put("id", annotationId)
+
                     put("image_path", finalImagePath)
                     put("boxes", boxesJson)
                     put("grade1", isGrade1)
                     put("grade2", isGrade2)
-                    put("timestamp", System.currentTimeMillis())
                 }
 
 
