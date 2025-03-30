@@ -713,7 +713,7 @@ fun AnnotationScreen(
                                             boxes = boxes,
                                             imagePath = AnnotationState.imagePath.value,
                                             bitmap = originalBitmap,
-                                            grade = selectedModel
+                                            grade = grade.toString()
                                         )
                                         
                                         result.fold(
