@@ -175,7 +175,7 @@ class BrailleFormatter {
         capitalizeNext = false
         numberMode = false
 
-        val result = StringBuilder("Translated Braille:\n")
+        val result = StringBuilder("")
         val organizedLines = organizeCellsByLines(cells)
 
         for (lineIndex in organizedLines.indices) {
@@ -247,6 +247,10 @@ class BrailleFormatter {
                             if (capitalizeNext) {
                                 text = text.replaceFirstChar { it.uppercase() }
                                 capitalizeNext = false
+                            }
+                            // Convert uppercase to lowercase if not preceded by capital sign
+                            else if (isUppercase(text)) {
+                                text = text.lowercase()
                             }
 
                             // Apply number mode if active
@@ -341,6 +345,14 @@ class BrailleFormatter {
             "mahal", "nag", "ng", "pag", "tu"
         )
         return text in partWords
+    }
+
+    private fun isUppercase(text: String): Boolean {
+        return text in setOf(
+            "A", "B", "C", "D", "E", "F", "G", "H", "I", "J",
+            "K", "L", "M", "N", "Ñ", "NG", "O", "P", "Q", "R", "S", "T",
+            "U", "V", "W", "X", "Y", "Z"
+        )
     }
 
     /**
