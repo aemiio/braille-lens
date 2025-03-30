@@ -21,15 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aemiio.braillelens.R
-import com.aemiio.braillelens.ui.BackgroundGrey
-import com.aemiio.braillelens.ui.BrailleLensColors
-import com.aemiio.braillelens.ui.FontBlack
 
 @Composable
 fun AppDrawer(
@@ -40,7 +39,7 @@ fun AppDrawer(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .background(BackgroundGrey)
+            .background(MaterialTheme.colorScheme.background)
             .padding(vertical = 24.dp)
     ) {
 
@@ -68,12 +67,12 @@ fun AppDrawer(
                         text = "Braille-Lens",
                         fontSize = 22.sp,
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.secondary
                     )
                     Text(
                         text = "Your Vision, Our Mission",
                         fontSize = 14.sp,
-                        color = FontBlack
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -92,21 +91,27 @@ fun AppDrawer(
             icon = painterResource(id = R.drawable.home_24px),
             text = "Home",
             isSelected = currentRoute == "home",
-            onClick = { onItemSelected("home") }
+            onClick = { onItemSelected("home") },
+            color = MaterialTheme.colorScheme.onSurface,
+            iconTint = MaterialTheme.colorScheme.onSurface
         )
 
         NavigationItem(
             icon = painterResource(id = R.drawable.dictionary_24px),
             text = "Dictionary",
             isSelected = currentRoute == "dictionary",
-            onClick = { onItemSelected("dictionary") }
+            onClick = { onItemSelected("dictionary") },
+            color = MaterialTheme.colorScheme.onSurface,
+            iconTint = MaterialTheme.colorScheme.onSurface
         )
 
         NavigationItem(
             icon = painterResource(id = R.drawable.info_24px),
             text = "About",
             isSelected = currentRoute == "about",
-            onClick = { onItemSelected("about") }
+            onClick = { onItemSelected("about") },
+            color = MaterialTheme.colorScheme.onSurface,
+            iconTint = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -116,16 +121,18 @@ fun NavigationItem(
     icon: Painter,
     text: String,
     isSelected: Boolean = false,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    color: Color,
+    iconTint: Color = color
 ) {
     val backgroundColor = if (isSelected) {
-        BrailleLensColors.backgroundGrey.copy(alpha = 0.5f)
+        MaterialTheme.colorScheme.background
     } else {
-        BackgroundGrey
+        MaterialTheme.colorScheme.background
     }
 
     val textColor =
-        BrailleLensColors.fontBlack
+        color
 
 
     Row(
@@ -142,6 +149,7 @@ fun NavigationItem(
             painter = icon,
             contentDescription = null,
             modifier = Modifier.size(24.dp),
+            colorFilter = ColorFilter.tint(iconTint)
         )
 
         Spacer(modifier = Modifier.width(16.dp))
