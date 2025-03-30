@@ -27,23 +27,23 @@ class BrailleFormatter {
     private var capitalizeNext = false
     private var numberMode = false
 
-    /**
-     * Process detection results, returning both raw and formatted results
-     */
-    fun processDetections(
-        detections: List<Map<String, Any>>,
-        classDetails: List<Map<String, String>>,
-        currentModel: String
-    ): ProcessedBrailleResult {
-        // Convert to BrailleCell objects
-        val cells = convertToBrailleCells(detections, classDetails, currentModel)
-
-        // Generate formatted results
-        val detectionText = formatDetectionResults(cells)
-        val translatedText = formatTranslatedText(cells, currentModel)
-
-        return ProcessedBrailleResult(cells, detectionText, translatedText)
-    }
+//    /**
+//     * Process detection results, returning both raw and formatted results
+//     */
+//    fun processDetections(
+//        detections: List<Map<String, Any>>,
+//        classDetails: List<Map<String, String>>,
+//        currentModel: String
+//    ): ProcessedBrailleResult {
+//        // Convert to BrailleCell objects
+//        val cells = convertToBrailleCells(detections, classDetails, currentModel)
+//
+//        // Generate formatted results
+//        val detectionText = formatDetectionResults(cells)
+//        val translatedText = formatTranslatedText(cells, currentModel)
+//
+//        return ProcessedBrailleResult(cells, detectionText, translatedText)
+//    }
 
     /**
      * Convert raw detections to BrailleCell objects
@@ -84,9 +84,9 @@ class BrailleFormatter {
         return cells
     }
 
-    fun isPrefix(binaryPattern: String): Boolean {
-        return binaryPattern == "000100" || binaryPattern == "000010"
-    }
+//    fun isPrefix(binaryPattern: String): Boolean {
+//        return binaryPattern == "000100" || binaryPattern == "000010"
+//    }
 
     /**
      * Organize braille cells into lines based on vertical position
@@ -355,50 +355,50 @@ class BrailleFormatter {
         )
     }
 
-    /**
-     * Draw detection boxes and formatted labels on canvas
-     */
-    fun drawDetectionBoxes(
-        canvas: Canvas,
-        cells: List<BrailleCell>,
-        boxPaint: Paint,
-        textPaint: Paint
-    ) {
-        for (cell in cells) {
-            // Draw box
-            canvas.drawRect(
-                cell.box["left"] as Float,
-                cell.box["top"] as Float,
-                cell.box["right"] as Float,
-                cell.box["bottom"] as Float,
-                boxPaint
-            )
-
-            // Draw label with meaning and confidence
-            val label = "${cell.meaning} ${(cell.confidence * 100).toInt()}%"
-            canvas.drawText(
-                label,
-                cell.box["left"] as Float,
-                Math.max(30f, (cell.box["top"] as Float) - 5f),
-                textPaint
-            )
-        }
-    }
-
-    /**
-     * Check if the cell should be shown in the final output
-     * Prefix indicators like dot_4, dot_5, capital, and number should not be shown
-     */
-    fun shouldShowCell(cells: List<BrailleCell>, currentIndex: Int): Boolean {
-        val currentCell = cells[currentIndex]
-
-        // Hide only the prefix indicators, not what follows them
-        return when (currentCell.binaryPattern) {
-            "000100" -> false  // dot_4 (unless part of ñ, handled separately)
-            "000010" -> false  // dot_5 (Grade 2 prefix)
-            "001111" -> false  // number prefix
-            "000001" -> false  // capital prefix
-            else -> true       // show all other cells
-        }
-    }
+//    /**
+//     * Draw detection boxes and formatted labels on canvas
+//     */
+//    fun drawDetectionBoxes(
+//        canvas: Canvas,
+//        cells: List<BrailleCell>,
+//        boxPaint: Paint,
+//        textPaint: Paint
+//    ) {
+//        for (cell in cells) {
+//            // Draw box
+//            canvas.drawRect(
+//                cell.box["left"] as Float,
+//                cell.box["top"] as Float,
+//                cell.box["right"] as Float,
+//                cell.box["bottom"] as Float,
+//                boxPaint
+//            )
+//
+//            // Draw label with meaning and confidence
+//            val label = "${cell.meaning} ${(cell.confidence * 100).toInt()}%"
+//            canvas.drawText(
+//                label,
+//                cell.box["left"] as Float,
+//                Math.max(30f, (cell.box["top"] as Float) - 5f),
+//                textPaint
+//            )
+//        }
+//    }
+//
+//    /**
+//     * Check if the cell should be shown in the final output
+//     * Prefix indicators like dot_4, dot_5, capital, and number should not be shown
+//     */
+//    fun shouldShowCell(cells: List<BrailleCell>, currentIndex: Int): Boolean {
+//        val currentCell = cells[currentIndex]
+//
+//        // Hide only the prefix indicators, not what follows them
+//        return when (currentCell.binaryPattern) {
+//            "000100" -> false  // dot_4 (unless part of ñ, handled separately)
+//            "000010" -> false  // dot_5 (Grade 2 prefix)
+//            "001111" -> false  // number prefix
+//            "000001" -> false  // capital prefix
+//            else -> true       // show all other cells
+//        }
+//    }
 }
