@@ -437,24 +437,39 @@ fun RecognitionResultScreen(
                                 onClick = {
                                     // Store detection results in AnnotationState before navigating
                                     if (detectionResult != null) {
-                                        val cleanDisplayBitmap = objectDetectionService.getCleanDisplayBitmap()
-                                        
-                                        val resultBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap)
-                                        
-                                        println("DEBUG: Using clean display bitmap with matching coordinates:")
-                                        resultBoxes.forEachIndexed { index, box ->
-                                            println("DEBUG: Result Box $index: x=${box.x}, y=${box.y}, w=${box.width}, h=${box.height}")
+                                        try {
+                                            val cleanDisplayBitmap = objectDetectionService.getCleanDisplayBitmap()
+                                            
+                                            if (cleanDisplayBitmap == null) {
+                                                // Fallback if clean bitmap isn't available - use the original bitmap
+                                                println("WARNING: Clean display bitmap is null, using original bitmap instead")
+                                                originalBitmap?.let { origBitmap ->
+                                                    AnnotationState.setDetectionResults(
+                                                        detectedBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap),
+                                                        bitmap = origBitmap,
+                                                        model = selectedModel,
+                                                        path = imagePath
+                                                    )
+                                                }
+                                            } else {
+                                                // Use clean bitmap as intended
+                                                AnnotationState.setDetectionResults(
+                                                    detectedBoxes = objectDetectionService.getResultBitmapBoxes(detectionResult?.displayBitmap),
+                                                    bitmap = cleanDisplayBitmap,
+                                                    model = selectedModel,
+                                                    path = imagePath
+                                                )
+                                            }
+                                            
+                                            println("DEBUG: Successfully set bitmap and ${AnnotationState.boxes.size} boxes for annotation")
+                                            navController.navigate("annotation/${Uri.encode(imagePath)}")
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                            println("ERROR during annotation preparation: ${e.message}")
+                                            // Show error feedback to user
+                                            errorMessage = "Failed to prepare image for editing: ${e.message}"
                                         }
-                                        
-                                        AnnotationState.setDetectionResults(
-                                            detectedBoxes = resultBoxes,
-                                            bitmap = cleanDisplayBitmap,
-                                            model = selectedModel,
-                                            path = imagePath
-                                        )
-                                        println("DEBUG: Passed ${resultBoxes.size} boxes to AnnotationState with clean display bitmap")
                                     }
-                                    navController.navigate("annotation/${imagePath}")
                                 },
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = BrailleLensColors.darkOlive
@@ -463,11 +478,11 @@ fun RecognitionResultScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Create,
-                                    contentDescription = "Correct Annotations",
+                                    contentDescription = "Edit Annotations",
                                     modifier = Modifier.size(20.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text("Edit")  // Shortened text
+                                Text("Edit")
                             }
                         }
                     }
