@@ -77,6 +77,9 @@ import kotlin.math.abs
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Job
+import com.aemiio.braillelens.utils.constrainBoxToCanvas
+import com.aemiio.braillelens.utils.ClassSelector
+import com.aemiio.braillelens.ui.components.AnnotationCanvas
 
 data class DetectedBox(
     val x: Float,
@@ -90,36 +93,6 @@ data class DetectedBox(
 
 enum class AnnotationMode {
     VIEW, ADD, EDIT, DELETE
-}
-
-fun constrainBoxToCanvas(box: DetectedBox, canvasSize: Size, bitmap: Bitmap?): DetectedBox {
-    if (bitmap == null || canvasSize.width <= 0 || canvasSize.height <= 0) return box
-
-    // Calculate bitmap-to-canvas scale factors
-    val scaleX = canvasSize.width / bitmap.width.toFloat()
-    val scaleY = canvasSize.height / bitmap.height.toFloat()
-
-    // Get box edges in bitmap coordinates
-    val halfWidth = box.width / 2
-    val halfHeight = box.height / 2
-    val left = box.x - halfWidth
-    val right = box.x + halfWidth
-    val top = box.y - halfHeight
-    val bottom = box.y + halfHeight
-
-    // Calculate constrained values
-    val constrainedLeft = left.coerceAtLeast(0f)
-    val constrainedRight = right.coerceAtMost(bitmap.width.toFloat())
-    val constrainedTop = top.coerceAtLeast(0f)
-    val constrainedBottom = bottom.coerceAtMost(bitmap.height.toFloat())
-
-    // Calculate new center coordinates and dimensions
-    val newWidth = (constrainedRight - constrainedLeft).coerceAtLeast(10f)
-    val newHeight = (constrainedBottom - constrainedTop).coerceAtLeast(10f)
-    val newX = constrainedLeft + (newWidth / 2)
-    val newY = constrainedTop + (newHeight / 2)
-
-    return box.copy(x = newX, y = newY, width = newWidth, height = newHeight)
 }
 
 @Composable
@@ -571,159 +544,158 @@ fun AnnotationScreen(
                 ) {
                 ClassSelector(
                     classOptions = classOptions,
-                        currentClass = if (currentMode == AnnotationMode.EDIT && selectedBox != null)
-                            boxes[selectedBox!!].className
-                        else
-                            currentClass,
-                        onClassChange = { newClass ->
-                            if (currentMode == AnnotationMode.EDIT && selectedBox != null) {
-                                // Update the selected box with the new class
-                                val box = boxes[selectedBox!!]
-                                val classId =
-                                    BrailleClassIdMapper.getMeaningToClassId(newClass, grade)
-                                println("DEBUG: Class change in EDIT mode: $newClass (ID: $classId)")
-                                val updatedBox = box.copy(className = newClass, classId = classId)
-                                updateBox(selectedBox!!, updatedBox)
-                            } else {
-                                // update current class
-                                currentClass = newClass
-                            }
+                    currentClass = if (currentMode == AnnotationMode.EDIT && selectedBox != null)
+                        boxes[selectedBox!!].className
+                    else
+                        currentClass,
+                    onClassChange = { newClass: String ->
+                        if (currentMode == AnnotationMode.EDIT && selectedBox != null) {
+                            // Update the selected box with the new class
+                            val box = boxes[selectedBox!!]
+                            val classId = BrailleClassIdMapper.getMeaningToClassId(newClass, grade)
+                            println("DEBUG: Class change in EDIT mode: $newClass (ID: $classId)")
+                            val updatedBox = box.copy(className = newClass, classId = classId)
+                            updateBox(selectedBox!!, updatedBox)
+                        } else {
+                            // update current class
+                            currentClass = newClass
                         }
-                    )
-                }
-            }
-
-            // Add this spacer here, after the class selector or mode buttons
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Canvas with consistent container height
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
-            ) {
-                AnnotationCanvas(
-                    bitmap = originalBitmap,
-                    boxes = boxes,
-                    annotationMode = currentMode,
-                    selectedBox = selectedBox,
-                    isDrawing = isDrawing,
-                    startPoint = startPoint,
-                    endPoint = endPoint,
-                    onBoxSelect = { selectedBox = it },
-                    onBoxAdd = { newBox ->
-                        val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
-                        val box = newBox.copy(className = currentClass, classId = classId)
-                        addBox(box)
-                    },
-                    onBoxDelete = { index ->
-                        deleteBox(index)
-                    },
-                    onStartDrawing = { offset ->
-                        isDrawing = true
-                        startPoint = offset
-                        endPoint = offset
-                    },
-                    onDrawing = { offset ->
-                        endPoint = offset
-                    },
-                    onEndDrawing = {
-                        isDrawing = false
-
-                        // Create and add the new box when drawing is complete
-                        if (currentMode == AnnotationMode.ADD && originalBitmap != null) {
-                            val canvasWidth = canvasSize.width
-                            val canvasHeight = canvasSize.height
-                            
-                            // Calculate box dimensions in canvas coordinates
-                            val left = minOf(startPoint.x, endPoint.x)
-                            val top = minOf(startPoint.y, endPoint.y)
-                            val width = abs(endPoint.x - startPoint.x)
-                            val height = abs(endPoint.y - startPoint.y)
-
-                            val centerX = left + width / 2
-                            val centerY = top + height / 2
-
-                            println("DEBUG: Drawing box in canvas coordinates: ($centerX,$centerY), size=${width}x${height}")
-                            
-                            // Convert from canvas coordinates to bitmap coordinates
-                            val canvasScaleX = canvasWidth / originalBitmap!!.width.toFloat()
-                            val canvasScaleY = canvasHeight / originalBitmap!!.height.toFloat()
-                            
-                            val bitmapCenterX = centerX / canvasScaleX
-                            val bitmapCenterY = centerY / canvasScaleY
-                            val bitmapWidth = width / canvasScaleX
-                            val bitmapHeight = height / canvasScaleY
-                            
-                            println("DEBUG: Converted to bitmap coordinates: ($bitmapCenterX,$bitmapCenterY), size=${bitmapWidth}x${bitmapHeight}")
-
-                            if (width > 10 && height > 10) {
-                                // Create the box using bitmap coordinates
-                                var box = DetectedBox(
-                                    x = bitmapCenterX,
-                                    y = bitmapCenterY,
-                                    width = bitmapWidth,
-                                    height = bitmapHeight,
-                                className = currentClass,
-                                    classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
-                                )
-                                
-                                // Apply the same constraints as in edit mode to keep the box within bounds
-                                box = constrainBoxToCanvas(box, canvasSize, originalBitmap)
-                                
-                                println("DEBUG: Adding constrained box in bitmap coordinates: (${box.x},${box.y}), size=${box.width}x${box.height}")
-                                addBox(box)
-                            }
-                        }
-                    },
-                    currentClass = currentClass,
-                    onCanvasSizeChanged = { canvasSize = it }
+                    }
                 )
             }
+        }
 
-            // Fixed spacing after canvas - always consistent regardless of canvas height
-            Spacer(modifier = Modifier.height(24.dp))
+        // Add this spacer here, after the class selector or mode buttons
+        Spacer(modifier = Modifier.height(16.dp))
 
-            // Box details panel - Now appears below the canvas
-            selectedBox?.let { indexNullable ->
-                val index = indexNullable
-                if (index in 0 until boxes.size) {
-                    val box = boxes[index]
+        // Canvas with consistent container height
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp)
+        ) {
+            AnnotationCanvas(
+                bitmap = originalBitmap,
+                boxes = boxes,
+                annotationMode = currentMode,
+                selectedBox = selectedBox,
+                isDrawing = isDrawing,
+                startPoint = startPoint,
+                endPoint = endPoint,
+                onBoxSelect = { index: Int? -> selectedBox = index },
+                onBoxAdd = { newBox: DetectedBox ->
+                    val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
+                    val box = newBox.copy(className = currentClass, classId = classId)
+                    addBox(box)
+                },
+                onBoxDelete = { index: Int ->
+                    deleteBox(index)
+                },
+                onStartDrawing = { offset: Offset ->
+                    isDrawing = true
+                    startPoint = offset
+                    endPoint = offset
+                },
+                onDrawing = { offset: Offset ->
+                    endPoint = offset
+                },
+                onEndDrawing = {
+                    isDrawing = false
 
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                            .background(
-                                color = when (currentMode) {
-                                    AnnotationMode.EDIT -> BrailleLensColors.pastelGreen.copy(alpha = 0.95f)
-                                    AnnotationMode.DELETE -> Color.Red.copy(alpha = 0.85f)
-                                    else -> Color.White.copy(alpha = 0.95f)
-                                },
-                                shape = RoundedCornerShape(16.dp)
+                    // Create and add the new box when drawing is complete
+                    if (currentMode == AnnotationMode.ADD && originalBitmap != null) {
+                        val canvasWidth = canvasSize.width
+                        val canvasHeight = canvasSize.height
+                        
+                        // Calculate box dimensions in canvas coordinates
+                        val left = minOf(startPoint.x, endPoint.x)
+                        val top = minOf(startPoint.y, endPoint.y)
+                        val width = abs(endPoint.x - startPoint.x)
+                        val height = abs(endPoint.y - startPoint.y)
+
+                        val centerX = left + width / 2
+                        val centerY = top + height / 2
+
+                        println("DEBUG: Drawing box in canvas coordinates: ($centerX,$centerY), size=${width}x${height}")
+                        
+                        // Convert from canvas coordinates to bitmap coordinates
+                        val canvasScaleX = canvasWidth / originalBitmap!!.width.toFloat()
+                        val canvasScaleY = canvasHeight / originalBitmap!!.height.toFloat()
+                        
+                        val bitmapCenterX = centerX / canvasScaleX
+                        val bitmapCenterY = centerY / canvasScaleY
+                        val bitmapWidth = width / canvasScaleX
+                        val bitmapHeight = height / canvasScaleY
+                        
+                        println("DEBUG: Converted to bitmap coordinates: ($bitmapCenterX,$bitmapCenterY), size=${bitmapWidth}x${bitmapHeight}")
+
+                        if (width > 10 && height > 10) {
+                            // Create the box using bitmap coordinates
+                            var box = DetectedBox(
+                                x = bitmapCenterX,
+                                y = bitmapCenterY,
+                                width = bitmapWidth,
+                                height = bitmapHeight,
+                            className = currentClass,
+                                classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
                             )
-                            .padding(12.dp)
+                            
+                            // Apply the same constraints as in edit mode to keep the box within bounds
+                            box = constrainBoxToCanvas(box, canvasSize, originalBitmap)
+                            
+                            println("DEBUG: Adding constrained box in bitmap coordinates: (${box.x},${box.y}), size=${box.width}x${box.height}")
+                            addBox(box)
+                        }
+                    }
+                },
+                currentClass = currentClass,
+                onCanvasSizeChanged = { newSize: Size -> canvasSize = newSize }
+            )
+        }
+
+        // Fixed spacing after canvas - always consistent regardless of canvas height
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Box details panel - Now appears below the canvas
+        selectedBox?.let { indexNullable ->
+            val index = indexNullable
+            if (index in 0 until boxes.size) {
+                val box = boxes[index]
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 12.dp, vertical = 8.dp)
+                        .background(
+                            color = when (currentMode) {
+                                AnnotationMode.EDIT -> BrailleLensColors.pastelGreen.copy(alpha = 0.95f)
+                                AnnotationMode.DELETE -> Color.Red.copy(alpha = 0.85f)
+                                else -> Color.White.copy(alpha = 0.95f)
+                            },
+                            shape = RoundedCornerShape(16.dp)
+                        )
+                        .padding(12.dp)
+                ) {
+                Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                    Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            // Header section with box details
-                            Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                                    .padding(bottom = 4.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                    ) {
-                                // Left side: Information
-                                Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                                        "Box Details",
-                            fontSize = 16.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.Black.copy(alpha = 0.9f)
-                                    )
+                        // Header section with box details
+                        Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                                .padding(bottom = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                ) {
+                            // Left side: Information
+                            Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                                    "Box Details",
+                        fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black.copy(alpha = 0.9f)
+                                )
 
                                     Text(
                                         "Class: ${box.className}",
@@ -807,29 +779,33 @@ fun AnnotationScreen(
                                             )
                                             
                                             // Decrease width button with long press
-                                            var decreaseWidthJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(36.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) {
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                val newWidth = (box.width - 5).coerceAtLeast(10f)
-                                                                updateBox(index, box.copy(width = newWidth))
-                                                                
-                                                                decreaseWidthJob = coroutineScope.launch {
-                                                                    delay(400)
-                                                                    while (true) {
-                                                                        val currentWidth = (box.width - 5).coerceAtLeast(10f)
-                                                                        updateBox(index, box.copy(width = currentWidth))
-                                                                        delay(100)
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial update
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    val newWidth = (currentBox.width - 5).coerceAtLeast(10f)
+                                                                    updateBox(currentIndex, currentBox.copy(width = newWidth))
+                                                                    
+                                                                    // Continuous updates
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400)
+                                                                        while (true) {
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            val latestNewWidth = (latestBox.width - 5).coerceAtLeast(10f)
+                                                                            updateBox(currentIndex, latestBox.copy(width = latestNewWidth))
+                                                                            delay(100)
+                                                                        }
                                                                     }
+                                                                    
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                tryAwaitRelease()
-                                                                decreaseWidthJob?.cancel()
-                                                                decreaseWidthJob = null
                                                             }
                                                         )
                                                     },
@@ -843,8 +819,10 @@ fun AnnotationScreen(
                                                 )
                                             }
                                             
+                                            // Make sure we're using the current value from the actual box
+                                            val currentWidth = selectedBox?.let { boxes[it].width.toInt() } ?: 0
                                             Text(
-                                                "${box.width.toInt()}",
+                                                "$currentWidth",
                                                 fontSize = 14.sp,
                                                 fontWeight = FontWeight.Medium,
                                                 color = Color.Black.copy(alpha = 0.9f),
@@ -853,27 +831,31 @@ fun AnnotationScreen(
                                             )
                                             
                                             // Increase width button with long press
-                                            var increaseWidthJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(36.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) {
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                updateBox(index, box.copy(width = box.width + 5))
-                                                                
-                                                                increaseWidthJob = coroutineScope.launch {
-                                                                    delay(400)
-                                                                    while (true) {
-                                                                        updateBox(index, box.copy(width = box.width + 5))
-                                                                        delay(100)
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial update
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    updateBox(currentIndex, currentBox.copy(width = currentBox.width + 5))
+                                                                    
+                                                                    // Continuous updates
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400)
+                                                                        while (true) {
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            updateBox(currentIndex, latestBox.copy(width = latestBox.width + 5))
+                                                                            delay(100)
+                                                                        }
                                                                     }
+                                                                    
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                tryAwaitRelease()
-                                                                increaseWidthJob?.cancel()
-                                                                increaseWidthJob = null
                                                             }
                                                         )
                                                     },
@@ -902,29 +884,33 @@ fun AnnotationScreen(
                                             )
                                             
                                             // Decrease height button with long press
-                                            var decreaseHeightJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(36.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) {
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                val newHeight = (box.height - 5).coerceAtLeast(10f)
-                                                                updateBox(index, box.copy(height = newHeight))
-                                                                
-                                                                decreaseHeightJob = coroutineScope.launch {
-                                                                    delay(400)
-                                                                    while (true) {
-                                                                        val currentHeight = (box.height - 5).coerceAtLeast(10f)
-                                                                        updateBox(index, box.copy(height = currentHeight))
-                                                                        delay(100)
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial update
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    val newHeight = (currentBox.height - 5).coerceAtLeast(10f)
+                                                                    updateBox(currentIndex, currentBox.copy(height = newHeight))
+                                                                    
+                                                                    // Continuous updates
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400)
+                                                                        while (true) {
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            val latestNewHeight = (latestBox.height - 5).coerceAtLeast(10f)
+                                                                            updateBox(currentIndex, latestBox.copy(height = latestNewHeight))
+                                                                            delay(100)
+                                                                        }
                                                                     }
+                                                                    
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                tryAwaitRelease()
-                                                                decreaseHeightJob?.cancel()
-                                                                decreaseHeightJob = null
                                                             }
                                                         )
                                                     },
@@ -937,8 +923,10 @@ fun AnnotationScreen(
                                                 )
                                             }
                                             
+                                            // Make sure we're using the current value from the actual box
+                                            val currentHeight = selectedBox?.let { boxes[it].height.toInt() } ?: 0
                                             Text(
-                                                "${box.height.toInt()}",
+                                                "$currentHeight",
                                                 fontSize = 14.sp,
                                                 fontWeight = FontWeight.Medium,
                                                 color = Color.Black.copy(alpha = 0.9f),
@@ -947,27 +935,31 @@ fun AnnotationScreen(
                                             )
                                             
                                             // Increase height button with long press
-                                            var increaseHeightJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(36.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) {
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                updateBox(index, box.copy(height = box.height + 5))
-                                                                
-                                                                increaseHeightJob = coroutineScope.launch {
-                                                                    delay(400)
-                                                                    while (true) {
-                                                                        updateBox(index, box.copy(height = box.height + 5))
-                                                                        delay(100)
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial update
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    updateBox(currentIndex, currentBox.copy(height = currentBox.height + 5))
+                                                                    
+                                                                    // Continuous updates
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400)
+                                                                        while (true) {
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            updateBox(currentIndex, latestBox.copy(height = latestBox.height + 5))
+                                                                            delay(100)
+                                                                        }
                                                                     }
+                                                                    
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                tryAwaitRelease()
-                                                                increaseHeightJob?.cancel()
-                                                                increaseHeightJob = null
                                                             }
                                                         )
                                                     },
@@ -1009,32 +1001,34 @@ fun AnnotationScreen(
                                             verticalArrangement = Arrangement.Center
                                         ) {
                                             // Up button with long press
-                                            var upRepeatJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(40.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) { // Add selectedBox as key to recreate when box changes
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                // Handle the initial press
-                                                                updateBox(index, box.copy(y = box.y - 5))
-                                                                
-                                                                // Start a repeating job for continuous movement
-                                                                upRepeatJob = coroutineScope.launch {
-                                                                    delay(400) // Initial delay before repeating
-                                                                    while (true) {
-                                                                        updateBox(index, box.copy(y = box.y - 5))
-                                                                        delay(100) // Repeat interval
+                                                                // Get the current selected index value at press time
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial press movement
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    updateBox(currentIndex, currentBox.copy(y = currentBox.y - 5))
+                                                                    
+                                                                    // Start repeating job
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400) // Initial delay before repeating
+                                                                        while (true) {
+                                                                            // Always get the latest box data from the current index
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            updateBox(currentIndex, latestBox.copy(y = latestBox.y - 5))
+                                                                            delay(100) // Repeat interval
+                                                                        }
                                                                     }
+                                                                    
+                                                                    // Wait for release and cancel job
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                // Wait for release
-                                                                tryAwaitRelease()
-                                                                
-                                                                // Cancel the job when released
-                                                                upRepeatJob?.cancel()
-                                                                upRepeatJob = null
                                                             }
                                                         )
                                                     },
@@ -1052,27 +1046,31 @@ fun AnnotationScreen(
                                                 horizontalArrangement = Arrangement.spacedBy(8.dp)
                                             ) {
                                                 // Left button with long press
-                                                var leftRepeatJob by remember { mutableStateOf<Job?>(null) }
-                                                
                                                 Box(
                                                     modifier = Modifier
                                                         .size(40.dp)
-                                                        .pointerInput(Unit) {
+                                                        .pointerInput(selectedBox) {
                                                             detectTapGestures(
                                                                 onPress = { offset ->
-                                                                    updateBox(index, box.copy(x = box.x - 5))
-                                                                    
-                                                                    leftRepeatJob = coroutineScope.launch {
-                                                                        delay(400)
-                                                                        while (true) {
-                                                                            updateBox(index, box.copy(x = box.x - 5))
-                                                                            delay(100)
+                                                                    val currentIndex = selectedBox
+                                                                    if (currentIndex != null && currentIndex < boxes.size) {
+                                                                        // Initial movement
+                                                                        val currentBox = boxes[currentIndex]
+                                                                        updateBox(currentIndex, currentBox.copy(x = currentBox.x - 5))
+                                                                        
+                                                                        // Start repeating job
+                                                                        val job = coroutineScope.launch {
+                                                                            delay(400)
+                                                                            while (true) {
+                                                                                val latestBox = boxes[currentIndex]
+                                                                                updateBox(currentIndex, latestBox.copy(x = latestBox.x - 5))
+                                                                                delay(100)
+                                                                            }
                                                                         }
+                                                                        
+                                                                        tryAwaitRelease()
+                                                                        job.cancel()
                                                                     }
-                                                                    
-                                                                    tryAwaitRelease()
-                                                                    leftRepeatJob?.cancel()
-                                                                    leftRepeatJob = null
                                                                 }
                                                             )
                                                         },
@@ -1095,27 +1093,31 @@ fun AnnotationScreen(
                                                 )
                                                 
                                                 // Right button with long press
-                                                var rightRepeatJob by remember { mutableStateOf<Job?>(null) }
-                                                
                                                 Box(
                                                     modifier = Modifier
                                                         .size(40.dp)
-                                                        .pointerInput(Unit) {
+                                                        .pointerInput(selectedBox) {
                                                             detectTapGestures(
                                                                 onPress = { offset ->
-                                                                    updateBox(index, box.copy(x = box.x + 5))
-                                                                    
-                                                                    rightRepeatJob = coroutineScope.launch {
-                                                                        delay(400)
-                                                                        while (true) {
-                                                                            updateBox(index, box.copy(x = box.x + 5))
-                                                                            delay(100)
+                                                                    val currentIndex = selectedBox
+                                                                    if (currentIndex != null && currentIndex < boxes.size) {
+                                                                        // Initial movement
+                                                                        val currentBox = boxes[currentIndex]
+                                                                        updateBox(currentIndex, currentBox.copy(x = currentBox.x + 5))
+                                                                        
+                                                                        // Start repeating job
+                                                                        val job = coroutineScope.launch {
+                                                                            delay(400)
+                                                                            while (true) {
+                                                                                val latestBox = boxes[currentIndex]
+                                                                                updateBox(currentIndex, latestBox.copy(x = latestBox.x + 5))
+                                                                                delay(100)
+                                                                            }
                                                                         }
+                                                                        
+                                                                        tryAwaitRelease()
+                                                                        job.cancel()
                                                                     }
-                                                                    
-                                                                    tryAwaitRelease()
-                                                                    rightRepeatJob?.cancel()
-                                                                    rightRepeatJob = null
                                                                 }
                                                             )
                                                         },
@@ -1130,27 +1132,31 @@ fun AnnotationScreen(
                                             }
                                             
                                             // Down button with long press
-                                            var downRepeatJob by remember { mutableStateOf<Job?>(null) }
-                                            
                                             Box(
                                                 modifier = Modifier
                                                     .size(40.dp)
-                                                    .pointerInput(Unit) {
+                                                    .pointerInput(selectedBox) {
                                                         detectTapGestures(
                                                             onPress = { offset ->
-                                                                updateBox(index, box.copy(y = box.y + 5))
-                                                                
-                                                                downRepeatJob = coroutineScope.launch {
-                                                                    delay(400)
-                                                                    while (true) {
-                                                                        updateBox(index, box.copy(y = box.y + 5))
-                                                                        delay(100)
+                                                                val currentIndex = selectedBox
+                                                                if (currentIndex != null && currentIndex < boxes.size) {
+                                                                    // Initial movement
+                                                                    val currentBox = boxes[currentIndex]
+                                                                    updateBox(currentIndex, currentBox.copy(y = currentBox.y + 5))
+                                                                    
+                                                                    // Start repeating job
+                                                                    val job = coroutineScope.launch {
+                                                                        delay(400)
+                                                                        while (true) {
+                                                                            val latestBox = boxes[currentIndex]
+                                                                            updateBox(currentIndex, latestBox.copy(y = latestBox.y + 5))
+                                                                            delay(100)
+                                                                        }
                                                                     }
+                                                                    
+                                                                    tryAwaitRelease()
+                                                                    job.cancel()
                                                                 }
-                                                                
-                                                                tryAwaitRelease()
-                                                                downRepeatJob?.cancel()
-                                                                downRepeatJob = null
                                                             }
                                                         )
                                                     },
@@ -1174,287 +1180,4 @@ fun AnnotationScreen(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ClassSelector(
-    classOptions: List<String>,
-    currentClass: String,
-    onClassChange: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
-    // Force the selector to update when currentClass changes
-    var displayValue by remember(currentClass) { mutableStateOf(currentClass) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        ExposedDropdownMenuBox(
-            expanded = expanded,
-            onExpandedChange = { expanded = it }
-        ) {
-            OutlinedTextField(
-                value = displayValue,
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Braille Class") },
-                trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = BrailleLensColors.darkOlive,
-                    unfocusedBorderColor = BrailleLensColors.accentBeige
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor()
-            )
-
-            ExposedDropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                classOptions.forEach { option ->
-                    DropdownMenuItem(
-                        text = { Text(option) },
-                        onClick = {
-                            displayValue = option
-                            onClassChange(option)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun AnnotationCanvas(
-    bitmap: Bitmap?,
-    boxes: List<DetectedBox>,
-    annotationMode: AnnotationMode,
-    selectedBox: Int?,
-    isDrawing: Boolean,
-    startPoint: Offset,
-    endPoint: Offset,
-    onBoxSelect: (Int?) -> Unit,
-    onBoxAdd: (DetectedBox) -> Unit,
-    onBoxDelete: (Int) -> Unit,
-    onStartDrawing: (Offset) -> Unit,
-    onDrawing: (Offset) -> Unit,
-    onEndDrawing: () -> Unit,
-    currentClass: String,
-    onCanvasSizeChanged: (Size) -> Unit
-) {
-    // Remember last tap time for double-tap detection
-    var lastTapTime by remember { mutableStateOf(0L) }
-    // Remember box boundaries for better debugging/visualization
-    var lastTapPoint by remember { mutableStateOf<Offset?>(null) }
-
-    // Cache for box boundaries to ensure drawing and hit detection use the same values
-    val boxDrawBounds = remember { mutableMapOf<Int, Triple<Offset, Size, Boolean>>() }
-
-    Canvas(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(bitmap?.width?.toFloat()?.div(bitmap?.height?.toFloat() ?: 1f) ?: 1f)
-            .pointerInput(annotationMode) {
-                when (annotationMode) {
-                    AnnotationMode.ADD -> {
-                        detectDragGestures(
-                            onDragStart = { offset ->
-                                onStartDrawing(offset)
-                                println("DEBUG: Drag started at ($offset)")
-                                println("DEBUG: Canvas size: ${size.width} x ${size.height}, Bitmap size: ${bitmap?.width} x ${bitmap?.height}")
-                            },
-                            onDrag = { change, _ ->
-                                onDrawing(change.position)
-                                println("DEBUG: Dragging at (${change.position})")
-                            },
-                            onDragEnd = {
-                                println("DEBUG: Drag ended. Start: ($startPoint), End: ($endPoint)")
-                                onEndDrawing()
-                            }
-                        )
-                    }
-
-                    AnnotationMode.EDIT, AnnotationMode.DELETE, AnnotationMode.VIEW -> {
-                        detectTapGestures { offset ->
-                            // Remember the tap point for debugging
-                            lastTapPoint = offset
-                            println("DEBUG: Tap detected at $offset")
-
-                            bitmap?.let { bmp ->
-                                // Use the cached box bounds for hit detection instead of recalculating
-                                var tappedBoxIndex: Int? = null
-
-                                // Process boxes in reverse order (top-most first)
-                                for (i in boxes.indices.reversed()) {
-                                    val boxData = boxDrawBounds[i]
-                                    if (boxData == null) continue
-
-                                    val topLeft = boxData.first
-                                    val size = boxData.second
-
-                                    val boxLeft = topLeft.x
-                                    val boxTop = topLeft.y
-                                    val boxRight = boxLeft + size.width
-                                    val boxBottom = boxTop + size.height
-
-                                    println("DEBUG: Box $i EXACT bounds: L=$boxLeft, T=$boxTop, R=$boxRight, B=$boxBottom")
-
-                                    if (offset.x >= boxLeft && offset.x <= boxRight &&
-                                        offset.y >= boxTop && offset.y <= boxBottom
-                                    ) {
-                                        tappedBoxIndex = i
-                                        println("DEBUG: Hit detected on Box $i at tap ($offset)")
-
-                                        // For immediate action in DELETE mode
-                                        if (annotationMode == AnnotationMode.DELETE && selectedBox == i) {
-                                            println("DEBUG: Delete action on box $i")
-                                            onBoxDelete(i)
-                                            onBoxSelect(null)
-                                            return@detectTapGestures
-                                        }
-                                        break
-                                    }
-                                }
-
-                                // Handle tap actions based on mode
-                                when (annotationMode) {
-                                    AnnotationMode.DELETE -> {
-                                        if (tappedBoxIndex != null) {
-                                            onBoxSelect(tappedBoxIndex)
-                                } else {
-                                            onBoxSelect(null)
-                                        }
-                                    }
-
-                                    AnnotationMode.EDIT -> {
-                                        println("DEBUG: EDIT mode tap handled: ${tappedBoxIndex ?: "no box"}")
-                                    onBoxSelect(tappedBoxIndex)
-                                    }
-
-                                    else -> onBoxSelect(tappedBoxIndex)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-    ) {
-        onCanvasSizeChanged(size)
-
-        bitmap?.let { bmp ->
-            drawContext.canvas.nativeCanvas.drawBitmap(
-                bmp,
-                null,
-                android.graphics.Rect(0, 0, size.width.toInt(), size.height.toInt()),
-                null
-            )
-
-            // Clear the previous box bounds
-            boxDrawBounds.clear()
-
-            // Calculate canvas-to-bitmap scale factors
-            val canvasScaleX = size.width / bmp.width
-            val canvasScaleY = size.height / bmp.height
-            println("DEBUG: Canvas scale factors: X=$canvasScaleX, Y=$canvasScaleY")
-
-            boxes.forEachIndexed { index, box ->
-                val scaledX = box.x * canvasScaleX
-                val scaledY = box.y * canvasScaleY
-                val scaledWidth = box.width * canvasScaleX
-                val scaledHeight = box.height * canvasScaleY
-
-                val left = scaledX - scaledWidth / 2
-                val top = scaledY - scaledHeight / 2
-
-                // Store the exact draw bounds for hit detection
-                boxDrawBounds[index] = Triple(
-                    Offset(left, top),
-                    Size(scaledWidth, scaledHeight),
-                    index == selectedBox
-                )
-
-                println("DEBUG: Box $index: Original=(${box.x},${box.y}), Scaled=($scaledX,$scaledY), size=${scaledWidth}x${scaledHeight}")
-                println("DEBUG: Box $index ACTUAL draw bounds: L=$left, T=$top, R=${left + scaledWidth}, B=${top + scaledHeight}")
-
-                val isSelected = index == (selectedBox ?: -1)
-
-                val boxColor = when {
-                    isSelected && annotationMode == AnnotationMode.EDIT -> Color.Blue
-                    isSelected && annotationMode == AnnotationMode.DELETE -> Color.Red
-                    isSelected -> Color.Yellow
-                    else -> Color.Green
-                }
-
-                val strokeWidth = if (isSelected) 3.dp.toPx() else 2.dp.toPx()
-
-                // Draw the box
-                drawRect(
-                    color = boxColor,
-                    topLeft = Offset(left, top),
-                    size = Size(scaledWidth, scaledHeight),
-                    style = Stroke(width = strokeWidth)
-                )
-
-                // Draw the class name
-                drawContext.canvas.nativeCanvas.drawText(
-                    box.className,
-                    left,
-                    top - 10f,
-                    android.graphics.Paint().apply {
-                        color = android.graphics.Color.YELLOW
-                        textSize = 40f
-                        isAntiAlias = true
-                        setShadowLayer(3f, 1f, 1f, android.graphics.Color.BLACK)
-                    }
-                )
-
-                // Draw a selection indicator
-                if (isSelected) {
-                    drawCircle(
-                        color = boxColor,
-                        radius = 8f,
-                        center = Offset(scaledX, scaledY)
-                    )
-                }
-            }
-
-            // Debug visualization: draw last tap point
-            if (lastTapPoint != null) {
-                drawCircle(
-                    color = Color.Red,
-                    radius = 10f,
-                    center = lastTapPoint!!,
-                    alpha = 0.7f
-                )
-            }
-
-            if (isDrawing) {
-                val left = minOf(startPoint.x, endPoint.x)
-                val top = minOf(startPoint.y, endPoint.y)
-                val width = abs(endPoint.x - startPoint.x)
-                val height = abs(endPoint.y - startPoint.y)
-
-                println("DEBUG: Drawing temp box: left=$left, top=$top, width=$width, height=$height")
-
-                drawRect(
-                    color = Color.Red,
-                    topLeft = Offset(left, top),
-                    size = Size(width, height),
-                    style = Stroke(width = 3.dp.toPx())
-                )
-
-                val centerX = left + width / 2
-                val centerY = top + height / 2
-                drawCircle(
-                    color = Color.Yellow,
-                    radius = 5f,
-                    center = Offset(centerX, centerY)
-                )
-            }
-        }
-    }
-}
