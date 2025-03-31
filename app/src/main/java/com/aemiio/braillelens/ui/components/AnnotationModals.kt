@@ -18,17 +18,26 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -42,15 +51,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
 
 /**
@@ -271,7 +279,6 @@ private fun TermsContent() {
         SectionTitle(text = "5. Usage Limitations")
         BulletPoint(text = "The annotation editor is provided for educational and contributory purposes only.")
         BulletPoint(text = "Please use the annotation tools responsibly and accurately.")
-        BulletPoint(text = "Intentional submission of incorrect or misleading annotations may result in restrictions on future contributions.")
         
         SectionTitle(text = "6. Updates to Terms")
         BulletPoint(text = "These terms may be updated periodically to reflect changes in data usage or policies.")
@@ -335,7 +342,7 @@ private fun TermsContent() {
         )
         
         Text(
-            text = "Your efforts directly improve the accuracy of Filipino Braille recognition technology, helping individuals with visual impairments access more written content.",
+            text = "Your efforts directly contribute to improving Filipino-Tagalog Braille literacy and accessibility through a mobile application designed for both visually impaired individuals and the general public.",
             fontSize = 14.sp,
             lineHeight = 20.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -374,6 +381,277 @@ private fun BulletPoint(text: String) {
             lineHeight = 20.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Justify
+        )
+    }
+}
+
+/**
+ * A button to view the terms and conditions again
+ */
+@Composable
+fun ViewTermsButton(onClick: () -> Unit) {
+    TextButton(
+        onClick = onClick,
+        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+        colors = ButtonDefaults.textButtonColors(
+            contentColor = BrailleLensColors.darkOlive
+        ),
+    ) {
+        Text(
+            text = "Terms",
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+/**
+ * Help button to open annotation help bottom sheet
+ */
+@Composable
+fun HelpButton(onClick: () -> Unit) {
+    OutlinedButton(
+        onClick = onClick,
+        border = ButtonDefaults.outlinedButtonBorder.copy(
+            width = 1.dp,
+            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+        ),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.fillMaxWidth(0.8f)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Info,
+            contentDescription = "Help",
+            tint = BrailleLensColors.darkOlive,
+            modifier = Modifier.size(18.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            text = "How to Use the Annotation Editor",
+            fontSize = 14.sp,
+            color = BrailleLensColors.darkOlive
+        )
+    }
+}
+
+/**
+ * Help bottom sheet for annotation editor
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnnotationHelpBottomSheet(
+    showBottomSheet: Boolean,
+    onDismiss: () -> Unit
+) {
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = onDismiss,
+            containerColor = MaterialTheme.colorScheme.background,
+            dragHandle = { BottomSheetDefaults.DragHandle() },
+            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp, vertical = 16.dp)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.Start
+            ) {
+                Text(
+                    text = "How to Use the Annotation Editor",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BrailleLensColors.darkOlive
+                )
+                
+                Text(
+                    text = "The annotation editor lets you review, correct, and refine Braille detections to improve the Filipino Braille recognition model.",
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.padding(vertical = 12.dp)
+                )
+                
+                Text(
+                    text = "1. Modes of Annotation",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BrailleLensColors.darkOlive,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+                
+                // View Mode
+                HelpModeItem(
+                    icon = Icons.Default.Search,
+                    title = "View Mode",
+                    descriptions = listOf(
+                        "Displays detected Braille bounding boxes.",
+                        "Allows users to review the results before making changes."
+                    )
+                )
+                
+                // Add Mode
+                HelpModeItem(
+                    icon = Icons.Default.Add,
+                    title = "Add Mode",
+                    descriptions = listOf(
+                        "Enables adding new bounding boxes.",
+                        "Shows a list of available class labels based on the selected model.",
+                        "Users can draw new bounding boxes for Braille characters."
+                    )
+                )
+                
+                // Edit Mode
+                HelpModeItem(
+                    icon = Icons.Default.Edit,
+                    title = "Edit Mode",
+                    descriptions = listOf(
+                        "Allows modification of existing bounding boxes.",
+                        "Selecting a box displays: Class Name, Position (X, Y coordinates), Size (Width & Height).",
+                        "Users can change the class label if incorrect.",
+                        "Adjust the size and position for accuracy."
+                    )
+                )
+                
+                // Delete Mode
+                HelpModeItem(
+                    icon = Icons.Default.Delete,
+                    title = "Delete Mode",
+                    descriptions = listOf(
+                        "Users can remove incorrect bounding boxes.",
+                        "Double-tap on a box to delete it."
+                    )
+                )
+                
+                // Saving Annotations
+                Text(
+                    text = "2. Saving Your Annotations",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = BrailleLensColors.darkOlive,
+                    modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                )
+                
+                Text(
+                    text = "After making corrections, press \"Save Annotations\" to:",
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                
+                Column(
+                    modifier = Modifier.padding(start = 16.dp, top = 8.dp)
+                ) {
+                    HelpCheckItem(text = "Store updated bounding boxes and labels.")
+                    HelpCheckItem(text = "Save the image and annotation data to the database.")
+                    HelpCheckItem(text = "Help improve Filipino Braille recognition accuracy.")
+                }
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = BrailleLensColors.darkOlive
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp, horizontal = 16.dp)
+                ) {
+                    Text("Got it!")
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun HelpModeItem(
+    icon: ImageVector,
+    title: String,
+    descriptions: List<String>
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Box(
+            modifier = Modifier
+                .size(32.dp)
+                .background(
+                    color = BrailleLensColors.darkOlive.copy(alpha = 0.1f),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = title,
+                tint = BrailleLensColors.darkOlive,
+                modifier = Modifier.size(18.dp)
+            )
+        }
+        
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 12.dp)
+        ) {
+            Text(
+                text = title,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            
+            Spacer(modifier = Modifier.height(4.dp))
+            
+            descriptions.forEach { description ->
+                Row(
+                    modifier = Modifier.padding(vertical = 2.dp),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Text(
+                        text = "•",
+                        fontSize = 14.sp,
+                        color = BrailleLensColors.darkOlive,
+                        modifier = Modifier.padding(end = 8.dp, top = 2.dp)
+                    )
+                    Text(
+                        text = description,
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.9f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HelpCheckItem(text: String) {
+    Row(
+        modifier = Modifier.padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = null,
+            tint = BrailleLensColors.darkOlive,
+            modifier = Modifier.size(16.dp)
+        )
+        
+        Spacer(modifier = Modifier.width(8.dp))
+        
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
