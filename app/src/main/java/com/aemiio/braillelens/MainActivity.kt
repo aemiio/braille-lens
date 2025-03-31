@@ -86,7 +86,7 @@ fun MainScreen() {
     }
 
     // DEBUG FLAGS
-    val forceShowOnboarding = true // Set to true to show onboarding during development
+    val forceShowOnboarding = false // Set to true to show onboarding during development
     val allowOnboardingNavigation = true // Set to true to allow navigation from onboarding to home
 
     // Onboarding state
