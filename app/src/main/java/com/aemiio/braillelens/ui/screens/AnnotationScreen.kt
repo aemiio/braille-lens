@@ -57,7 +57,9 @@ import com.aemiio.braillelens.objectdetection.BrailleMap
 import com.aemiio.braillelens.services.SupabaseService
 import com.aemiio.braillelens.ui.BrailleLensColors
 import com.aemiio.braillelens.ui.components.AnnotationCanvas
+import com.aemiio.braillelens.ui.components.AnnotationHelpBottomSheet
 import com.aemiio.braillelens.ui.components.BoxDetailsCard
+import com.aemiio.braillelens.ui.components.HelpButton
 import com.aemiio.braillelens.ui.components.TermsAndConditionsModal
 import com.aemiio.braillelens.ui.components.hasAcceptedAnnotationTerms
 import com.aemiio.braillelens.ui.components.saveTermsAcceptanceStatus
@@ -324,6 +326,8 @@ fun AnnotationScreen(
         }
     }
 
+    var showHelpBottomSheet by remember { mutableStateOf(false) }
+    
     Scaffold(
         topBar = {
             Row(
@@ -789,6 +793,14 @@ fun AnnotationScreen(
 
                 Spacer(modifier = Modifier.height(8.dp))
                 
+
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Help Button
+                HelpButton(onClick = { showHelpBottomSheet = true })
+                
+                // Terms and Conditions Button
+                Spacer(modifier = Modifier.height(8.dp))
                 TextButton(
                     onClick = { showTermsModal = true },
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
@@ -820,6 +832,12 @@ fun AnnotationScreen(
         }
     }
 
+    // Display the help bottom sheet
+    AnnotationHelpBottomSheet(
+        showBottomSheet = showHelpBottomSheet,
+        onDismiss = { showHelpBottomSheet = false }
+    )
+    
     // Check if terms have been accepted when the screen is first launched
     LaunchedEffect(Unit) {
         if (!hasAcceptedAnnotationTerms(context)) {
