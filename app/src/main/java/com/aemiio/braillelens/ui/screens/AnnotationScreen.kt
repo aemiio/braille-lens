@@ -1,12 +1,8 @@
 package com.aemiio.braillelens.ui.screens
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,31 +17,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -63,9 +46,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,20 +54,18 @@ import androidx.navigation.NavController
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.objectdetection.BrailleClassIdMapper
 import com.aemiio.braillelens.objectdetection.BrailleMap
+import com.aemiio.braillelens.services.SupabaseService
 import com.aemiio.braillelens.ui.BrailleLensColors
-import com.aemiio.braillelens.utils.AnnotationState
-import kotlin.math.abs
-import kotlinx.coroutines.launch
-import com.aemiio.braillelens.utils.constrainBoxToCanvas
-import com.aemiio.braillelens.utils.ClassSelector
 import com.aemiio.braillelens.ui.components.AnnotationCanvas
 import com.aemiio.braillelens.ui.components.BoxDetailsCard
-import com.aemiio.braillelens.services.SupabaseService
 import com.aemiio.braillelens.ui.components.TermsAndConditionsModal
-import com.aemiio.braillelens.ui.components.ViewTermsButton
-import com.aemiio.braillelens.ui.components.HandleAnnotationTerms
 import com.aemiio.braillelens.ui.components.hasAcceptedAnnotationTerms
 import com.aemiio.braillelens.ui.components.saveTermsAcceptanceStatus
+import com.aemiio.braillelens.utils.AnnotationState
+import com.aemiio.braillelens.utils.ClassSelector
+import com.aemiio.braillelens.utils.constrainBoxToCanvas
+import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 data class DetectedBox(
     val x: Float,
@@ -158,7 +136,7 @@ fun AnnotationScreen(
         if (originalBitmap == null) {
             println("DEBUG: Bitmap null in AnnotationScreen, attempting to load from path: $imagePath")
             try {
-                // Try to decode from path
+                // Decode from path
                 if (imagePath.startsWith("file:") || imagePath.startsWith("content:")) {
                     val uri = Uri.parse(imagePath)
                     val inputStream = context.contentResolver.openInputStream(uri)
@@ -173,7 +151,7 @@ fun AnnotationScreen(
                     }
                 } else {
                     try {
-                        // Try to load as resource ID
+
                         val resourceId = imagePath.toInt()
                         val loadedBitmap =
                             BitmapFactory.decodeResource(context.resources, resourceId)
@@ -183,7 +161,7 @@ fun AnnotationScreen(
                             originalBitmap = loadedBitmap
                         }
                     } catch (e: NumberFormatException) {
-                        // Try sample images as fallback
+
                         val resourceId = when (imagePath) {
                             "1" -> R.drawable.sample1
                             "2" -> R.drawable.sample2
@@ -211,7 +189,7 @@ fun AnnotationScreen(
         }
     }
 
-    // Display error message if bitmap is still null
+    // Display error message if bitmap is null
     if (originalBitmap == null) {
         Column(
             modifier = Modifier
@@ -290,7 +268,7 @@ fun AnnotationScreen(
     // normalize boxes if they're too large
     LaunchedEffect(canvasSize, boxes) {
         if (canvasSize.width > 0 && canvasSize.height > 0 && boxes.isNotEmpty()) {
-            // Check if boxes need normalization (very large values)
+
             val needsNormalization = boxes.any { box ->
                 box.x > canvasSize.width * 2 || box.y > canvasSize.height * 2
             }
@@ -369,7 +347,7 @@ fun AnnotationScreen(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 
-                // Only show model text in the top bar
+
                 Text(
                     text = selectedModel,
                     fontSize = 14.sp,
@@ -388,7 +366,7 @@ fun AnnotationScreen(
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Ensure the mode buttons are displayed
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -396,7 +374,7 @@ fun AnnotationScreen(
                         .padding(horizontal = 12.dp, vertical = 8.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // VIEW button
+
                     if (currentMode == AnnotationMode.VIEW) {
                         Button(
                             onClick = {
@@ -430,7 +408,7 @@ fun AnnotationScreen(
                         }
                     }
 
-                    // ADD button
+
                     if (currentMode == AnnotationMode.ADD) {
                         Button(
                             onClick = {
@@ -476,7 +454,7 @@ fun AnnotationScreen(
                         }
                     }
 
-                    // EDIT button
+
                     if (currentMode == AnnotationMode.EDIT) {
                         Button(
                             onClick = {
@@ -522,7 +500,7 @@ fun AnnotationScreen(
                         }
                     }
 
-                    // DELETE button
+
                     if (currentMode == AnnotationMode.DELETE) {
                         Button(
                             onClick = {
@@ -569,7 +547,7 @@ fun AnnotationScreen(
                     }
                 }
 
-                // Class selector - Now placed ABOVE the canvas when in ADD or EDIT mode
+                // Class selector
                 if (currentMode == AnnotationMode.ADD || (currentMode == AnnotationMode.EDIT && selectedBox != null)) {
                     Box(
                         modifier = Modifier
@@ -594,7 +572,7 @@ fun AnnotationScreen(
                                     val updatedBox = box.copy(className = newClass, classId = classId)
                                     updateBox(selectedBox!!, updatedBox)
                                 } else {
-                                    // update current class
+
                                     currentClass = newClass
                                 }
                             }
@@ -602,10 +580,10 @@ fun AnnotationScreen(
                     }
                 }
 
-                // Add this spacer here, after the class selector or mode buttons
+
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Canvas with consistent container height
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -719,7 +697,7 @@ fun AnnotationScreen(
                     }
                 }
 
-                // Add spacer before the save button
+
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 // Save Annotations Button
@@ -808,8 +786,7 @@ fun AnnotationScreen(
                         }
                     }
                 }
-                
-                // Add the Terms button at the bottom of the screen
+
                 Spacer(modifier = Modifier.height(8.dp))
                 
                 TextButton(
@@ -826,12 +803,10 @@ fun AnnotationScreen(
                         fontWeight = FontWeight.Medium
                     )
                 }
-                
-                // Add some padding at the bottom
+
                 Spacer(modifier = Modifier.height(16.dp))
             }
         } else {
-            // Show loading indicator while waiting for terms acceptance
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -844,9 +819,8 @@ fun AnnotationScreen(
             }
         }
     }
-    
-    // Corrected approach - check for terms acceptance inside a LaunchedEffect
-    // without calling composable functions
+
+    // Check if terms have been accepted when the screen is first launched
     LaunchedEffect(Unit) {
         if (!hasAcceptedAnnotationTerms(context)) {
             showTermsModal = true
