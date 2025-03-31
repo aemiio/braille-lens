@@ -1,7 +1,10 @@
 package com.aemiio.braillelens.ui.components
 
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,13 +15,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -34,12 +43,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
 
 /**
@@ -100,7 +111,7 @@ fun TermsAndConditionsModal(
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
+                containerColor = MaterialTheme.colorScheme.onSecondaryContainer
             ),
             elevation = CardDefaults.cardElevation(8.dp)
         ) {
@@ -110,42 +121,38 @@ fun TermsAndConditionsModal(
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Title
+
                 Text(
-                    text = "Terms for Data Contribution",
-                    fontSize = 20.sp,
+                    text = "Braille-Lens Annotation Terms",
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // Terms content in a scrollable box
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(300.dp)
+                        .height(350.dp)
                         .background(
-                            color = MaterialTheme.colorScheme.surfaceVariant,
+                            color = MaterialTheme.colorScheme.background,
                             shape = RoundedCornerShape(8.dp)
                         )
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
+                            .padding(16.dp)
                             .verticalScroll(scrollState)
                     ) {
-                        Text(
-                            text = termsAndConditionsText,
-                            fontSize = 14.sp,
-                            lineHeight = 20.sp,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        TermsContent()
                     }
                     
-                    // Gradient fade at the bottom to indicate more content
+
                     if (!hasScrolledToBottom) {
                         Box(
                             modifier = Modifier
@@ -164,26 +171,38 @@ fun TermsAndConditionsModal(
                     }
                 }
                 
-                // Scroll instruction
+
                 if (!buttonsEnabled) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = "Please scroll to the bottom to continue",
-                        fontSize = 12.sp,
-                        color = BrailleLensColors.darkOlive,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Center
-                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Scroll down",
+                            tint = BrailleLensColors.darkOlive
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Scroll to the bottom to enable buttons",
+                            fontSize = 14.sp,
+                            color = BrailleLensColors.darkOlive,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                // Action buttons
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Decline button
+
                     OutlinedButton(
                         onClick = onDecline,
                         enabled = buttonsEnabled,
@@ -195,7 +214,7 @@ fun TermsAndConditionsModal(
                         Text("Decline")
                     }
                     
-                    // Accept button
+
                     Button(
                         onClick = onAccept,
                         enabled = buttonsEnabled,
@@ -214,103 +233,147 @@ fun TermsAndConditionsModal(
 }
 
 /**
- * A button to view the terms and conditions again
+ * Styled content for the terms and conditions with proper formatting
  */
 @Composable
-fun ViewTermsButton(onClick: () -> Unit) {
-    TextButton(
-        onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        colors = ButtonDefaults.textButtonColors(
-            contentColor = BrailleLensColors.darkOlive
-        ),
+private fun TermsContent() {
+    val context = LocalContext.current
+    
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(
+            text = "By accepting these terms, you agree to contribute your annotations (bounding boxes, class names, and images) to help improve the Filipino Braille recognition model.",
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Justify
+        )
+        
+        SectionTitle(text = "1. Data Collection and Usage")
+        BulletPoint(text = "The images you annotate, along with your bounding box corrections and class labels, will be stored in our public dataset using Supabase.")
+        BulletPoint(text = "This data will be used exclusively for retraining the Braille-Lens model to enhance accuracy in recognizing Filipino Braille (Grade 1 and Grade 2).")
+        BulletPoint(text = "Your contributions directly support Braille accessibility and literacy in the Philippines.")
+        
+        SectionTitle(text = "2. Privacy and Anonymity")
+        BulletPoint(text = "Annotations are collected anonymously; no personal information is stored or linked to your contributions.")
+        BulletPoint(text = "Uploaded images will be stored in a publicly accessible Supabase bucket and may be included in future public Braille datasets for research.")
+        BulletPoint(text = "Images and annotations will only be used for Braille recognition training and development.")
+        
+        SectionTitle(text = "3. Image Content")
+        BulletPoint(text = "Only annotate images containing Braille text. Do not upload or edit non-Braille images.")
+        BulletPoint(text = "Do not annotate images containing personal, sensitive, or copyrighted content.")
+        BulletPoint(text = "We reserve the right to remove inappropriate content from the dataset.")
+        
+        SectionTitle(text = "4. Ownership and Licensing")
+        BulletPoint(text = "By submitting annotations, you grant us the right to use, modify, and distribute your contributions as part of the Braille-Lens dataset.")
+        BulletPoint(text = "Your contributions become part of a public resource for Braille accessibility and may be used in future research projects.")
+        BulletPoint(text = "The improved Braille recognition model will be available to benefit the entire Braille community.")
+        
+        SectionTitle(text = "5. Usage Limitations")
+        BulletPoint(text = "The annotation editor is provided for educational and contributory purposes only.")
+        BulletPoint(text = "Please use the annotation tools responsibly and accurately.")
+        BulletPoint(text = "Intentional submission of incorrect or misleading annotations may result in restrictions on future contributions.")
+        
+        SectionTitle(text = "6. Updates to Terms")
+        BulletPoint(text = "These terms may be updated periodically to reflect changes in data usage or policies.")
+        BulletPoint(text = "Significant changes will be communicated within the Braille-Lens app.")
+        BulletPoint(text = "Continuing to use the annotation editor after an update means you accept the revised terms.")
+        
+        SectionTitle(text = "7. Opting Out & Data Removal")
+        BulletPoint(text = "You can stop contributing at any time by declining these terms when prompted.")
+        BulletPoint(text = "Previously submitted annotations will remain in the dataset unless you specifically request removal.")
+        
+
+        Row(
+            modifier = Modifier.padding(start = 8.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(
+                text = "•",
+                fontSize = 14.sp,
+                color = BrailleLensColors.darkOlive,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(end = 8.dp, top = 2.dp)
+            )
+            
+            Column {
+                Text(
+                    text = "If you want to remove your contributions, please contact us via email:",
+                    fontSize = 14.sp,
+                    lineHeight = 20.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Justify
+                )
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Text(
+                    text = "jyramae.celajes@cvsu.edu.ph",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier
+                        .padding(start = 4.dp)
+                        .clickable {
+                            val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                data = Uri.parse("mailto:jyramae.celajes@cvsu.edu.ph")
+                            }
+                            context.startActivity(intent)
+                        }
+                )
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        Text(
+            text = "Thank You for Your Contribution!",
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Bold,
+            color = BrailleLensColors.darkOlive,
+            modifier = Modifier.padding(top = 8.dp),
+            textAlign = TextAlign.Center
+        )
+        
+        Text(
+            text = "Your efforts directly improve the accuracy of Filipino Braille recognition technology, helping individuals with visual impairments access more written content.",
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Justify
+        )
+    }
+}
+
+@Composable
+private fun SectionTitle(text: String) {
+    Text(
+        text = text,
+        fontSize = 15.sp,
+        fontWeight = FontWeight.Bold,
+        color = BrailleLensColors.darkOlive,
+        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+    )
+}
+
+@Composable
+private fun BulletPoint(text: String) {
+    Row(
+        modifier = Modifier.padding(start = 8.dp),
+        verticalAlignment = Alignment.Top
     ) {
         Text(
-            text = "Terms",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
+            text = "•",
+            fontSize = 14.sp,
+            color = BrailleLensColors.darkOlive,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(end = 8.dp, top = 2.dp)
+        )
+        Text(
+            text = text,
+            fontSize = 14.sp,
+            lineHeight = 20.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Justify
         )
     }
 }
-
-/**
- * Hook to handle terms acceptance flow
- */
-@Composable
-fun HandleAnnotationTerms(
-    onAccept: () -> Unit,
-    onDecline: () -> Unit
-): Boolean {
-    val context = LocalContext.current
-    var showTerms by remember { mutableStateOf(false) }
-    
-    // Check if terms have already been accepted
-    val alreadyAccepted = remember { hasAcceptedAnnotationTerms(context) }
-    
-    // Show terms if not already accepted
-    LaunchedEffect(Unit) {
-        if (!alreadyAccepted) {
-            showTerms = true
-        }
-    }
-    
-    if (showTerms) {
-        TermsAndConditionsModal(
-            showTerms = true,
-            onAccept = {
-                saveTermsAcceptanceStatus(context, true)
-                showTerms = false
-                onAccept()
-            },
-            onDecline = {
-                saveTermsAcceptanceStatus(context, false)
-                showTerms = false
-                onDecline()
-            }
-        )
-    }
-    
-    return alreadyAccepted || !showTerms
-}
-
-// Terms and conditions text content
-private val termsAndConditionsText = """
-By accepting these terms, you agree to contribute your annotations to help improve our braille recognition technology. Here's how your data will be used:
-
-1. Data Collection and Usage
-   • The images you annotate and your annotations may be stored in our database.
-   • This data will be used to train and improve our braille recognition algorithms.
-   • Your contributions help make braille more accessible to everyone.
-
-2. Privacy and Anonymity
-   • All annotations are collected anonymously.
-   • We do not store personal identifying information alongside your annotations.
-   • Images are stored securely and used only for training purposes.
-
-3. Image Content
-   • Please only annotate images containing braille text.
-   • Do not annotate images containing personal information or sensitive content.
-   • We reserve the right to remove inappropriate content.
-
-4. Ownership and Licensing
-   • Annotations you submit become part of our training dataset.
-   • Your contributions help build a public resource for braille accessibility.
-   • The improved algorithms will benefit the entire community of braille users.
-
-5. Usage Limitations
-   • The annotation tools are provided for educational and contributory purposes.
-   • Please use the tools responsibly and accurately.
-   • Intentional submission of incorrect annotations may result in restrictions.
-
-6. Updates to Terms
-   • These terms may be updated periodically.
-   • Significant changes will be communicated within the app.
-   • Continued use after changes constitutes acceptance of new terms.
-
-7. Opting Out
-   • You can stop contributing at any time by declining these terms.
-   • Previously submitted annotations will remain in our dataset unless you specifically request removal.
-   • To request removal of your annotations, please contact our support team.
-
-Thank you for helping make braille more accessible through your contributions! Your efforts directly improve the accuracy of our recognition technology and help people with visual impairments access more written content.
-""".trimIndent()
