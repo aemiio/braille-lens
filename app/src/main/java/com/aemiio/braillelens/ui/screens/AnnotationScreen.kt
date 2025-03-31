@@ -11,6 +11,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -49,6 +50,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -81,6 +83,11 @@ import com.aemiio.braillelens.utils.ClassSelector
 import com.aemiio.braillelens.ui.components.AnnotationCanvas
 import com.aemiio.braillelens.ui.components.BoxDetailsCard
 import com.aemiio.braillelens.services.SupabaseService
+import com.aemiio.braillelens.ui.components.TermsAndConditionsModal
+import com.aemiio.braillelens.ui.components.ViewTermsButton
+import com.aemiio.braillelens.ui.components.HandleAnnotationTerms
+import com.aemiio.braillelens.ui.components.hasAcceptedAnnotationTerms
+import com.aemiio.braillelens.ui.components.saveTermsAcceptanceStatus
 
 data class DetectedBox(
     val x: Float,
@@ -123,6 +130,29 @@ fun AnnotationScreen(
     val scrollState = rememberScrollState()
 
     var canvasSize by remember { mutableStateOf(Size(0f, 0f)) }
+
+    var showTermsModal by remember { mutableStateOf(false) }
+    
+    // Check if terms have been accepted - moved inside the composable function
+    val termsAccepted = remember { hasAcceptedAnnotationTerms(context) }
+    var isEditorUnlocked by remember { mutableStateOf(termsAccepted) }
+    
+    // Handle the terms and conditions modal
+    if (showTermsModal || (!termsAccepted && !isEditorUnlocked)) {
+        TermsAndConditionsModal(
+            showTerms = true,
+            onAccept = {
+                saveTermsAcceptanceStatus(context, true)
+                isEditorUnlocked = true
+                showTermsModal = false
+            },
+            onDecline = {
+                saveTermsAcceptanceStatus(context, false)
+                showTermsModal = false
+                navController.popBackStack()
+            }
+        )
+    }
 
     LaunchedEffect(imagePath) {
         if (originalBitmap == null) {
@@ -338,8 +368,10 @@ fun AnnotationScreen(
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Spacer(modifier = Modifier.weight(1f))
+                
+                // Only show model text in the top bar
                 Text(
-                    text = "${selectedModel}",
+                    text = selectedModel,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
@@ -347,435 +379,477 @@ fun AnnotationScreen(
             }
         }
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Row(
+        // Only show the editor content if terms have been accepted
+        if (isEditorUnlocked) {
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // VIEW button
-                if (currentMode == AnnotationMode.VIEW) {
-                    Button(
-                        onClick = {
-                            currentMode = AnnotationMode.VIEW
-                            selectedBox = null
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BrailleLensColors.darkOlive
-                        )
-                    ) {
-                        Text(
-                            "View",
-                            color = Color.White
-                        )
+                // Ensure the mode buttons are displayed
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState())
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // VIEW button
+                    if (currentMode == AnnotationMode.VIEW) {
+                        Button(
+                            onClick = {
+                                currentMode = AnnotationMode.VIEW
+                                selectedBox = null
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BrailleLensColors.darkOlive
+                            )
+                        ) {
+                            Text(
+                                "View",
+                                color = Color.White
+                            )
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = {
+                                currentMode = AnnotationMode.VIEW
+                                selectedBox = null
+                            },
+                            border = ButtonDefaults.outlinedButtonBorder.copy(
+                                width = 1.dp,
+                                brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+                            )
+                        ) {
+                            Text(
+                                "View",
+                                color = BrailleLensColors.darkOlive
+                            )
+                        }
                     }
-                } else {
-                    OutlinedButton(
-                        onClick = {
-                            currentMode = AnnotationMode.VIEW
-                            selectedBox = null
-                        },
-                        border = ButtonDefaults.outlinedButtonBorder.copy(
-                            width = 1.dp,
-                            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
-                        )
+
+                    // ADD button
+                    if (currentMode == AnnotationMode.ADD) {
+                        Button(
+                            onClick = {
+                                currentMode = AnnotationMode.ADD
+                                selectedBox = null
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BrailleLensColors.darkOlive
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add Mode",
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Add",
+                                color = Color.White
+                            )
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = {
+                                currentMode = AnnotationMode.ADD
+                                selectedBox = null
+                            },
+                            border = ButtonDefaults.outlinedButtonBorder.copy(
+                                width = 1.dp,
+                                brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add Mode",
+                                tint = BrailleLensColors.darkOlive
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Add",
+                                color = BrailleLensColors.darkOlive
+                            )
+                        }
+                    }
+
+                    // EDIT button
+                    if (currentMode == AnnotationMode.EDIT) {
+                        Button(
+                            onClick = {
+                                currentMode = AnnotationMode.EDIT
+                                if (currentMode != AnnotationMode.EDIT) selectedBox = null
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BrailleLensColors.darkOlive
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit Mode",
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Edit",
+                                color = Color.White
+                            )
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = {
+                                currentMode = AnnotationMode.EDIT
+                                if (currentMode != AnnotationMode.EDIT) selectedBox = null
+                            },
+                            border = ButtonDefaults.outlinedButtonBorder.copy(
+                                width = 1.dp,
+                                brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit Mode",
+                                tint = BrailleLensColors.darkOlive
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Edit",
+                                color = BrailleLensColors.darkOlive
+                            )
+                        }
+                    }
+
+                    // DELETE button
+                    if (currentMode == AnnotationMode.DELETE) {
+                        Button(
+                            onClick = {
+                                currentMode = AnnotationMode.DELETE
+                                if (currentMode != AnnotationMode.DELETE) selectedBox = null
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BrailleLensColors.darkOlive
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Mode",
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Delete",
+                                color = Color.White
+                            )
+                        }
+                    } else {
+                        OutlinedButton(
+                            onClick = {
+                                currentMode = AnnotationMode.DELETE
+                                if (currentMode != AnnotationMode.DELETE) selectedBox = null
+                            },
+                            border = ButtonDefaults.outlinedButtonBorder.copy(
+                                width = 1.dp,
+                                brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete Mode",
+                                tint = BrailleLensColors.darkOlive
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                "Delete",
+                                color = BrailleLensColors.darkOlive
+                            )
+                        }
+                    }
+                }
+
+                // Class selector - Now placed ABOVE the canvas when in ADD or EDIT mode
+                if (currentMode == AnnotationMode.ADD || (currentMode == AnnotationMode.EDIT && selectedBox != null)) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 12.dp)
+                            .background(MaterialTheme.colorScheme.background)
+                            .padding(8.dp)
                     ) {
-                        Text(
-                            "View",
-                            color = BrailleLensColors.darkOlive
+                        ClassSelector(
+                            classOptions = classOptions,
+                            currentClass = if (currentMode == AnnotationMode.EDIT && selectedBox != null)
+                                boxes[selectedBox!!].className
+                            else
+                                currentClass,
+                            onClassChange = { newClass: String ->
+                                if (currentMode == AnnotationMode.EDIT && selectedBox != null) {
+                                    // Update the selected box with the new class
+                                    val box = boxes[selectedBox!!]
+                                    val classId =
+                                        BrailleClassIdMapper.getMeaningToClassId(newClass, grade)
+                                    println("DEBUG: Class change in EDIT mode: $newClass (ID: $classId)")
+                                    val updatedBox = box.copy(className = newClass, classId = classId)
+                                    updateBox(selectedBox!!, updatedBox)
+                                } else {
+                                    // update current class
+                                    currentClass = newClass
+                                }
+                            }
                         )
                     }
                 }
 
-                // ADD button
-                if (currentMode == AnnotationMode.ADD) {
-                    Button(
-                        onClick = {
-                            currentMode = AnnotationMode.ADD
-                            selectedBox = null
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BrailleLensColors.darkOlive
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add Mode",
-                            tint = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Add",
-                            color = Color.White
-                        )
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = {
-                            currentMode = AnnotationMode.ADD
-                            selectedBox = null
-                        },
-                        border = ButtonDefaults.outlinedButtonBorder.copy(
-                            width = 1.dp,
-                            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Add,
-                            contentDescription = "Add Mode",
-                            tint = BrailleLensColors.darkOlive
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Add",
-                            color = BrailleLensColors.darkOlive
-                        )
-                    }
-                }
+                // Add this spacer here, after the class selector or mode buttons
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // EDIT button
-                if (currentMode == AnnotationMode.EDIT) {
-                    Button(
-                        onClick = {
-                            currentMode = AnnotationMode.EDIT
-                            if (currentMode != AnnotationMode.EDIT) selectedBox = null
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BrailleLensColors.darkOlive
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Mode",
-                            tint = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Edit",
-                            color = Color.White
-                        )
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = {
-                            currentMode = AnnotationMode.EDIT
-                            if (currentMode != AnnotationMode.EDIT) selectedBox = null
-                        },
-                        border = ButtonDefaults.outlinedButtonBorder.copy(
-                            width = 1.dp,
-                            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit Mode",
-                            tint = BrailleLensColors.darkOlive
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Edit",
-                            color = BrailleLensColors.darkOlive
-                        )
-                    }
-                }
-
-                // DELETE button
-                if (currentMode == AnnotationMode.DELETE) {
-                    Button(
-                        onClick = {
-                            currentMode = AnnotationMode.DELETE
-                            if (currentMode != AnnotationMode.DELETE) selectedBox = null
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BrailleLensColors.darkOlive
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Mode",
-                            tint = Color.White
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Delete",
-                            color = Color.White
-                        )
-                    }
-                } else {
-                    OutlinedButton(
-                        onClick = {
-                            currentMode = AnnotationMode.DELETE
-                            if (currentMode != AnnotationMode.DELETE) selectedBox = null
-                        },
-                        border = ButtonDefaults.outlinedButtonBorder.copy(
-                            width = 1.dp,
-                            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
-                        )
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete Mode",
-                            tint = BrailleLensColors.darkOlive
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Text(
-                            "Delete",
-                            color = BrailleLensColors.darkOlive
-                        )
-                    }
-                }
-            }
-
-            // Class selector - Now placed ABOVE the canvas when in ADD or EDIT mode
-            if (currentMode == AnnotationMode.ADD || (currentMode == AnnotationMode.EDIT && selectedBox != null)) {
+                // Canvas with consistent container height
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp)
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(8.dp)
                 ) {
-                    ClassSelector(
-                        classOptions = classOptions,
-                        currentClass = if (currentMode == AnnotationMode.EDIT && selectedBox != null)
-                            boxes[selectedBox!!].className
-                        else
-                            currentClass,
-                        onClassChange = { newClass: String ->
-                            if (currentMode == AnnotationMode.EDIT && selectedBox != null) {
-                                // Update the selected box with the new class
-                                val box = boxes[selectedBox!!]
-                                val classId =
-                                    BrailleClassIdMapper.getMeaningToClassId(newClass, grade)
-                                println("DEBUG: Class change in EDIT mode: $newClass (ID: $classId)")
-                                val updatedBox = box.copy(className = newClass, classId = classId)
-                                updateBox(selectedBox!!, updatedBox)
-                            } else {
-                                // update current class
-                                currentClass = newClass
+                    AnnotationCanvas(
+                        bitmap = originalBitmap,
+                        boxes = boxes,
+                        annotationMode = currentMode,
+                        selectedBox = selectedBox,
+                        isDrawing = isDrawing,
+                        startPoint = startPoint,
+                        endPoint = endPoint,
+                        onBoxSelect = { index: Int? -> selectedBox = index },
+                        onBoxAdd = { newBox: DetectedBox ->
+                            val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
+                            val box = newBox.copy(className = currentClass, classId = classId)
+                            addBox(box)
+                        },
+                        onBoxDelete = { index: Int ->
+                            deleteBox(index)
+                        },
+                        onStartDrawing = { offset: Offset ->
+                            isDrawing = true
+                            startPoint = offset
+                            endPoint = offset
+                        },
+                        onDrawing = { offset: Offset ->
+                            endPoint = offset
+                        },
+                        onEndDrawing = {
+                            isDrawing = false
+
+                            // Create and add the new box when drawing is complete
+                            if (currentMode == AnnotationMode.ADD && originalBitmap != null) {
+                                val canvasWidth = canvasSize.width
+                                val canvasHeight = canvasSize.height
+
+                                // Calculate box dimensions in canvas coordinates
+                                val left = minOf(startPoint.x, endPoint.x)
+                                val top = minOf(startPoint.y, endPoint.y)
+                                val width = abs(endPoint.x - startPoint.x)
+                                val height = abs(endPoint.y - startPoint.y)
+
+                                val centerX = left + width / 2
+                                val centerY = top + height / 2
+
+                                println("DEBUG: Drawing box in canvas coordinates: ($centerX,$centerY), size=${width}x${height}")
+
+                                // Convert from canvas coordinates to bitmap coordinates
+                                val canvasScaleX = canvasWidth / originalBitmap!!.width.toFloat()
+                                val canvasScaleY = canvasHeight / originalBitmap!!.height.toFloat()
+
+                                val bitmapCenterX = centerX / canvasScaleX
+                                val bitmapCenterY = centerY / canvasScaleY
+                                val bitmapWidth = width / canvasScaleX
+                                val bitmapHeight = height / canvasScaleY
+
+                                println("DEBUG: Converted to bitmap coordinates: ($bitmapCenterX,$bitmapCenterY), size=${bitmapWidth}x${bitmapHeight}")
+
+                                if (width > 10 && height > 10) {
+                                    // Create the box using bitmap coordinates
+                                    var box = DetectedBox(
+                                        x = bitmapCenterX,
+                                        y = bitmapCenterY,
+                                        width = bitmapWidth,
+                                        height = bitmapHeight,
+                                        className = currentClass,
+                                        classId = BrailleClassIdMapper.getMeaningToClassId(
+                                            currentClass,
+                                            grade
+                                        )
+                                    )
+
+                                    // Apply the same constraints as in edit mode to keep the box within bounds
+                                    box = constrainBoxToCanvas(box, canvasSize, originalBitmap)
+
+                                    println("DEBUG: Adding constrained box in bitmap coordinates: (${box.x},${box.y}), size=${box.width}x${box.height}")
+                                    addBox(box)
+                                }
                             }
-                        }
+                        },
+                        currentClass = currentClass,
+                        onCanvasSizeChanged = { newSize: Size -> canvasSize = newSize }
                     )
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                selectedBox?.let { indexNullable ->
+                    val index = indexNullable
+                    if (index in 0 until boxes.size) {
+                        val box = boxes[index]
+
+                        BoxDetailsCard(
+                            box = box,
+                            currentMode = currentMode,
+                            selectedBox = index,
+                            boxes = boxes,
+                            onBoxDelete = { boxIndex ->
+                                deleteBox(boxIndex)
+                                selectedBox = null
+                            },
+                            onBoxUpdate = { boxIndex, updatedBox ->
+                                // Ensure box stays within canvas boundaries
+                                val constrainedBox =
+                                    constrainBoxToCanvas(updatedBox, canvasSize, originalBitmap)
+                                updateBox(boxIndex, constrainedBox)
+                            }
+                        )
+                    }
+                }
+
+                // Add spacer before the save button
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Save Annotations Button
+                var isSaving by remember { mutableStateOf(false) }
+                var saveMessage by remember { mutableStateOf<String?>(null) }
+                var saveMessageColor by remember { mutableStateOf(BrailleLensColors.darkOlive) }
+                
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Button(
+                            onClick = {
+                                if (boxes.isNotEmpty() && originalBitmap != null) {
+                                    isSaving = true
+                                    saveMessage = null
+                                    coroutineScope.launch {
+                                        try {
+                                            val result = SupabaseService.saveAnnotations(
+                                                context = context,
+                                                boxes = boxes,
+                                                imagePath = AnnotationState.imagePath.value,
+                                                bitmap = originalBitmap,
+                                                grade = grade.toString()
+                                            )
+                                            
+                                            result.fold(
+                                                onSuccess = { message ->
+                                                    saveMessage = "Saved successfully!"
+                                                    saveMessageColor = BrailleLensColors.darkOlive
+                                                    isSaving = false
+                                                },
+                                                onFailure = { error ->
+                                                    saveMessage = "Error: ${error.message}"
+                                                    saveMessageColor = Color.Red
+                                                    isSaving = false
+                                                }
+                                            )
+                                        } catch (e: Exception) {
+                                            saveMessage = "Error: ${e.message}"
+                                            saveMessageColor = Color.Red
+                                            isSaving = false
+                                        }
+                                    }
+                                } else {
+                                    saveMessage = "Nothing to save. Add annotations first."
+                                    saveMessageColor = Color.Red
+                                }
+                            },
+                            enabled = !isSaving && boxes.isNotEmpty(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BrailleLensColors.darkOlive,
+                                disabledContainerColor = BrailleLensColors.darkOlive.copy(alpha = 0.5f)
+                            ),
+                            modifier = Modifier.fillMaxWidth(0.8f)
+                        ) {
+                            if (isSaving) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    color = Color.White,
+                                    strokeWidth = 2.dp
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                            Text(
+                                text = if (isSaving) "Saving..." else "Save Annotations",
+                                fontSize = 16.sp,
+                                color = Color.White
+                            )
+                        }
+                        
+                        // Display success/error message
+                        saveMessage?.let {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = it,
+                                color = saveMessageColor,
+                                fontSize = 14.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
+                
+                // Add the Terms button at the bottom of the screen
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                TextButton(
+                    onClick = { showTermsModal = true },
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.textButtonColors(
+                        contentColor = BrailleLensColors.darkOlive.copy(alpha = 0.8f)
+                    ),
+                    modifier = Modifier.padding(vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "View Terms & Conditions",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+                
+                // Add some padding at the bottom
+                Spacer(modifier = Modifier.height(16.dp))
             }
-
-            // Add this spacer here, after the class selector or mode buttons
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Canvas with consistent container height
+        } else {
+            // Show loading indicator while waiting for terms acceptance
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 12.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                AnnotationCanvas(
-                    bitmap = originalBitmap,
-                    boxes = boxes,
-                    annotationMode = currentMode,
-                    selectedBox = selectedBox,
-                    isDrawing = isDrawing,
-                    startPoint = startPoint,
-                    endPoint = endPoint,
-                    onBoxSelect = { index: Int? -> selectedBox = index },
-                    onBoxAdd = { newBox: DetectedBox ->
-                        val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
-                        val box = newBox.copy(className = currentClass, classId = classId)
-                        addBox(box)
-                    },
-                    onBoxDelete = { index: Int ->
-                        deleteBox(index)
-                    },
-                    onStartDrawing = { offset: Offset ->
-                        isDrawing = true
-                        startPoint = offset
-                        endPoint = offset
-                    },
-                    onDrawing = { offset: Offset ->
-                        endPoint = offset
-                    },
-                    onEndDrawing = {
-                        isDrawing = false
-
-                        // Create and add the new box when drawing is complete
-                        if (currentMode == AnnotationMode.ADD && originalBitmap != null) {
-                            val canvasWidth = canvasSize.width
-                            val canvasHeight = canvasSize.height
-
-                            // Calculate box dimensions in canvas coordinates
-                            val left = minOf(startPoint.x, endPoint.x)
-                            val top = minOf(startPoint.y, endPoint.y)
-                            val width = abs(endPoint.x - startPoint.x)
-                            val height = abs(endPoint.y - startPoint.y)
-
-                            val centerX = left + width / 2
-                            val centerY = top + height / 2
-
-                            println("DEBUG: Drawing box in canvas coordinates: ($centerX,$centerY), size=${width}x${height}")
-
-                            // Convert from canvas coordinates to bitmap coordinates
-                            val canvasScaleX = canvasWidth / originalBitmap!!.width.toFloat()
-                            val canvasScaleY = canvasHeight / originalBitmap!!.height.toFloat()
-
-                            val bitmapCenterX = centerX / canvasScaleX
-                            val bitmapCenterY = centerY / canvasScaleY
-                            val bitmapWidth = width / canvasScaleX
-                            val bitmapHeight = height / canvasScaleY
-
-                            println("DEBUG: Converted to bitmap coordinates: ($bitmapCenterX,$bitmapCenterY), size=${bitmapWidth}x${bitmapHeight}")
-
-                            if (width > 10 && height > 10) {
-                                // Create the box using bitmap coordinates
-                                var box = DetectedBox(
-                                    x = bitmapCenterX,
-                                    y = bitmapCenterY,
-                                    width = bitmapWidth,
-                                    height = bitmapHeight,
-                                    className = currentClass,
-                                    classId = BrailleClassIdMapper.getMeaningToClassId(
-                                        currentClass,
-                                        grade
-                                    )
-                                )
-
-                                // Apply the same constraints as in edit mode to keep the box within bounds
-                                box = constrainBoxToCanvas(box, canvasSize, originalBitmap)
-
-                                println("DEBUG: Adding constrained box in bitmap coordinates: (${box.x},${box.y}), size=${box.width}x${box.height}")
-                                addBox(box)
-                            }
-                        }
-                    },
-                    currentClass = currentClass,
-                    onCanvasSizeChanged = { newSize: Size -> canvasSize = newSize }
+                CircularProgressIndicator(
+                    color = BrailleLensColors.darkOlive
                 )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            selectedBox?.let { indexNullable ->
-                val index = indexNullable
-                if (index in 0 until boxes.size) {
-                    val box = boxes[index]
-
-                    BoxDetailsCard(
-                        box = box,
-                        currentMode = currentMode,
-                        selectedBox = index,
-                        boxes = boxes,
-                        onBoxDelete = { boxIndex ->
-                            deleteBox(boxIndex)
-                            selectedBox = null
-                        },
-                        onBoxUpdate = { boxIndex, updatedBox ->
-                            // Ensure box stays within canvas boundaries
-                            val constrainedBox =
-                                constrainBoxToCanvas(updatedBox, canvasSize, originalBitmap)
-                            updateBox(boxIndex, constrainedBox)
-                        }
-                    )
-                }
-            }
-
-            // Add spacer before the save button
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Save Annotations Button
-            var isSaving by remember { mutableStateOf(false) }
-            var saveMessage by remember { mutableStateOf<String?>(null) }
-            var saveMessageColor by remember { mutableStateOf(BrailleLensColors.darkOlive) }
-            
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Button(
-                        onClick = {
-                            if (boxes.isNotEmpty() && originalBitmap != null) {
-                                isSaving = true
-                                saveMessage = null
-                                coroutineScope.launch {
-                                    try {
-                                        val result = SupabaseService.saveAnnotations(
-                                            context = context,
-                                            boxes = boxes,
-                                            imagePath = AnnotationState.imagePath.value,
-                                            bitmap = originalBitmap,
-                                            grade = grade.toString()
-                                        )
-                                        
-                                        result.fold(
-                                            onSuccess = { message ->
-                                                saveMessage = "Saved successfully!"
-                                                saveMessageColor = BrailleLensColors.darkOlive
-                                                isSaving = false
-                                            },
-                                            onFailure = { error ->
-                                                saveMessage = "Error: ${error.message}"
-                                                saveMessageColor = Color.Red
-                                                isSaving = false
-                                            }
-                                        )
-                                    } catch (e: Exception) {
-                                        saveMessage = "Error: ${e.message}"
-                                        saveMessageColor = Color.Red
-                                        isSaving = false
-                                    }
-                                }
-                            } else {
-                                saveMessage = "Nothing to save. Add annotations first."
-                                saveMessageColor = Color.Red
-                            }
-                        },
-                        enabled = !isSaving && boxes.isNotEmpty(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = BrailleLensColors.darkOlive,
-                            disabledContainerColor = BrailleLensColors.darkOlive.copy(alpha = 0.5f)
-                        ),
-                        modifier = Modifier.fillMaxWidth(0.8f)
-                    ) {
-                        if (isSaving) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                        }
-                        Text(
-                            text = if (isSaving) "Saving..." else "Save Annotations",
-                            fontSize = 16.sp,
-                            color = Color.White
-                        )
-                    }
-                    
-                    // Display success/error message
-                    saveMessage?.let {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = it,
-                            color = saveMessageColor,
-                            fontSize = 14.sp,
-                            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                        )
-                    }
-                }
-            }
-            
-            // Add some padding at the bottom
-            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+    
+    // Corrected approach - check for terms acceptance inside a LaunchedEffect
+    // without calling composable functions
+    LaunchedEffect(Unit) {
+        if (!hasAcceptedAnnotationTerms(context)) {
+            showTermsModal = true
         }
     }
 }
