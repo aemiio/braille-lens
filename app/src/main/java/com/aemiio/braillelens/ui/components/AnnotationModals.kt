@@ -154,7 +154,7 @@ fun TermsAndConditionsModal(
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(16.dp)
+                            .padding(12.dp)
                             .verticalScroll(scrollState)
                     ) {
                         TermsContent()
@@ -203,7 +203,7 @@ fun TermsAndConditionsModal(
                     }
                 }
                 
-                Spacer(modifier = Modifier.height(24.dp))
+                Spacer(modifier = Modifier.height(16.dp))
                 
 
                 Row(
