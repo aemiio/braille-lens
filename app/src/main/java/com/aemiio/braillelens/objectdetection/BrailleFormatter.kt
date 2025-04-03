@@ -3,6 +3,11 @@ package com.aemiio.braillelens.objectdetection
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.Log
+import kotlin.collections.plusAssign
+import kotlin.inc
+import kotlin.text.append
+import kotlin.text.compareTo
+import kotlin.text.get
 
 data class BrailleCell(
     val classId: Int,
@@ -228,7 +233,9 @@ class BrailleFormatter {
                                     continue
                                 }
                             }
-                            // Normal dot_4 handling (not part of ñ)
+                            // When dot_4 is not part of ñ, we should turn off number mode
+                            // as it's a modifier that interrupts number sequence
+                            numberMode = false
                             i++
                             continue
                         }
