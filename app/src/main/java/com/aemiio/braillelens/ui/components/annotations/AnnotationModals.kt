@@ -439,7 +439,7 @@ fun AnnotationHelpBottomSheet(
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "How to Use the Annotation Editor",
+                    text = "How to Use the Annotation Editor (Internet Needed)",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = BrailleLensColors.darkOlive
