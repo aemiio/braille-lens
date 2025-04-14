@@ -119,14 +119,12 @@ fun OnboardingScreen(
     when (windowSize.height) {
         WindowType.Compact -> {
             SmallOnboardingScreen(
-                navController = navController,
                 onFinishOnboarding = onFinishOnboarding
             )
         }
 
         else -> {
             MediumOnboardingScreen(
-                navController = navController,
                 onFinishOnboarding = onFinishOnboarding
             )
         }
@@ -145,11 +143,9 @@ data class OnboardingPage(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SmallOnboardingScreen(
-    navController: NavController,
     onFinishOnboarding: () -> Unit
 ) {
     OnboardingScreenImplementation(
-        navController = navController,
         onFinishOnboarding = onFinishOnboarding,
         spacerHeight = 16.dp,
         buttonWidth = 0.8f,
@@ -161,11 +157,9 @@ fun SmallOnboardingScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun MediumOnboardingScreen(
-    navController: NavController,
     onFinishOnboarding: () -> Unit
 ) {
     OnboardingScreenImplementation(
-        navController = navController,
         onFinishOnboarding = onFinishOnboarding,
         spacerHeight = 24.dp,
         buttonWidth = 0.7f,
@@ -177,7 +171,6 @@ fun MediumOnboardingScreen(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun OnboardingScreenImplementation(
-    navController: NavController,
     onFinishOnboarding: () -> Unit,
     spacerHeight: Dp,
     buttonWidth: Float,
@@ -243,7 +236,6 @@ private fun OnboardingScreenImplementation(
         Box(modifier = Modifier.fillMaxSize()) {
             // Animated dot background
             AnimatedDotBackground(
-                pagerState.currentPage,
                 pages[pagerState.currentPage].backgroundColor,
                 modifier = Modifier.fillMaxSize()
             )
@@ -461,7 +453,7 @@ fun OtherPagesLayout(
 }
 
 @Composable
-fun AnimatedDotBackground(currentPage: Int, pageColor: Color, modifier: Modifier = Modifier) {
+fun AnimatedDotBackground(pageColor: Color, modifier: Modifier = Modifier) {
     val density = LocalDensity.current
 
     class Dot(

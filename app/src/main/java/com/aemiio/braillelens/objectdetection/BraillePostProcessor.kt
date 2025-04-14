@@ -1,6 +1,5 @@
 package com.aemiio.braillelens.objectdetection
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Paint
@@ -28,11 +27,8 @@ object BraillePostProcessor {
 
     fun processDetections(
         result: Result,
-        context: Context,
         currentModel: String,
-        classes: List<String>,
-        boxPaint: Paint,
-        textPaint: Paint
+        classes: List<String>
     ): ProcessedDetectionResult {
         Log.d(TAG, "Processing ${result.outputBox.size} detections")
 
@@ -46,7 +42,7 @@ object BraillePostProcessor {
             ?: result.outputBitmap
 
         // Create annotated result bitmap
-        val fullResultBitmap = createAnnotatedResultBitmap(result, offsetX, offsetY, currentModel, context)
+        val fullResultBitmap = createAnnotatedResultBitmap(result, offsetX, offsetY, currentModel)
 
         // Calculate content dimensions (non-padded area)
         val contentWidth = preprocessedBitmap.width - (2 * offsetX)
@@ -82,7 +78,6 @@ object BraillePostProcessor {
             val classId = detection["classId"] as Int
             val classDetails = BrailleResult.getClassDetails(
                 classId,
-                context,
                 currentModel,
                 classes
             )
@@ -95,8 +90,7 @@ object BraillePostProcessor {
         val brailleFormatter = BrailleFormatter()
         val cells = brailleFormatter.convertToBrailleCells(
             processedDetections,
-            classDetailsMap,
-            currentModel
+            classDetailsMap
         )
 
         val sortedLines = brailleFormatter.organizeCellsByLines(cells)
@@ -116,8 +110,7 @@ object BraillePostProcessor {
         result: Result,
         offsetX: Int,
         offsetY: Int,
-        currentModel: String,
-        context: Context?
+        currentModel: String
     ): Bitmap {
         val inputSize = ObjectDetector.INPUT_SIZE
         val preprocessedBitmap = ObjectDetector.getPreprocessedInputBitmap()

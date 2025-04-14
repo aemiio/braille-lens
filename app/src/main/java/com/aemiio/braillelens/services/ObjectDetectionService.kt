@@ -19,7 +19,6 @@ import java.io.InputStream
 
 class ObjectDetectionService {
     private val objDetector = ObjectDetector()
-    private val TAG = "ObjectDetectionService"
 
     var confidenceThreshold: Float = 0.25f
 
@@ -37,7 +36,7 @@ class ObjectDetectionService {
             ?: throw IllegalArgumentException("Could not open image")
 
 
-        BrailleClassIdMapper.loadMappingsFromResources(context)
+        BrailleClassIdMapper.loadMappingsFromResources()
 
         BraillePostProcessor.resetStates()
 
@@ -59,11 +58,8 @@ class ObjectDetectionService {
 
             return@withContext BraillePostProcessor.processDetections(
                 result = result,
-                context = context,
                 currentModel = modelName,
-                classes = classes,
-                boxPaint = boxPaint,
-                textPaint = textPaint
+                classes = classes
             )
         } finally {
             inputStream.close()
@@ -77,7 +73,7 @@ class ObjectDetectionService {
         detectionMode: String
     ): ProcessedDetectionResult = withContext(Dispatchers.IO) {
 
-        BrailleClassIdMapper.loadMappingsFromResources(context)
+        BrailleClassIdMapper.loadMappingsFromResources()
 
 
         BraillePostProcessor.resetStates()
@@ -110,11 +106,8 @@ class ObjectDetectionService {
 
             return@withContext BraillePostProcessor.processDetections(
                 result = result,
-                context = context,
                 currentModel = modelName,
-                classes = classes,
-                boxPaint = boxPaint,
-                textPaint = textPaint
+                classes = classes
             )
         } finally {
             objDetector.close()
@@ -175,82 +168,7 @@ class ObjectDetectionService {
         }
     }
 
-    fun getDetectedBoxes(): List<DetectedBox> {
-        val result = lastResult ?: return emptyList()
-        val boxes = mutableListOf<DetectedBox>()
-
-
-        val scaleFactor = ObjectDetector.getScaleFactor()
-        val offsetX = ObjectDetector.getOffsetX()
-        val offsetY = ObjectDetector.getOffsetY()
-
-
-        val preprocessedBitmap = ObjectDetector.getPreprocessedInputBitmap() ?: return emptyList()
-
-
-        val contentWidth = preprocessedBitmap.width - (2 * offsetX)
-        val contentHeight = preprocessedBitmap.height - (2 * offsetY)
-
-
-        val originalWidth = (contentWidth / scaleFactor).toInt().coerceAtLeast(1)
-        val originalHeight = (contentHeight / scaleFactor).toInt().coerceAtLeast(1)
-
-        for (i in 0 until result.outputBox.size) {
-            val box = result.outputBox[i]
-
-
-            val normX = box[0].toFloat()
-            val normY = box[1].toFloat()
-            val normWidth = box[2].toFloat()
-            val normHeight = box[3].toFloat()
-            val confidence = box[4].toFloat()
-            val classId = box[5].toInt()
-
-
-            val x = normX * originalWidth
-            val y = normY * originalHeight
-            val width = normWidth * originalWidth
-            val height = normHeight * originalHeight
-
-
-            val grade: Int
-            val actualClassId: Int
-
-            when (currentModel) {
-                ObjectDetector.MODEL_G2 -> {
-                    grade = 2
-                    actualClassId = classId
-                }
-                ObjectDetector.BOTH_MODELS -> {
-                    val isG2 = classId >= BothModelsMerger.G2_CLASS_OFFSET
-                    grade = if (isG2) 2 else 1
-                    actualClassId = if (isG2) classId - BothModelsMerger.G2_CLASS_OFFSET else classId
-                }
-                else -> {
-                    grade = 1
-                    actualClassId = classId
-                }
-            }
-
-            val className = BrailleClassIdMapper.getMeaning(actualClassId, grade) ?: "unknown"
-
-            boxes.add(
-                DetectedBox(
-                    x = x,
-                    y = y,
-                    width = width,
-                    height = height,
-                    className = className,
-                    classId = actualClassId,
-                    confidence = confidence
-                )
-            )
-        }
-
-        return boxes
-    }
-
-//    fun getCanvasScaledBoxes(canvasWidth: Float, canvasHeight: Float): List<DetectedBox> {
+    //    fun getCanvasScaledBoxes(canvasWidth: Float, canvasHeight: Float): List<DetectedBox> {
 //        val rawBoxes = getDetectedBoxes()
 //
 //        // Transform the boxes to fit the canvas

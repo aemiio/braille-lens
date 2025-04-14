@@ -2,7 +2,6 @@ package com.aemiio.braillelens.ui.components.annotations
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +39,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -384,26 +382,6 @@ private fun BulletPoint(text: String) {
             lineHeight = 20.sp,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Justify
-        )
-    }
-}
-
-/**
- * A button to view the terms and conditions again
- */
-@Composable
-fun ViewTermsButton(onClick: () -> Unit) {
-    TextButton(
-        onClick = onClick,
-        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-        colors = ButtonDefaults.textButtonColors(
-            contentColor = BrailleLensColors.darkOlive
-        ),
-    ) {
-        Text(
-            text = "Terms",
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Medium
         )
     }
 }

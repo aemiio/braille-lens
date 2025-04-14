@@ -20,7 +20,7 @@ import androidx.compose.material3.MaterialTheme
 
 @Composable
 fun ResourcesSection() {
-    val context = LocalContext.current
+    LocalContext.current
 
     Column(
         modifier = Modifier

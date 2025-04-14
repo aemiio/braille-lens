@@ -57,12 +57,10 @@ fun AnnotationCanvas(
     startPoint: Offset,
     endPoint: Offset,
     onBoxSelect: (Int?) -> Unit,
-    onBoxAdd: (DetectedBox) -> Unit,
     onBoxDelete: (Int) -> Unit,
     onStartDrawing: (Offset) -> Unit,
     onDrawing: (Offset) -> Unit,
     onEndDrawing: () -> Unit,
-    currentClass: String,
     onCanvasSizeChanged: (Size) -> Unit
 ) {
     // Remember last tap time for double-tap detection

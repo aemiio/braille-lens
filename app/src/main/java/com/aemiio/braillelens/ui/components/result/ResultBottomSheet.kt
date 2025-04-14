@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,10 +32,7 @@ import androidx.compose.ui.unit.sp
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
 import androidx.compose.foundation.background
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -76,7 +72,7 @@ fun ResultBottomSheet(
                     )
                 )
 
-                // 1. Detection Results Section
+
                 HelpModeItem(
                     icon = painterResource(id = R.drawable.image_24px),
                     title = "Detection Visualization",
@@ -89,7 +85,7 @@ fun ResultBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 2. Confidence Threshold Section
+
                 HelpModeItem(
                     icon = painterResource(id = R.drawable.linear_scale),
                     title = "Confidence Threshold",
@@ -102,7 +98,7 @@ fun ResultBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 3. Recognition Modes
+
                 HelpModeItem(
                     icon = painterResource(id = R.drawable.language),
                     title = "Recognition Modes",
@@ -115,7 +111,7 @@ fun ResultBottomSheet(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // 4. Available Actions Section
+
                 Text(
                     text = "Available Actions",
                     fontSize = 16.sp,

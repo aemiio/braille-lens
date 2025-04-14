@@ -1,5 +1,4 @@
 package com.aemiio.braillelens.objectdetection
-import android.content.Context
 import android.util.Log
 
 object BrailleClassIdMapper {
@@ -22,41 +21,9 @@ object BrailleClassIdMapper {
     }
 
     /**
-     * Get binary pattern for a class ID, handling both single and combined models
-     */
-    fun getBinaryPattern(classId: Int): String {
-        // Check if this is from the combined model
-        if (classId >= BothModelsMerger.G2_CLASS_OFFSET) {
-            val actualId = classId - BothModelsMerger.G2_CLASS_OFFSET
-            return g2ClassIdToBinaryMap[actualId] ?: run {
-                Log.w(TAG, "Unknown G2 class ID: $actualId")
-                "??????"
-            }
-        }
-
-        // Otherwise treat as G1 class
-        return g1ClassIdToBinaryMap[classId] ?: run {
-            Log.w(TAG, "Unknown G1 class ID: $classId")
-            "??????"
-        }
-    }
-
-    /**
-     * Get meaning for a class ID
-     */
-    fun getMeaning(classId: Int): String {
-        if (classId >= BothModelsMerger.G2_CLASS_OFFSET) {
-            val actualId = classId - BothModelsMerger.G2_CLASS_OFFSET
-            return BrailleMap.G2brailleMap[actualId]?.meaning ?: "?"
-        }
-
-        return BrailleMap.G1brailleMap[classId]?.meaning ?: "?"
-    }
-
-    /**
      * Debug function to help with mapping issues
      */
-    fun loadMappingsFromResources(context: Context) {
+    fun loadMappingsFromResources() {
         Log.d(TAG, "Initializing Braille class ID mappings...")
 
         // Log G1 mappings for debugging
@@ -81,11 +48,6 @@ object BrailleClassIdMapper {
     // Get the meaning directly from the map
     fun getMeaning(classId: Int, grade: Int): String {
         return getBrailleEntry(classId, grade)?.meaning ?: "?"
-    }
-
-    // Get the binary pattern directly from the map
-    fun getBinary(classId: Int, grade: Int): String {
-        return getBrailleEntry(classId, grade)?.binary ?: "?"
     }
 
     fun getMeaningToClassId(meaning: String, grade: Int): Int {

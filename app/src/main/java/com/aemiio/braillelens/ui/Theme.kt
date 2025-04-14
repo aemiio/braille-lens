@@ -69,16 +69,11 @@ private val DarkColors = darkColorScheme(
 object BrailleLensColors {
     val darkOrange = DarkOrange
     val darkOlive = DarkOlive
-    val darkTeal = DarkTeal
-    val lightCream = LightCream
-    val backgroundCream = BackgroundCream
     val backgroundGrey = BackgroundGrey
     val pastelOrange = PastelOrange
     val pastelGreen = PastelGreen
-    val pastelTeal = PastelTeal
     val accentRed = AccentRed
     val accentBeige = AccentBeige
-    val accentPurple = AccentPurple
     val fontWhite = FontWhite
     val fontBlack = FontBlack
 }

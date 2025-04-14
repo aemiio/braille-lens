@@ -68,8 +68,6 @@ import com.aemiio.braillelens.utils.AnnotationState
 import com.aemiio.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import com.aemiio.braillelens.ui.components.result.ResultBottomSheet
 
 
@@ -79,9 +77,8 @@ fun RecognitionResultScreen(
     navController: NavController,
     detectionMode: String,
     imagePath: String,
-    recognizedText: String,
 
-) {
+    ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
@@ -208,7 +205,6 @@ fun RecognitionResultScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    // Add help button
                     IconButton(
                         onClick = { showHelpBottomSheet = true }
                     ) {
@@ -453,8 +449,7 @@ fun RecognitionResultScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                       
-                        // Read Aloud button - full width
+
                         Button(
                             onClick = { ttsManager.speak(result.translatedText) },
                             colors = ButtonDefaults.buttonColors(
@@ -470,8 +465,7 @@ fun RecognitionResultScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Read Aloud")
                         }
-                        
-                        // Two buttons side by side with equal width
+
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(12.dp)

@@ -4,7 +4,6 @@ package com.aemiio.braillelens.objectdetection
  * Helper class for handling class name retrieval and related functions
  */
 object BrailleClass {
-    private const val TAG = "BrailleClass"
 
     fun getClassName(classId: Int, currentModel: String, classes: List<String>): String {
         return if (currentModel == ObjectDetector.BOTH_MODELS) {

@@ -184,15 +184,13 @@ fun MainScreen() {
                                 navController = navController,
                                 detectionMode = backStackEntry.arguments?.getString("mode") ?: "Grade 1 Braille",
                                 imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
-                                recognizedText = "",
                             )
                         }
 
                         composable("annotation/{imagePath}") { backStackEntry ->
                             AnnotationScreen(
                                 navController = navController,
-                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: "",
-                                onBoxUpdate = { /* Handle box updates if needed */ }
+                                imagePath = backStackEntry.arguments?.getString("imagePath") ?: ""
                             )
                         }
 

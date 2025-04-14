@@ -37,15 +37,7 @@ internal class ObjectDetector {
         fun getOffsetX(): Int = offsetX
         fun getOffsetY(): Int = offsetY
 
-        private var instance: ObjectDetector? = null
         private var lastPreprocessedBitmap: Bitmap? = null
-
-        fun getInstance(): ObjectDetector {
-            if (instance == null) {
-                instance = ObjectDetector()
-            }
-            return instance!!
-        }
 
         fun getPreprocessedInputBitmap(): Bitmap? {
             return lastPreprocessedBitmap
@@ -122,7 +114,7 @@ internal class ObjectDetector {
                 val g2Result = runModel(MODEL_G2, inputBuffer, originalBitmap, confidenceThreshold)
 
                 // Merge results from both models
-                mergeResults(g1Result, g2Result, originalBitmap, confidenceThreshold)
+                mergeResults(g1Result, g2Result, originalBitmap)
             }
             else -> {
                 // Run single model
@@ -149,8 +141,6 @@ internal class ObjectDetector {
         // Process results
         val detections = postprocessYOLOv8(
             outputBuffer[0],
-            bitmap.width,
-            bitmap.height,
             confidenceThreshold
         )
 
@@ -160,8 +150,7 @@ internal class ObjectDetector {
     internal fun mergeResults(
         g1Result: Result,
         g2Result: Result,
-        bitmap: Bitmap,
-        confidenceThreshold: Float
+        bitmap: Bitmap
     ): Result {
         return bothModelsMerger.mergeResults(g1Result, g2Result, bitmap)
     }
@@ -278,8 +267,6 @@ internal class ObjectDetector {
 
     private fun postprocessYOLOv8(
         outputBuffer: Array<FloatArray>,
-        originalWidth: Int,
-        originalHeight: Int,
         confidenceThreshold: Float
     ): Array<FloatArray> {
         val rawResults = mutableListOf<FloatArray>()

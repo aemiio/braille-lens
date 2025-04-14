@@ -86,8 +86,7 @@ enum class AnnotationMode {
 @Composable
 fun AnnotationScreen(
     navController: NavController,
-    imagePath: String,
-    onBoxUpdate: (List<DetectedBox>) -> Unit
+    imagePath: String
 ) {
     val context = LocalContext.current
     val boxes = AnnotationState.boxes
@@ -107,7 +106,7 @@ fun AnnotationScreen(
     var startPoint by remember { mutableStateOf(Offset.Zero) }
     var endPoint by remember { mutableStateOf(Offset.Zero) }
     var currentClass by remember { mutableStateOf("") }
-    val scrollState = rememberScrollState()
+    rememberScrollState()
 
     var canvasSize by remember { mutableStateOf(Size(0f, 0f)) }
 
@@ -249,9 +248,8 @@ fun AnnotationScreen(
         }
     }
 
-    val snackbarHostState = remember { SnackbarHostState() }
+    remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var snackbarMessage by remember { mutableStateOf<String?>(null) }
 
 
     LaunchedEffect(classOptions) {
@@ -602,11 +600,6 @@ fun AnnotationScreen(
                         startPoint = startPoint,
                         endPoint = endPoint,
                         onBoxSelect = { index: Int? -> selectedBox = index },
-                        onBoxAdd = { newBox: DetectedBox ->
-                            val classId = BrailleClassIdMapper.getMeaningToClassId(currentClass, grade)
-                            val box = newBox.copy(className = currentClass, classId = classId)
-                            addBox(box)
-                        },
                         onBoxDelete = { index: Int ->
                             deleteBox(index)
                         },
@@ -670,7 +663,6 @@ fun AnnotationScreen(
                                 }
                             }
                         },
-                        currentClass = currentClass,
                         onCanvasSizeChanged = { newSize: Size -> canvasSize = newSize }
                     )
                 }
@@ -832,7 +824,6 @@ fun AnnotationScreen(
         }
     }
 
-    // Display the help bottom sheet
     AnnotationHelpBottomSheet(
         showBottomSheet = showHelpBottomSheet,
         onDismiss = { showHelpBottomSheet = false }

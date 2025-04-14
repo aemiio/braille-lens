@@ -1,13 +1,6 @@
 package com.aemiio.braillelens.objectdetection
 
-import android.graphics.Canvas
-import android.graphics.Paint
 import android.util.Log
-import kotlin.collections.plusAssign
-import kotlin.inc
-import kotlin.text.append
-import kotlin.text.compareTo
-import kotlin.text.get
 
 data class BrailleCell(
     val classId: Int,
@@ -19,12 +12,6 @@ data class BrailleCell(
     val width: Float,
     val height: Float,
     val box: Map<String, Any>
-)
-
-data class ProcessedBrailleResult(
-    val cells: List<BrailleCell>,
-    val detectionText: String,
-    val translatedText: String
 )
 
 class BrailleFormatter {
@@ -55,8 +42,7 @@ class BrailleFormatter {
      */
     fun convertToBrailleCells(
         detections: List<Map<String, Any>>,
-        classDetails: List<Map<String, String>>,
-        currentModel: String
+        classDetails: List<Map<String, String>>
     ): List<BrailleCell> {
         val cells = mutableListOf<BrailleCell>()
 
