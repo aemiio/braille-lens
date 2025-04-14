@@ -13,7 +13,6 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.channels.FileChannel
 import androidx.core.graphics.scale
-import kotlin.times
 
 data class Result(
     var outputBitmap: Bitmap,
@@ -167,54 +166,54 @@ internal class ObjectDetector {
         return bothModelsMerger.mergeResults(g1Result, g2Result, bitmap)
     }
 
-    private fun enhanceImageForBraille(original: Bitmap): Bitmap {
-        val width = original.width
-        val height = original.height
-        val enhanced = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-
-        // Convert to grayscale and apply contrast enhancement
-        val pixels = IntArray(width * height)
-        original.getPixels(pixels, 0, width, 0, 0, width, height)
-
-        // First find min and max for contrast stretching
-        var min = 255
-        var max = 0
-
-        // Convert to grayscale first
-        val grayPixels = IntArray(width * height)
-        for (i in pixels.indices) {
-            val pixel = pixels[i]
-            val r = pixel shr 16 and 0xFF
-            val g = pixel shr 8 and 0xFF
-            val b = pixel and 0xFF
-
-            // Standard grayscale conversion
-            val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
-            grayPixels[i] = gray
-
-            // Track min and max values
-            if (gray < min) min = gray
-            if (gray > max) max = max
-        }
-
-        // Apply contrast stretching if there's a valid range
-        val range = max - min
-        if (range > 0) {
-            for (i in pixels.indices) {
-                val gray = grayPixels[i]
-
-                // Contrast enhancement with stretching
-                val enhanced = ((gray - min) * 255.0 / range).toInt().coerceIn(0, 255)
-
-                // Create RGB pixel (keeping alpha)
-                val alpha = pixels[i] shr 24 and 0xFF
-                pixels[i] = (alpha shl 24) or (enhanced shl 16) or (enhanced shl 8) or enhanced
-            }
-        }
-
-        enhanced.setPixels(pixels, 0, width, 0, 0, width, height)
-        return enhanced
-    }
+//    private fun enhanceImageForBraille(original: Bitmap): Bitmap {
+//        val width = original.width
+//        val height = original.height
+//        val enhanced = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+//
+//        // Convert to grayscale and apply contrast enhancement
+//        val pixels = IntArray(width * height)
+//        original.getPixels(pixels, 0, width, 0, 0, width, height)
+//
+//        // First find min and max for contrast stretching
+//        var min = 255
+//        var max = 0
+//
+//        // Convert to grayscale first
+//        val grayPixels = IntArray(width * height)
+//        for (i in pixels.indices) {
+//            val pixel = pixels[i]
+//            val r = pixel shr 16 and 0xFF
+//            val g = pixel shr 8 and 0xFF
+//            val b = pixel and 0xFF
+//
+//            // Standard grayscale conversion
+//            val gray = (0.299 * r + 0.587 * g + 0.114 * b).toInt()
+//            grayPixels[i] = gray
+//
+//            // Track min and max values
+//            if (gray < min) min = gray
+//            if (gray > max) max = max
+//        }
+//
+//        // Apply contrast stretching if there's a valid range
+//        val range = max - min
+//        if (range > 0) {
+//            for (i in pixels.indices) {
+//                val gray = grayPixels[i]
+//
+//                // Contrast enhancement with stretching
+//                val enhanced = ((gray - min) * 255.0 / range).toInt().coerceIn(0, 255)
+//
+//                // Create RGB pixel (keeping alpha)
+//                val alpha = pixels[i] shr 24 and 0xFF
+//                pixels[i] = (alpha shl 24) or (enhanced shl 16) or (enhanced shl 8) or enhanced
+//            }
+//        }
+//
+//        enhanced.setPixels(pixels, 0, width, 0, 0, width, height)
+//        return enhanced
+//    }
 
     private fun preprocessImage(bitmap: Bitmap): ByteBuffer {
         // Each float has 4 bytes, 640 image resolution and 3 channels (RGB)
@@ -253,12 +252,12 @@ internal class ObjectDetector {
         // Save the padded input image for visualization
         lastPreprocessedBitmap = paddedBitmap.copy(Bitmap.Config.ARGB_8888, false)
 
-        // Apply enhancements after padding
-        val enhancedBitmap = enhanceImageForBraille(paddedBitmap)
+//        // Apply enhancements after padding
+//        val enhancedBitmap = enhanceImageForBraille(paddedBitmap)
 
         // Extract pixels from the padded bitmap
         val pixels = IntArray(INPUT_SIZE * INPUT_SIZE)
-        enhancedBitmap.getPixels(pixels, 0,
+        paddedBitmap.getPixels(pixels, 0,
             INPUT_SIZE, 0, 0,
             INPUT_SIZE,
             INPUT_SIZE
