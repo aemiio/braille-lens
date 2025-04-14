@@ -33,8 +33,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.aemiio.braillelens.ui.BrailleLensColors
 import com.aemiio.braillelens.ui.BrailleLensTheme
-import com.aemiio.braillelens.ui.components.AppDrawer
-import com.aemiio.braillelens.ui.components.CustomNavigationBar
+import com.aemiio.braillelens.ui.components.navigation.AppDrawer
+import com.aemiio.braillelens.ui.components.navigation.CustomNavigationBar
 import com.aemiio.braillelens.ui.screens.AboutScreen
 import com.aemiio.braillelens.ui.screens.AnnotationScreen
 import com.aemiio.braillelens.ui.screens.CaptureScreen
@@ -50,7 +50,6 @@ import com.aemiio.braillelens.ui.screens.findActivity
 import com.aemiio.braillelens.ui.screens.hasCompletedOnboarding
 import com.aemiio.braillelens.ui.screens.setOnboardingComplete
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
