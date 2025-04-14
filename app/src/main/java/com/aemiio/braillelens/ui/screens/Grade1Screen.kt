@@ -29,9 +29,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.aemiio.braillelens.ui.BrailleLensColors
-import com.aemiio.braillelens.ui.components.BrailleCardItem
-import com.aemiio.braillelens.ui.components.FilterBubble
-import com.aemiio.braillelens.ui.components.loadBrailleCards
+import com.aemiio.braillelens.ui.components.dictionary.BrailleCardItem
+import com.aemiio.braillelens.ui.components.dictionary.FilterBubble
+import com.aemiio.braillelens.ui.components.dictionary.loadBrailleCards
 
 
 @Composable

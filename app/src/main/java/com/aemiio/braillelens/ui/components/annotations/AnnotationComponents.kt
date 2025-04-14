@@ -1,6 +1,8 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.annotations
 
 import android.graphics.Bitmap
+import android.graphics.Paint
+import android.graphics.Rect
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -35,6 +37,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.aemiio.braillelens.ui.BrailleLensColors
@@ -165,7 +168,7 @@ fun AnnotationCanvas(
             drawContext.canvas.nativeCanvas.drawBitmap(
                 bmp,
                 null,
-                android.graphics.Rect(0, 0, size.width.toInt(), size.height.toInt()),
+                Rect(0, 0, size.width.toInt(), size.height.toInt()),
                 null
             )
 
@@ -220,7 +223,7 @@ fun AnnotationCanvas(
                     box.className,
                     left,
                     top - 10f,
-                    android.graphics.Paint().apply {
+                    Paint().apply {
                         color = android.graphics.Color.YELLOW
                         textSize = 40f
                         isAntiAlias = true
@@ -445,7 +448,7 @@ fun BoxDetailsCard(
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.width(30.dp),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                textAlign = TextAlign.Center
                             )
                             
                             // Increase width button with long press
@@ -546,7 +549,7 @@ fun BoxDetailsCard(
                                 fontWeight = FontWeight.Medium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.width(30.dp),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                textAlign = TextAlign.Center
                             )
                             
                             // Increase height button with long press

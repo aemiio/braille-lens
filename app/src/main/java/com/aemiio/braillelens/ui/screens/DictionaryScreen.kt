@@ -28,7 +28,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
-import com.aemiio.braillelens.ui.components.DictionaryCard
+import com.aemiio.braillelens.ui.components.dictionary.DictionaryCard
 import com.aemiio.braillelens.utils.EnableFullScreen
 import com.aemiio.braillelens.utils.WindowType
 import com.aemiio.braillelens.utils.rememberWindowSize

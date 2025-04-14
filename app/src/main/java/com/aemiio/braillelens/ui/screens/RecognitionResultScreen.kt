@@ -68,6 +68,9 @@ import com.aemiio.braillelens.utils.AnnotationState
 import com.aemiio.braillelens.utils.TTSManager
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.clickable
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import com.aemiio.braillelens.ui.components.result.ResultBottomSheet
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,6 +97,8 @@ fun RecognitionResultScreen(
     var originalBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
     var selectedModel by remember { mutableStateOf(detectionMode) }
+
+    var showHelpBottomSheet by remember { mutableStateOf(false) }
 
     val processImage = {
         coroutineScope.launch {
@@ -199,6 +204,24 @@ fun RecognitionResultScreen(
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(start = 8.dp)
+                    )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
+                    // Add help button
+                    IconButton(
+                        onClick = { showHelpBottomSheet = true }
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.info_24px),
+                            contentDescription = "Help",
+                            tint = MaterialTheme.colorScheme.onBackground,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                    ResultBottomSheet(
+                        showBottomSheet = showHelpBottomSheet,
+                        onDismiss = { showHelpBottomSheet = false }
                     )
                 }
             }

@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.reusables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

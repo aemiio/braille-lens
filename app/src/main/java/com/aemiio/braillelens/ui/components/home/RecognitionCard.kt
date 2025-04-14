@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.home
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
+import com.aemiio.braillelens.ui.components.reusables.InfoPopover
 import com.aemiio.braillelens.utils.WindowType
 import com.aemiio.braillelens.utils.rememberWindowSize
 

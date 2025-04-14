@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.navigation
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

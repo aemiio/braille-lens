@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.dictionary
 
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -33,7 +33,7 @@ import com.aemiio.braillelens.utils.TTSManager
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.InputStream
-
+import kotlin.collections.get
 
 
 data class BrailleCardData(

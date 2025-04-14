@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.annotations
 
 import android.content.Context
 import android.content.Intent
@@ -50,7 +50,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.aemiio.braillelens.ui.BrailleLensColors
+import androidx.core.net.toUri
 
 /**
  * Check if the user has accepted the annotation terms before
@@ -168,7 +171,7 @@ fun TermsAndConditionsModal(
                                 .height(40.dp)
                                 .align(Alignment.BottomCenter)
                                 .background(
-                                    androidx.compose.ui.graphics.Brush.verticalGradient(
+                                    Brush.verticalGradient(
                                         colors = listOf(
                                             Color.Transparent,
                                             MaterialTheme.colorScheme.surfaceVariant
@@ -322,7 +325,7 @@ private fun TermsContent() {
                         .padding(start = 4.dp)
                         .clickable {
                             val intent = Intent(Intent.ACTION_SENDTO).apply {
-                                data = Uri.parse("mailto:jyramae.celajes@cvsu.edu.ph")
+                                data = "mailto:jyramae.celajes@cvsu.edu.ph".toUri()
                             }
                             context.startActivity(intent)
                         }
@@ -414,7 +417,7 @@ fun HelpButton(onClick: () -> Unit) {
         onClick = onClick,
         border = ButtonDefaults.outlinedButtonBorder.copy(
             width = 1.dp,
-            brush = androidx.compose.ui.graphics.SolidColor(BrailleLensColors.darkOlive)
+            brush = SolidColor(BrailleLensColors.darkOlive)
         ),
         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         modifier = Modifier.fillMaxWidth(0.8f)

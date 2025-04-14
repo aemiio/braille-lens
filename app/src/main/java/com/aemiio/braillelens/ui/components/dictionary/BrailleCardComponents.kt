@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.dictionary
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable

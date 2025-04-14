@@ -1,4 +1,4 @@
-package com.aemiio.braillelens.ui.components
+package com.aemiio.braillelens.ui.components.dictionary
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.aemiio.braillelens.ui.BrailleLensColors
+import com.aemiio.braillelens.ui.components.reusables.InfoPopover
 
 @Composable
 fun DictionaryCard(navController: NavController) {

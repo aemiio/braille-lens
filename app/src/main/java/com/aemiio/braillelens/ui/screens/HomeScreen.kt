@@ -30,7 +30,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
-import com.aemiio.braillelens.ui.components.RecognitionCard
+import com.aemiio.braillelens.ui.components.home.RecognitionCard
 import com.aemiio.braillelens.utils.EnableFullScreen
 import com.aemiio.braillelens.utils.WindowType
 import com.aemiio.braillelens.utils.rememberWindowSize
