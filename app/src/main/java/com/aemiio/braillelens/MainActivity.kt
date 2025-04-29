@@ -18,6 +18,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,17 +47,23 @@ import com.aemiio.braillelens.ui.screens.ImportScreen
 import com.aemiio.braillelens.ui.screens.OnboardingScreen
 import com.aemiio.braillelens.ui.screens.RecognitionResultScreen
 import com.aemiio.braillelens.ui.screens.SampleScreen
+import com.aemiio.braillelens.ui.screens.SettingsScreen
 import com.aemiio.braillelens.ui.screens.findActivity
 import com.aemiio.braillelens.ui.screens.hasCompletedOnboarding
 import com.aemiio.braillelens.ui.screens.setOnboardingComplete
+import com.aemiio.braillelens.utils.ThemeManager
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            BrailleLensTheme {
-                Surface() {
+            val context = LocalContext.current
+            val themeManager = remember { ThemeManager.getInstance(context) }
+            val currentThemeMode by themeManager.themeMode.collectAsState()
+
+            BrailleLensTheme(themeMode = currentThemeMode) {
+                Surface {
                     MainScreen()
                 }
             }
@@ -193,6 +200,10 @@ fun MainScreen() {
                                 imagePath = backStackEntry.arguments?.getString("imagePath") ?: ""
                             )
                         }
+
+                        composable("settings") { SettingsScreen(
+                            navController = navController
+                        ) }
 
                     }
                 }

@@ -106,6 +106,15 @@ fun AppDrawer(
         )
 
         NavigationItem(
+            icon = painterResource(id = R.drawable.settings_24px),
+            text = "Settings",
+            isSelected = currentRoute == "settings",
+            onClick = { onItemSelected("settings") },
+            color = MaterialTheme.colorScheme.onSurface,
+            iconTint = MaterialTheme.colorScheme.onSurface
+        )
+
+        NavigationItem(
             icon = painterResource(id = R.drawable.info_24px),
             text = "About",
             isSelected = currentRoute == "about",

@@ -31,7 +31,7 @@ fun CustomNavigationBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
+            .height(90.dp)
             .shadow(
                 elevation = 8.dp,
                 shape = RectangleShape,
@@ -53,13 +53,13 @@ fun CustomNavigationBar(
                     Icon(
                         painter = painterResource(id = R.drawable.home_24px),
                         contentDescription = "Home",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 },
                 label = {
                     Text(
                         text = "Home",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = if (currentScreen == "home") FontWeight.Bold else FontWeight.Normal
                     )
                 },
@@ -80,13 +80,13 @@ fun CustomNavigationBar(
                     Icon(
                         painter = painterResource(id = R.drawable.dictionary_24px),
                         contentDescription = "Dictionary",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 },
                 label = {
                     Text(
                         text = "Dictionary",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = if (currentScreen == "dictionary") FontWeight.Bold else FontWeight.Normal
                     )
                 },
@@ -107,13 +107,13 @@ fun CustomNavigationBar(
                     Icon(
                         painter = painterResource(id = R.drawable.info_24px),
                         contentDescription = "About",
-                        modifier = Modifier.size(24.dp)
+                        modifier = Modifier.size(20.dp)
                     )
                 },
                 label = {
                     Text(
                         text = "About",
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = if (currentScreen == "about") FontWeight.Bold else FontWeight.Normal
                     )
                 },
