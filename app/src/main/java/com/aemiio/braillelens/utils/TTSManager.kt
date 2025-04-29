@@ -5,12 +5,19 @@ import android.speech.tts.TextToSpeech
 import android.widget.Toast
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import java.util.Locale
 
 class TTSManager private constructor(private val context: Context) {
     private var textToSpeech: TextToSpeech? = null
     private val _isTTSReady = MutableStateFlow(false)
     val isTTSReady: StateFlow<Boolean> = _isTTSReady
+
+    private val _pitch = MutableStateFlow(1.0f)
+    val pitch = _pitch.asStateFlow()
+
+    private val _speechRate = MutableStateFlow(1.0f)
+    val speechRate = _speechRate.asStateFlow()
 
     init {
         initTTS()
@@ -30,8 +37,8 @@ class TTSManager private constructor(private val context: Context) {
                     textToSpeech?.setLanguage(Locale.getDefault())
                 }
 
-                textToSpeech?.setPitch(1.0f)
-                textToSpeech?.setSpeechRate(1.0f)
+                textToSpeech?.setPitch(_pitch.value)
+                textToSpeech?.setSpeechRate(_speechRate.value)
                 _isTTSReady.value = true
             } else {
                 Toast.makeText(context, "TTS Initialization failed", Toast.LENGTH_SHORT).show()
@@ -45,6 +52,16 @@ class TTSManager private constructor(private val context: Context) {
         } else {
             Toast.makeText(context, "TTS not ready", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    fun setPitch(newPitch: Float) {
+        _pitch.value = newPitch
+        textToSpeech?.setPitch(newPitch)
+    }
+
+    fun setSpeechRate(newRate: Float) {
+        _speechRate.value = newRate
+        textToSpeech?.setSpeechRate(newRate)
     }
 
     fun shutdown() {
