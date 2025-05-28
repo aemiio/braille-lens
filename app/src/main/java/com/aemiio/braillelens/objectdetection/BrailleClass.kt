@@ -27,7 +27,6 @@ object BrailleClass {
                 }
             }
         } else {
-            // Standard single-model behavior
             if (classId >= 0 && classId < classes.size) classes[classId] else "Unknown"
         }
     }

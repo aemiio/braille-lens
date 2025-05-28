@@ -41,17 +41,5 @@ object BrailleImageUtils {
             return ""
         }
     }
-
-//    fun cropToSquare(imagePath: String, width: Int, height: Int): Bitmap {
-//        val bitmap = BitmapFactory.decodeFile(imagePath)
-//        val x = (bitmap.width - width) / 2
-//        val y = (bitmap.height - height) / 2
-//        return Bitmap.createBitmap(bitmap, x, y, width, height)
-//    }
-//
-//    fun saveBitmapToFile(bitmap: Bitmap, file: File) {
-//        FileOutputStream(file).use { out ->
-//            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out)
-//        }
-//    }
+    
 }
