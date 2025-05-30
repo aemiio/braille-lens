@@ -2,6 +2,7 @@ package com.aemiio.braillelens.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,12 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -30,6 +38,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.aemiio.braillelens.R
 import com.aemiio.braillelens.ui.BrailleLensColors
+import com.aemiio.braillelens.ui.components.home.GuideBottomSheet
 import com.aemiio.braillelens.ui.components.home.RecognitionCard
 import com.aemiio.braillelens.utils.EnableFullScreen
 import com.aemiio.braillelens.utils.WindowType
@@ -52,6 +61,10 @@ fun HomeScreen(openDrawer: () -> Unit, navController: NavController) {
 @Composable
 fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
     val context = LocalContext.current
+
+    var showGuideSheet by remember { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
 
     Box(
         modifier = Modifier
@@ -83,7 +96,6 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             )
         }
 
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,10 +113,42 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 .zIndex(0f)
         ) {
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
+                    .clickable { showGuideSheet = true },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.quick_reference_24px),
+                    contentDescription = "Guide",
+                    tint = BrailleLensColors.darkOlive,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "How to Use Braille lens",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = BrailleLensColors.darkOlive
+                )
+            }
 
-            RecognitionCard(
-                navController = navController,
-                context = context
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+            ) {
+                RecognitionCard(
+                    navController = navController,
+                    context = context
+                )
+            }
+            GuideBottomSheet(
+                showGuideSheet = showGuideSheet,
+                onDismiss = { showGuideSheet = false }
             )
         }
     }
@@ -113,6 +157,10 @@ fun SmallHomeScreen(openDrawer: () -> Unit, navController: NavController) {
 @Composable
 fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
     val context = LocalContext.current
+
+    var showGuideSheet by remember { mutableStateOf(false) }
+
+    val scrollState = rememberScrollState()
 
     Box(
         modifier = Modifier
@@ -144,6 +192,7 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
                 tint = BrailleLensColors.accentRed
             )
         }
+
 
 
         Column(
@@ -179,13 +228,13 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
 
                 Column(modifier = Modifier.padding(start = 16.dp)) {
                     Text(
-                        text = "Braille Lens",
+                        text = "Braille-Lens",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = BrailleLensColors.darkOrange
                     )
                     Text(
-                        text = "Your Vision, Our Mission",
+                        text = "Making Braille Accessible",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )
@@ -193,9 +242,42 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
             }
 
 
-            RecognitionCard(
-                navController = navController,
-                context = context
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(6.dp)
+                    .clickable { showGuideSheet = true },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.quick_reference_24px),
+                    contentDescription = "Guide",
+                    tint = BrailleLensColors.darkOlive,
+                    modifier = Modifier.size(24.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "How to Use Braille-Lens",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = BrailleLensColors.darkOlive
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(scrollState)
+            ) {
+                RecognitionCard(
+                    navController = navController,
+                    context = context
+                )
+            }
+            GuideBottomSheet(
+                showGuideSheet = showGuideSheet,
+                onDismiss = { showGuideSheet = false }
             )
         }
     }
