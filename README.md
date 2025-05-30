@@ -44,6 +44,7 @@ Developed as a thesis under the **Department of Computer Studies**, **Cavite Sta
   Works with both:
   - Simulated Braille (black dot representations)
   - Written/embedded Braille (captured with lighting that shows dot shadows)
+_See samples here:_ [Sample Input Images](https://drive.google.com/drive/folders/1EsSBbHq_mlTkhx3lyY38UYMZQOD6b178?usp=drive_link)
 
 - 📝 **Braille to Text + TTS**  
   Converts detected Braille into Tagalog text and reads it aloud using Text-to-Speech.
