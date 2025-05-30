@@ -213,33 +213,33 @@ fun MediumHomeScreen(openDrawer: () -> Unit, navController: NavController) {
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 10.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.braille_logo),
-                    contentDescription = "Braille Lens Logo",
-                    modifier = Modifier.size(50.dp)
-                )
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(vertical = 10.dp),
+//                verticalAlignment = Alignment.CenterVertically,
+//                horizontalArrangement = Arrangement.Center
+//            ) {
+//                Image(
+//                    painter = painterResource(id = R.drawable.braille_logo),
+//                    contentDescription = "Braille Lens Logo",
+//                    modifier = Modifier.size(50.dp)
+//                )
 
-                Column(modifier = Modifier.padding(start = 16.dp)) {
-                    Text(
-                        text = "Braille-Lens",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = BrailleLensColors.darkOrange
-                    )
-                    Text(
-                        text = "Making Braille Accessible",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
-            }
+//                Column(modifier = Modifier.padding(start = 16.dp)) {
+//                    Text(
+//                        text = "Braille-Lens",
+//                        fontSize = 16.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = BrailleLensColors.darkOrange
+//                    )
+//                    Text(
+//                        text = "Making Braille Accessible",
+//                        fontSize = 12.sp,
+//                        color = MaterialTheme.colorScheme.onBackground
+//                    )
+//                }
+//            }
 
 
             Row(
