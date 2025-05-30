@@ -169,13 +169,13 @@ fun MediumDictionaryScreen(openDrawer: () -> Unit, navController: NavController)
 
                 Column(modifier = Modifier.padding(start = 16.dp)) {
                     Text(
-                        text = "Braille Lens",
+                        text = "Braille-Lens",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Bold,
                         color = BrailleLensColors.darkOrange
                     )
                     Text(
-                        text = "Your Vision, Our Mission",
+                        text = "Making Braille Accessible",
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onBackground
                     )

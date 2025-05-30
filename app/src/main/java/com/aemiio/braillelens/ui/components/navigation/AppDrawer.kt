@@ -70,7 +70,7 @@ fun AppDrawer(
                         color = MaterialTheme.colorScheme.secondary
                     )
                     Text(
-                        text = "Your Vision, Our Mission",
+                        text = "Making Braille Accessible",
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface
                     )
