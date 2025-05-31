@@ -36,9 +36,9 @@ Developed as a thesis under the **Department of Computer Studies**, **Cavite Sta
   - Filipino alphabet (includes **ñ** and **ng**)  
   - Capital sign, number sign  
   - Digits (1–9)  
-  - One-cell contractions (alphabet and non-alphabet)  
-  - One-cell part words  
-  - Two-cell contractions (alphabet and non-alphabet)
+  - Filipino-Tagalog One-cell contractions (alphabet and non-alphabet)  
+  - Filipino-Tagalog One-cell part words  
+  - Filipino-Tagalog Two-cell contractions (alphabet and non-alphabet)
 
 - 🟤 **Real and Simulated Braille Support**  
   Works with both:
