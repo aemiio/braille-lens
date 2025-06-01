@@ -1,3 +1,7 @@
+<!--
+Keywords: Filipino Braille recognition app, Tagalog Braille OCR, YOLOv8 Braille detection, Android Braille to Text app, Braille alphabet translator, Text-to-Speech for Braille, accessible reading app Philippines, Filipino Tagalog Braille Application, Grade 1 Braille, Grade 2 Braille, Filipino Braille OCR
+-->
+
 # 📱 Braille-lens: Filipino-Tagalog Braille Recognition App
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white)
